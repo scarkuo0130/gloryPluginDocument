@@ -70,7 +70,7 @@
     position: absolute;
     top: 5px;
     left: 5px;
-    width: 400px;       /* 含右側折疊按鈕區域 */
+    width: 700px;       /* 整合活躍玩家面板，幾乎佔滿畫布寬度（canvas 720） */
     height: 130px;      /* tap-friendly touch target */
     /* 暗色遮罩 + 玩家背板（可被 JS 動態切換） */
     background:
@@ -82,7 +82,7 @@
     border: 2px solid rgba(255, 200, 100, 0.3);
     border-radius: 26px;
     padding: 14px;
-    padding-right: 0;   /* 右側交給折疊按鈕 */
+    padding-left: 0;    /* 左側交給折疊按鈕（展開時） */
     display: flex;
     align-items: center;
     gap: 18px;
@@ -96,29 +96,36 @@
     border-color: rgba(255, 200, 100, 0.6);
   }
 
-  /* 折疊狀態：整條 bar 滑出左側畫面外，只露出右邊按鈕 */
-  /* 寬度 440 - 想露出 70 = 平移 -370px，再扣掉左邊 24 留邊就是 -394 */
+  /* 折疊狀態：整條 bar 滑出左側畫面外，只露出右邊（此時 collapse-btn 回到右側）的按鈕 */
+  /* width 700、collapse-btn 35 → 想露出 35px：tx = -(700 - 35) = -665 */
   .status-bar.collapsed {
-    transform: translateX(-394px);
+    transform: translateX(-665px);
     cursor: default;
+    padding-left: 14px;
+    padding-right: 0;   /* 折疊時右側交給按鈕 */
   }
 
-  /* 折疊按鈕（永遠貼在 bar 右側，露出在畫面內的就是這顆） */
+  /* 折疊按鈕 — 預設樣式（折疊狀態用：貼在 bar 右側） */
   .collapse-btn {
     position: relative;
-    width: 70px;
+    width: 35px;
     height: 100%;
     flex-shrink: 0;
     display: flex;
     align-items: center;
     justify-content: center;
-    border-left: 2px solid rgba(255, 200, 100, 0.25);
     color: #ffd166;
-    font-size: 48px;
+    font-size: 32px;
     font-weight: 800;
     cursor: pointer;
     user-select: none;
     transition: background 0.15s;
+    /* 折疊時按鈕在右側 */
+    order: 0;
+    border-left: 2px solid rgba(255, 200, 100, 0.25);
+    border-right: none;
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
     border-top-right-radius: 24px;
     border-bottom-right-radius: 24px;
   }
@@ -129,10 +136,19 @@
     line-height: 1;
     transform: translateY(-2px);
   }
-  /* 折疊狀態時，按鈕箭頭旋轉 */
+  /* 展開狀態：按鈕翻到左側 */
+  .status-bar:not(.collapsed) .collapse-btn {
+    order: -1;
+    border-left: none;
+    border-right: 2px solid rgba(255, 200, 100, 0.25);
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+    border-top-left-radius: 24px;
+    border-bottom-left-radius: 24px;
+  }
+  /* 折疊狀態時，淡化分隔線、加按壓背景感 */
   .status-bar.collapsed .collapse-btn {
     border-left-color: transparent;
-    /* 拉一下動畫感 */
     background: rgba(255, 209, 102, 0.08);
   }
 
@@ -153,47 +169,6 @@
     font-size: 40px;
     border: 3px solid #ffd166;
   }
-  .status-message-btn {
-    position: absolute;
-    top: 135px;
-    left: 20px;
-    width: 50px;
-    height: 50px;
-    z-index: 70;
-    border-radius: 25%;
-    background: linear-gradient(135deg, #ffd166, #ff8c42);
-    border: 1px solid #1a0f2e;
-    color: #2a1810;
-    font-size: 35px;
-    font-weight: 900;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    box-shadow: 0 8px 18px rgba(0,0,0,0.45), inset 0 1px 0 rgba(255,255,255,0.4);
-    padding: 0;
-  }
-  .status-message-btn:active { transform: translateY(1px); }
-  /* 主選單開啟時隱藏訊息按鈕 */
-  .canvas:has(.menu.show) .status-message-btn { display: none; }
-  .status-message-btn-badge {
-    position: absolute;
-    top: -4px;
-    right: -6px;
-    min-width: 22px;
-    height: 22px;
-    padding: 0 6px;
-    background: #ff4d4f;
-    color: #fff;
-    font-size: 13px;
-    font-weight: 900;
-    border-radius: 12px;
-    border: 2px solid #1a0f2e;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    line-height: 1;
-  }
   .level-badge {
     position: absolute;
     bottom: -4px;
@@ -209,7 +184,8 @@
   }
 
   .status-info {
-    flex: 1;
+    width: 240px;
+    flex-shrink: 0;
     min-width: 0;
     display: flex;
     flex-direction: column;
@@ -272,11 +248,11 @@
   }
   .status-promo-carousel {
     position: absolute;
-    top: 135px;
+    top: 140px;
     left: 80px;
     width: 50px;
     height: 50px;
-    z-index: 70;
+    z-index: 80;
     border-radius: 25%;
     background: linear-gradient(135deg, #ffd166, #ff8c42);
     border: 1px solid #1a0f2e;
@@ -300,11 +276,11 @@
     display: none !important;
   }
 
-  /* 未讀信箱紅點：顯示在 status-bar 左下角（無數字，僅提示） */
+  /* 未讀信箱紅點：展開時顯示在內容區左下角；折疊時改為貼在 collapse-btn 上方 */
   .mail-dot-badge {
     position: absolute;
     bottom: 8px;
-    left: 8px;
+    left: 80px;
     z-index: 2;
     width: 16px;
     height: 16px;
@@ -317,6 +293,13 @@
     padding: 0;
     transform-origin: center;
     animation: mailDotPulse 1.4s ease-in-out infinite;
+  }
+  /* 折疊時：紅點移到 bar 右側 collapse-btn 上方 */
+  .status-bar.collapsed .mail-dot-badge {
+    bottom: auto;
+    left: auto;
+    top: 6px;
+    right: 6px;
   }
   @keyframes mailDotPulse {
     0%, 100% {
@@ -2633,29 +2616,24 @@
     min-width: 88px;
     text-align: right;
   }
+  /* 整合在 status-bar 右側 — 改為 flex 子層、無獨立邊框背景 */
   .active-player-panel {
-    position: absolute;
-    top: 266px;
-    right: 22px;
-    width: 380px;
-    max-width: calc(100% - 44px);
+    position: relative;
+    flex: 1;
+    min-width: 0;
+    align-self: stretch;
     padding: 0;
-    border-radius: 22px;
-    border: 1.5px solid rgba(255,255,255,0.10);
-    background: linear-gradient(135deg, rgba(255,255,255,0.10), rgba(255,255,255,0.04));
-    z-index: 40;
-    box-shadow: 0 18px 40px rgba(0,0,0,0.24);
-    backdrop-filter: blur(18px) saturate(1.35);
-    -webkit-backdrop-filter: blur(18px) saturate(1.35);
-    transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    background: transparent;
+    border: none;
+    border-left: 1.5px solid rgba(255,255,255,0.14);
+    border-radius: 0;
+    z-index: auto;
+    box-shadow: none;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
     display: flex;
     align-items: stretch;
     overflow: hidden;
-  }
-  /* 折疊狀態：整個 panel 滑出右側畫面外，只露出左邊按鈕 */
-  .active-player-panel.collapsed {
-    transform: translateX(320px);
-    cursor: default;
   }
   /* 完全隱藏（由訊息按鈕控制） */
   .active-player-panel.hidden {
@@ -2688,9 +2666,9 @@
   .active-player-body {
     flex: 1;
     min-width: 0;
-    padding: 12px 15px;
-    cursor: grab;
-    touch-action: none; /* 讓 pointermove 在觸控時連續觸發 */
+    padding: 6px 12px;
+    overflow: hidden;
+    cursor: default;
   }
   .active-player-body.dragging {
     cursor: grabbing;
@@ -2708,13 +2686,16 @@
     letter-spacing: 1px;
   }
   .active-player-feed {
-    min-height: 132px;
-    max-height: 132px;
+    min-height: 110px;
+    max-height: 110px;
     overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
   }
   .active-player-item {
-    padding: 11px 14px;
-    border-radius: 18px;
+    padding: 6px 10px;
+    border-radius: 14px;
     background: rgba(255,255,255,0.06);
     border: 1px solid rgba(255,255,255,0.10);
     box-shadow: inset 0 1px 0 rgba(255,255,255,0.08);
@@ -3613,6 +3594,13 @@
           <div class="status-title" id="statusTitle">幸運兒</div>
           <div class="status-exp"><div class="status-exp-fill" id="expFill"></div></div>
         </div>
+        <!-- 活躍玩家面板（整合於 status-bar 右側） -->
+        <div class="active-player-panel" id="activePlayerPanel">
+          <div class="active-player-body">
+            <div class="active-player-title">活躍玩家</div>
+            <div class="active-player-feed" id="activePlayerFeed"></div>
+          </div>
+        </div>
         <!-- 折疊 / 展開按鈕 -->
         <div class="collapse-btn" id="collapseBtn" onclick="onCollapseClick(event)">
           <span id="collapseIcon">‹</span>
@@ -3621,12 +3609,7 @@
         <div class="mail-dot-badge" id="mailBadge"></div>
       </div>
 
-      <!-- 訊息 icon 按鈕（懸浮於畫布、status-bar 外）— 開關 active-player-panel -->
-      <button type="button" class="status-message-btn" onclick="toggleActivePlayerPanelVisibility()" aria-label="開關活躍玩家">
-        ✉
-      </button>
-
-      <!-- Promotion 小按鈕（懸浮於 ✉ 右邊） -->
+      <!-- Promotion 小按鈕（懸浮於 status-bar 下方） -->
       <button type="button" class="status-promo-carousel" onclick="openPromotionModal()" aria-label="活動">
         <img id="statusPromoImage" src="" alt="Promotion">
       </button>
@@ -3714,13 +3697,6 @@
               <div class="menu-item-desc">查看可解鎖機台</div>
             </div>
           </div>
-        </div>
-      </div>
-
-      <div class="active-player-panel" id="activePlayerPanel">
-        <div class="active-player-body">
-          <div class="active-player-title">活躍玩家</div>
-          <div class="active-player-feed" id="activePlayerFeed"></div>
         </div>
       </div>
 
@@ -4408,6 +4384,8 @@
   } catch (err) {
     // Prototype fallback: ignore broken saved options.
   }
+  // 強制 Promotion 按鈕一定顯示（避免舊 localStorage 把它關掉）
+  userOptions.showPromotion = true;
 
   // ===== UI Logic =====
   let menuOpen = false;
@@ -5580,13 +5558,12 @@
   document.getElementById('expFill').style.width = '65%';
   function setupStatusBarDrag() {
     const bar = document.getElementById('statusBar');
-    const btn = document.querySelector('.status-message-btn');
     const promo = document.querySelector('.status-promo-carousel');
     if (!bar) return;
     const SCALE = 1 / 0.5556;
     const CANVAS_H = 1280;
     const KEEP_VISIBLE = 60;
-    let startY = 0, top0 = 0, btnTop0 = 0, promoTop0 = 0, pid = null, moved = false;
+    let startY = 0, top0 = 0, promoTop0 = 0, pid = null, moved = false;
     bar.addEventListener('pointerdown', e => {
       // 折疊鈕自己有點擊邏輯，不啟動拖曳
       if (e.target.closest('.collapse-btn')) return;
@@ -5597,10 +5574,6 @@
       const rect = bar.getBoundingClientRect();
       const parentRect = bar.parentElement.getBoundingClientRect();
       top0 = (rect.top - parentRect.top) * SCALE;
-      if (btn) {
-        const btnRect = btn.getBoundingClientRect();
-        btnTop0 = (btnRect.top - parentRect.top) * SCALE;
-      }
       if (promo) {
         const promoRect = promo.getBoundingClientRect();
         promoTop0 = (promoRect.top - parentRect.top) * SCALE;
@@ -5614,7 +5587,6 @@
       t = Math.max(0, Math.min(CANVAS_H - KEEP_VISIBLE, t));
       bar.style.top = t + 'px';
       const delta = t - top0;
-      if (btn) btn.style.top = (btnTop0 + delta) + 'px';
       if (promo) promo.style.top = (promoTop0 + delta) + 'px';
     });
     const end = () => {
@@ -5757,7 +5729,7 @@
   renderMails();
   renderLb('turnover');
   enableDragScroll(document.getElementById('lbMetricScroll'));
-  setupActivePlayerDrag();
+  // setupActivePlayerDrag();  // 活躍玩家面板已整合進 status-bar，停用獨立拖曳
   setupMarqueeDrag();
   setupStatusBarDrag();
   renderDailyTasks();
