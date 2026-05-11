@@ -261,34 +261,56 @@
     background: linear-gradient(90deg, #ffd166, #ff8c42);
     border-radius: 6px;
   }
-  .status-promo-carousel {
-    position: absolute;
-    top: 140px;
-    left: 80px;
-    width: 50px;
-    height: 50px;
-    z-index: 80;
-    border-radius: 25%;
-    background: linear-gradient(135deg, #ffd166, #ff8c42);
-    border: 1px solid #1a0f2e;
+  .promotion-hidden {
+    display: none !important;
+  }
+
+  /* Promotion 在執行中的 feed 訊息 */
+  .promo-feed-item {
     display: flex;
     align-items: center;
-    justify-content: center;
+    gap: 10px;
+    padding: 4px 6px;
     cursor: pointer;
-    box-shadow: 0 8px 18px rgba(0,0,0,0.45), inset 0 1px 0 rgba(255,255,255,0.4);
-    padding: 0;
-    overflow: hidden;
+    animation: activeFeedIn 0.35s cubic-bezier(0.22, 1, 0.36, 1) both;
   }
-  .status-promo-carousel img {
+  .promo-feed-frame {
+    width: 44px;
+    height: 44px;
+    border-radius: 10px;
+    overflow: hidden;
+    border: 1.5px solid rgba(255, 209, 102, 0.45);
+    flex-shrink: 0;
+    background: rgba(0,0,0,0.25);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.10);
+  }
+  .promo-feed-frame img {
     width: 100%;
     height: 100%;
     object-fit: cover;
     display: block;
   }
-  .status-promo-carousel:active { transform: translateY(1px); }
-  .canvas:has(.menu.show) .status-promo-carousel { display: none; }
-  .promotion-hidden {
-    display: none !important;
+  .promo-feed-text {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+  .promo-feed-label {
+    font-size: 19px;
+    font-weight: 800;
+    color: #fff;
+    line-height: 1.15;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .promo-feed-remaining {
+    font-size: 16px;
+    color: #ffd166;
+    font-weight: 700;
+    line-height: 1;
   }
 
   /* 未讀信箱紅點：展開時顯示在內容區左下角；折疊時改為貼在 collapse-btn 上方 */
@@ -3638,11 +3660,6 @@
         <div class="mail-dot-badge" id="mailBadge"></div>
       </div>
 
-      <!-- Promotion 小按鈕（懸浮於 status-bar 下方） -->
-      <button type="button" class="status-promo-carousel" onclick="openPromotionModal()" aria-label="活動">
-        <img id="statusPromoImage" src="" alt="Promotion">
-      </button>
-
       <!-- Main Menu -->
       <div class="menu" id="mainMenu">
         <div class="menu-header" onclick="openPage('profilePage')">
@@ -4456,6 +4473,12 @@
   let activePlayerFeedTimer = null;
   let activePlayerPanelCollapsed = false;
 
+  // Promotion 在執行中的 feed 訊息（當 userOptions.showPromotion = true 才會被加入 feed）
+  const promotionFeedItems = [
+    { promoIdx: 0, label: 'CashDrop 活動展開中', remaining: '24H15M' },
+    { promoIdx: 1, label: '排行榜正在進行中',   remaining: '24H15M' }
+  ];
+
   function toggleMenu() { menuOpen ? closeMenu() : openMenu(); }
   function openMenu() {
     if (collapseStage === 2) return;
@@ -4528,11 +4551,6 @@
     const prize = document.getElementById('promotionPrize');
     const dots = document.getElementById('promotionDots');
     if (!item || !thumb || !kicker || !title || !desc || !prize || !dots) return;
-    const statusPromo = document.getElementById('statusPromoImage');
-    if (statusPromo) {
-      statusPromo.src = item.image;
-      statusPromo.alt = item.type;
-    }
     thumb.src = item.image;
     thumb.alt = item.type;
     kicker.textContent = item.type;
@@ -4640,17 +4658,48 @@
   function renderActivePlayerFeed() {
     const feed = document.getElementById('activePlayerFeed');
     if (!feed) return;
+    // 將 Promotion 訊息（若有開）與一般活躍玩家事件合併到同一個 feed 輪播
+    const promoEntries = userOptions.showPromotion
+      ? promotionFeedItems.map(p => ({ type: 'promo', data: p }))
+      : [];
+    const eventEntries = activePlayerEvents.map(e => ({ type: 'event', data: e }));
+    const combined = [...promoEntries, ...eventEntries];
+    if (!combined.length) { feed.innerHTML = ''; return; }
     const visible = Array.from({ length: 2 }, (_, idx) => {
-      const eventIdx = (activePlayerFeedIdx - idx + activePlayerEvents.length) % activePlayerEvents.length;
-      return activePlayerEvents[eventIdx];
+      const i = (activePlayerFeedIdx - idx + combined.length) % combined.length;
+      return combined[i];
     });
-    feed.innerHTML = visible.map(item => `
+    feed.innerHTML = visible.map(entry => {
+      if (entry.type === 'promo') return renderPromoFeedItem(entry.data);
+      return renderPlayerEventItem(entry.data);
+    }).join('');
+  }
+
+  function renderPlayerEventItem(item) {
+    return `
       <div class="active-player-item">
         ${item.game ? `<div class="active-player-game">[${item.game}]</div>` : ''}
         <div class="active-player-meta">${renderActivePlayerMeta(item.player)}</div>
         <div class="active-player-event">${item.event}</div>
       </div>
-    `).join('');
+    `;
+  }
+
+  function renderPromoFeedItem(item) {
+    const promo = promotionItems[item.promoIdx] || {};
+    const img = promo.image || '';
+    const alt = promo.type || '';
+    return `
+      <div class="promo-feed-item" onclick="openPromotionModal()">
+        <div class="promo-feed-frame">
+          ${img ? `<img src="${img}" alt="${alt}">` : ''}
+        </div>
+        <div class="promo-feed-text">
+          <div class="promo-feed-label">${item.label}</div>
+          <div class="promo-feed-remaining">剩餘 ${item.remaining}</div>
+        </div>
+      </div>
+    `;
   }
 
   function renderActivePlayerMeta(playerName) {
@@ -4699,7 +4748,9 @@
     renderActivePlayerFeed();
     if (activePlayerFeedTimer) clearInterval(activePlayerFeedTimer);
     activePlayerFeedTimer = setInterval(() => {
-      activePlayerFeedIdx = (activePlayerFeedIdx + 1) % activePlayerEvents.length;
+      // 依當前 Promotion 開關決定 cycle 長度（promo + event）
+      const totalLen = (userOptions.showPromotion ? promotionFeedItems.length : 0) + activePlayerEvents.length;
+      activePlayerFeedIdx = (activePlayerFeedIdx + 1) % totalLen;
       renderActivePlayerFeed();
     }, 2000);
   }
@@ -4780,9 +4831,11 @@
 
   function applyPromotionVisibility() {
     const visible = userOptions.showPromotion;
-    document.querySelectorAll('.status-promo-carousel, .promotion-btn').forEach(el => {
+    document.querySelectorAll('.promotion-btn').forEach(el => {
       el.classList.toggle('promotion-hidden', !visible);
     });
+    // Promotion 開關會影響 active-player-feed 是否加入 promo 訊息
+    if (typeof renderActivePlayerFeed === 'function') renderActivePlayerFeed();
   }
 
   function applyMarqueeEffect() {
@@ -5593,12 +5646,11 @@
   document.getElementById('expFill').style.width = '65%';
   function setupStatusBarDrag() {
     const bar = document.getElementById('statusBar');
-    const promo = document.querySelector('.status-promo-carousel');
     if (!bar) return;
     const SCALE = 1 / 0.5556;
     const CANVAS_H = 1280;
     const KEEP_VISIBLE = 60;
-    let startY = 0, top0 = 0, promoTop0 = 0, pid = null, moved = false;
+    let startY = 0, top0 = 0, pid = null, moved = false;
     bar.addEventListener('pointerdown', e => {
       // 折疊鈕自己有點擊邏輯，不啟動拖曳
       if (e.target.closest('.collapse-btn')) return;
@@ -5609,10 +5661,6 @@
       const rect = bar.getBoundingClientRect();
       const parentRect = bar.parentElement.getBoundingClientRect();
       top0 = (rect.top - parentRect.top) * SCALE;
-      if (promo) {
-        const promoRect = promo.getBoundingClientRect();
-        promoTop0 = (promoRect.top - parentRect.top) * SCALE;
-      }
     });
     bar.addEventListener('pointermove', e => {
       if (pid === null) return;
@@ -5621,8 +5669,6 @@
       let t = top0 + dy;
       t = Math.max(0, Math.min(CANVAS_H - KEEP_VISIBLE, t));
       bar.style.top = t + 'px';
-      const delta = t - top0;
-      if (promo) promo.style.top = (promoTop0 + delta) + 'px';
     });
     const end = () => {
       if (pid === null) return;
