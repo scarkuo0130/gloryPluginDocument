@@ -69,7 +69,7 @@
   .status-bar {
     position: absolute;
     top: 5px;
-    left: 5px;
+    right: 15px;        /* 右側錨定 — 收合時往右縮，右邊緣不動 */
     width: 700px;       /* 整合活躍玩家面板，幾乎佔滿畫布寬度（canvas 720） */
     height: 130px;      /* tap-friendly touch target */
     /* 暗色遮罩 + 玩家背板（可被 JS 動態切換） */
@@ -82,30 +82,43 @@
     border: 2px solid rgba(255, 200, 100, 0.3);
     border-radius: 26px;
     padding: 14px;
-    padding-left: 0;    /* 左側交給折疊按鈕（展開時） */
+    padding-left: 0;    /* 左側交給折疊按鈕 */
     display: flex;
     align-items: center;
     gap: 18px;
     cursor: pointer;
-    transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1), border-color 0.2s, background 0.4s;
+    transition: width 0.35s cubic-bezier(0.4, 0, 0.2, 1), transform 0.35s cubic-bezier(0.4, 0, 0.2, 1), border-color 0.2s, background 0.4s;
     z-index: 10;
     box-shadow: 0 12px 36px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.1);
     touch-action: none;
+    overflow: hidden;
   }
   .status-bar:not(.collapsed):active {
     border-color: rgba(255, 200, 100, 0.6);
   }
 
-  /* 折疊狀態：整條 bar 滑出左側畫面外，只露出右邊（此時 collapse-btn 回到右側）的按鈕 */
-  /* width 700、collapse-btn 35 → 想露出 35px：tx = -(700 - 35) = -665 */
-  .status-bar.collapsed {
-    transform: translateX(-665px);
-    cursor: default;
-    padding-left: 14px;
-    padding-right: 0;   /* 折疊時右側交給按鈕 */
+  /* 半收：只隱藏右側 active-player-panel，保留個人資料區 */
+  .status-bar.half-collapsed {
+    width: 410px;
+  }
+  .status-bar.half-collapsed .active-player-panel {
+    display: none;
   }
 
-  /* 折疊按鈕 — 預設樣式（折疊狀態用：貼在 bar 右側） */
+  /* 全收：只剩 collapse-btn 與紅點，bar 縮到按鈕寬度 */
+  .status-bar.collapsed {
+    width: 39px;
+    padding-left: 0;
+    padding-right: 0;
+    cursor: default;
+  }
+  .status-bar.collapsed .avatar-wrap,
+  .status-bar.collapsed .status-info,
+  .status-bar.collapsed .active-player-panel {
+    display: none;
+  }
+
+  /* 折疊按鈕 — 永遠貼在 bar 左側（bar 收合時往右縮，按鈕跟著向右移動） */
   .collapse-btn {
     position: relative;
     width: 35px;
@@ -120,24 +133,6 @@
     cursor: pointer;
     user-select: none;
     transition: background 0.15s;
-    /* 折疊時按鈕在右側 */
-    order: 0;
-    border-left: 2px solid rgba(255, 200, 100, 0.25);
-    border-right: none;
-    border-top-left-radius: 0;
-    border-bottom-left-radius: 0;
-    border-top-right-radius: 24px;
-    border-bottom-right-radius: 24px;
-  }
-  .collapse-btn:active {
-    background: rgba(255, 209, 102, 0.15);
-  }
-  .collapse-btn span {
-    line-height: 1;
-    transform: translateY(-2px);
-  }
-  /* 展開狀態：按鈕翻到左側 */
-  .status-bar:not(.collapsed) .collapse-btn {
     order: -1;
     border-left: none;
     border-right: 2px solid rgba(255, 200, 100, 0.25);
@@ -146,9 +141,17 @@
     border-top-left-radius: 24px;
     border-bottom-left-radius: 24px;
   }
-  /* 折疊狀態時，淡化分隔線、加按壓背景感 */
+  .collapse-btn:active {
+    background: rgba(255, 209, 102, 0.15);
+  }
+  .collapse-btn span {
+    line-height: 1;
+    transform: translateY(-2px);
+  }
+  /* 全收時按鈕變成 bar 唯一內容，四角全圓、移除分隔線 */
   .status-bar.collapsed .collapse-btn {
-    border-left-color: transparent;
+    border-right: none;
+    border-radius: 24px;
     background: rgba(255, 209, 102, 0.08);
   }
 
@@ -3603,7 +3606,7 @@
         </div>
         <!-- 折疊 / 展開按鈕 -->
         <div class="collapse-btn" id="collapseBtn" onclick="onCollapseClick(event)">
-          <span id="collapseIcon">‹</span>
+          <span id="collapseIcon">›</span>
         </div>
         <!-- 未讀紅點（左下角） -->
         <div class="mail-dot-badge" id="mailBadge"></div>
@@ -4389,7 +4392,7 @@
 
   // ===== UI Logic =====
   let menuOpen = false;
-  let collapsed = false;
+  let collapseStage = 0; // 0=全開, 1=半收（只剩個人資料）, 2=全收（只剩 collapse-btn + 紅點）
   let audioCtx = null;
   let currentAchievementTab = 'total';
 
@@ -4429,7 +4432,7 @@
 
   function toggleMenu() { menuOpen ? closeMenu() : openMenu(); }
   function openMenu() {
-    if (collapsed) return;
+    if (collapseStage === 2) return;
     document.getElementById('mainMenu').classList.add('show');
     document.getElementById('overlay').classList.add('show');
     menuOpen = true;
@@ -4440,25 +4443,31 @@
     menuOpen = false;
   }
 
-  // 點 status bar：展開狀態下開選單；折疊狀態下不動作（要點 > 才會展開）
+  // 點 status bar：全開或半收狀態下開選單；全收狀態下不動作
   function onStatusBarClick(e) {
-    if (collapsed) return;
+    if (collapseStage === 2) return;
     toggleMenu();
   }
 
-  // 點折疊按鈕：切換 bar 的折疊 / 展開
+  // 點折疊按鈕：3 段循環 全開 → 半收 → 全收 → 全開
   function onCollapseClick(e) {
     e.stopPropagation();
-    collapsed = !collapsed;
+    collapseStage = (collapseStage + 1) % 3;
     const bar = document.getElementById('statusBar');
     const icon = document.getElementById('collapseIcon');
-    if (collapsed) {
-      bar.classList.add('collapsed');
+    bar.classList.remove('half-collapsed', 'collapsed');
+    if (collapseStage === 0) {
+      // 全開：箭頭向右（按一下會關閉）
       icon.textContent = '›';
-      closeMenu();
+    } else if (collapseStage === 1) {
+      // 半收：仍向右（按一下會繼續關閉）
+      bar.classList.add('half-collapsed');
+      icon.textContent = '›';
     } else {
-      bar.classList.remove('collapsed');
+      // 全收：箭頭向左（按一下會打開）
+      bar.classList.add('collapsed');
       icon.textContent = '‹';
+      closeMenu();
     }
   }
   function toggleActivePlayerPanelVisibility() {
