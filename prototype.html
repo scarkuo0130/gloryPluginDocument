@@ -72,10 +72,8 @@
     right: 15px;        /* 右側錨定 — 收合時往右縮，右邊緣不動 */
     width: 700px;       /* 整合活躍玩家面板，幾乎佔滿畫布寬度（canvas 720） */
     height: 130px;      /* tap-friendly touch target */
-    /* 暗色遮罩 + 玩家背板（可被 JS 動態切換） */
-    background:
-      linear-gradient(135deg, rgba(20, 10, 40, 0.48), rgba(15, 8, 35, 0.66)),
-      var(--user-bg, linear-gradient(135deg, #3a2570, #1a0f3e));
+    /* 中性深色玻璃底（玩家背板僅套用在 .status-profile 區塊，不跨到 active-player-panel） */
+    background: linear-gradient(135deg, rgba(20, 10, 40, 0.55), rgba(15, 8, 35, 0.72));
     background-size: cover;
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
@@ -99,7 +97,7 @@
 
   /* 半收：只隱藏右側 active-player-panel，保留個人資料區 */
   .status-bar.half-collapsed {
-    width: 410px;
+    width: 440px;
   }
   .status-bar.half-collapsed .active-player-panel {
     display: none;
@@ -112,8 +110,7 @@
     padding-right: 0;
     cursor: default;
   }
-  .status-bar.collapsed .avatar-wrap,
-  .status-bar.collapsed .status-info,
+  .status-bar.collapsed .status-profile,
   .status-bar.collapsed .active-player-panel {
     display: none;
   }
@@ -155,6 +152,21 @@
     background: rgba(255, 209, 102, 0.08);
   }
 
+  /* 玩家個人資料 chip（avatar + status-info）— 對齊 .mq-user 跑馬燈 chip 風格 */
+  .status-profile {
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    gap: 14px;
+    padding: 8px 18px 8px 10px;
+    border-radius: 32px;
+    background:
+      linear-gradient(to right, rgba(15,10,30,0.65), rgba(15,10,30,0.85)),
+      var(--user-bg, linear-gradient(135deg, #3a2570, #1a0f3e));
+    background-size: cover;
+    border: 1.5px solid rgba(255, 209, 102, 0.45);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.1);
+  }
   .avatar-wrap {
     position: relative;
     width: 75px;
@@ -2697,11 +2709,11 @@
     gap: 4px;
   }
   .active-player-item {
-    padding: 6px 10px;
-    border-radius: 14px;
-    background: rgba(255,255,255,0.06);
-    border: 1px solid rgba(255,255,255,0.10);
-    box-shadow: inset 0 1px 0 rgba(255,255,255,0.08);
+    padding: 4px 6px;
+    border-radius: 0;
+    background: transparent;
+    border: none;
+    box-shadow: none;
     animation: activeFeedIn 0.35s cubic-bezier(0.22, 1, 0.36, 1) both;
   }
   .active-player-game {
@@ -2713,10 +2725,18 @@
   .active-player-meta {
     margin-bottom: 5px;
   }
+  /* 活躍玩家面板內的玩家列：對齊 .mq-user / .status-profile 的 chip 風格 */
   .active-player-meta .lb-menu-row {
     min-height: 42px;
-    padding: 5px 9px;
+    padding: 5px 14px 5px 6px;
     gap: 9px;
+    border-radius: 32px;
+    background:
+      linear-gradient(to right, rgba(15,10,30,0.65), rgba(15,10,30,0.85)),
+      var(--player-bg, rgba(255,255,255,0.05));
+    background-size: cover;
+    border: 1.5px solid rgba(255, 209, 102, 0.45);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.1);
   }
   .active-player-meta .lb-menu-avatar {
     width: 39px;
@@ -3274,14 +3294,18 @@
 
   .status-bar {
     overflow: hidden;
+    /* 嚴格對齊 .marquee 最終玻璃主題（L3368）— 兩條 marquee 規則合併後的真正樣貌 */
     background:
-      linear-gradient(135deg, rgba(255,255,255,0.38), rgba(255,255,255,0.13)),
-      var(--user-bg, linear-gradient(135deg, #3a2570, #1a0f3e));
+      linear-gradient(135deg, rgba(255,255,255,0.34), rgba(255,255,255,0.14)),
+      rgba(255, 255, 255, 0.08);
     border-color: rgba(255,255,255,0.42);
-    box-shadow: var(--glass-shadow), 0 0 30px rgba(255, 209, 102, 0.08);
+    backdrop-filter: blur(26px) saturate(1.6);
+    -webkit-backdrop-filter: blur(26px) saturate(1.6);
+    box-shadow:
+      0 14px 36px rgba(0,0,0,0.26),
+      inset 0 1px 0 rgba(255,255,255,0.42);
   }
 
-  .status-bar::after,
   .menu::before,
   .menu-header::after,
   .promotion-btn::after,
@@ -3298,7 +3322,7 @@
 
   .collapse-btn {
     border-left-color: rgba(255,255,255,0.26);
-    background: rgba(255,255,255,0.08);
+    background: transparent;
   }
 
   .collapse-btn:active {
@@ -3586,16 +3610,18 @@
 
       <!-- Account Status Bar -->
       <div class="status-bar" id="statusBar" onclick="onStatusBarClick(event)">
-        <div class="avatar-wrap">
-          <div class="avatar" id="statusAvatar">🦊</div>
-        </div>
-        <div class="status-info">
-          <div class="status-name">
-            <span class="status-level" id="statusLevel">Lv.12</span>
-            <span class="name-text" id="statusName">Joan5428</span>
+        <div class="status-profile">
+          <div class="avatar-wrap">
+            <div class="avatar" id="statusAvatar">🦊</div>
           </div>
-          <div class="status-title" id="statusTitle">幸運兒</div>
-          <div class="status-exp"><div class="status-exp-fill" id="expFill"></div></div>
+          <div class="status-info">
+            <div class="status-name">
+              <span class="status-level" id="statusLevel">Lv.12</span>
+              <span class="name-text" id="statusName">Joan5428</span>
+            </div>
+            <div class="status-title" id="statusTitle">幸運兒</div>
+            <div class="status-exp"><div class="status-exp-fill" id="expFill"></div></div>
+          </div>
         </div>
         <!-- 活躍玩家面板（整合於 status-bar 右側） -->
         <div class="active-player-panel" id="activePlayerPanel">
@@ -4630,7 +4656,7 @@
   function renderActivePlayerMeta(playerName) {
     const profile = profiles[playerName] || {};
     return `
-      <div class="lb-menu-row" style="background:${profile.bg || 'rgba(255,255,255,0.08)'};">
+      <div class="lb-menu-row" style="--player-bg: ${profile.bg || 'rgba(255,255,255,0.05)'};">
         <div class="lb-menu-avatar">${profile.avatar || '🎮'}</div>
         <div class="lb-menu-meta">
           <div class="lb-menu-name">
