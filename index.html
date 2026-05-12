@@ -594,8 +594,8 @@
   }
   .mq-msg {
     font-size: 18px;
-    font-weight: 600;
-    color: #ffd166;
+    font-weight: 700;
+    color: #3a1f0d;
     flex-shrink: 0;
   }
   .marquee.marquee-effect-2 {
@@ -735,6 +735,14 @@
     flex: 1;
     overflow-y: auto;
     padding: 28px;
+  }
+
+  #dailyTaskPage .page-body {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+  #dailyTaskPage .page-body::-webkit-scrollbar {
+    display: none;
   }
 
   #leaderboardPage .page-body {
@@ -879,6 +887,11 @@
     font-weight: 900;
     color: #fff;
     margin-bottom: 6px;
+    text-shadow:
+      -1px -1px 0 #000, 1px -1px 0 #000,
+      -1px  1px 0 #000, 1px  1px 0 #000,
+      -1px  0   0 #000, 1px  0   0 #000,
+       0  -1px 0 #000,  0   1px 0 #000;
   }
   .promotion-desc {
     font-size: 18px;
@@ -1052,6 +1065,11 @@
     color: #fff;
     font-weight: 900;
     margin-bottom: 6px;
+    text-shadow:
+      -1px -1px 0 #000, 1px -1px 0 #000,
+      -1px  1px 0 #000, 1px  1px 0 #000,
+      -1px  0   0 #000, 1px  0   0 #000,
+       0  -1px 0 #000,  0   1px 0 #000;
   }
   .menu-item-desc {
     font-size: 18px;
@@ -2172,8 +2190,19 @@
   }
   .login-streak-row {
     display: grid;
-    grid-template-columns: repeat(5, 1fr);
-    gap: 10px;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 8px;
+  }
+  .login-streak-perfect {
+    border: 1.5px solid rgba(255, 209, 102, 0.45);
+    background: linear-gradient(135deg, rgba(255, 209, 102, 0.12), rgba(255, 140, 66, 0.08));
+  }
+  .login-streak-perfect-label {
+    font-size: 18px;
+    font-weight: 800;
+    color: #ffd166;
+    letter-spacing: 0.5px;
+    text-align: center;
   }
   .login-streak-claim {
     height: 52px;
@@ -3404,6 +3433,7 @@
 
   .menu {
     background: var(--glass-bg-strong);
+    background-color: rgb(1 16 23 / 77%);
     border-color: rgba(255,255,255,0.36);
     box-shadow: var(--glass-shadow);
   }
@@ -5140,14 +5170,45 @@
     renderDailyTaskMenuProgress();
   }
 
-  const STREAK_EXP_REWARDS = [100, 200, 300, 500, 800, 1500];
+  // 連簽獎勵：4 週各 7 天，每週一個獎勵；第 5 個為 28 天全勤獎
+  const STREAK_REWARDS = [
+    { type: 'exp',        value: 500 },
+    { type: 'title',      value: '連簽達人' },
+    { type: 'background', value: '黃金' },
+    { type: 'exp',        value: 2000 },
+  ];
+  const PERFECT_ATTENDANCE_REWARD = { type: 'avatar', value: '🏆' };
+  const PERFECT_ATTENDANCE_IDX = STREAK_REWARDS.length; // 4
+  const STREAK_DAYS_PER_GROUP = 7;
+  const STREAK_TOTAL_DAYS = STREAK_REWARDS.length * STREAK_DAYS_PER_GROUP; // 28
+
+  function streakRewardLabel(reward, prefix) {
+    switch (reward.type) {
+      case 'exp':        return `${prefix} EXP +${reward.value}`;
+      case 'title':      return `${prefix} 稱號「${reward.value}」`;
+      case 'background': return `${prefix} 背板「${reward.value}」`;
+      case 'avatar':     return `${prefix} 頭像 ${reward.value}`;
+    }
+    return prefix;
+  }
+  function streakToastText(reward) {
+    switch (reward.type) {
+      case 'exp':        return `領取成功！+${reward.value} EXP`;
+      case 'title':      return `領取成功！獲得稱號「${reward.value}」`;
+      case 'background': return `領取成功！獲得背板「${reward.value}」`;
+      case 'avatar':     return `領取成功！獲得頭像 ${reward.value}`;
+    }
+    return '領取成功！';
+  }
+
   const streakClaimedGroups = new Set();
   function renderLoginStreak() {
     const allTasksClaimed = dailyTasks.every(t => t.status === 'done');
     const isDayDone = (day) => day !== 7 && (day < dailyTaskCompleteCount || (day === dailyTaskCompleteCount && allTasksClaimed));
-    const groups = Array.from({ length: 6 }, (_, gi) => {
-      const startDay = gi * 5 + 1;
-      const days = Array.from({ length: 5 }, (_, di) => {
+
+    const weeklyGroups = STREAK_REWARDS.map((reward, gi) => {
+      const startDay = gi * STREAK_DAYS_PER_GROUP + 1;
+      const days = Array.from({ length: STREAK_DAYS_PER_GROUP }, (_, di) => {
         const day = startDay + di;
         const isMissed = day === 7;
         const classes = [
@@ -5158,16 +5219,15 @@
         ].filter(Boolean).join(' ');
         return `<div class="${classes}"><div class="login-day-num">${day}</div></div>`;
       }).join('');
-      // 該組 5 天皆達成才能領取（含 day 5 是否 done）
-      const groupAllDone = Array.from({ length: 5 }, (_, di) => isDayDone(startDay + di)).every(Boolean);
-      const groupHasMissed = startDay <= 7 && 7 <= startDay + 4;
-      const exp = STREAK_EXP_REWARDS[gi];
+      // 該組 7 天皆達成才能領取
+      const groupAllDone = Array.from({ length: STREAK_DAYS_PER_GROUP }, (_, di) => isDayDone(startDay + di)).every(Boolean);
+      const groupHasMissed = Array.from({ length: STREAK_DAYS_PER_GROUP }, (_, di) => (startDay + di) === 7).some(Boolean);
       const claimed = streakClaimedGroups.has(gi);
-      let btnLabel = `領取 EXP +${exp}`;
+      let btnLabel = streakRewardLabel(reward, '領取');
       let btnClass = 'login-streak-claim';
       let disabled = false;
       if (claimed) {
-        btnLabel = `已領取 +${exp} EXP`;
+        btnLabel = streakRewardLabel(reward, '已領取');
         btnClass += ' claimed';
         disabled = true;
       } else if (groupHasMissed) {
@@ -5186,19 +5246,46 @@
         </div>
       `;
     }).join('');
+
+    // 全勤獎：28 天全部達成才能領
+    const allDone = Array.from({ length: STREAK_TOTAL_DAYS }, (_, i) => isDayDone(i + 1)).every(Boolean);
+    const perfectClaimed = streakClaimedGroups.has(PERFECT_ATTENDANCE_IDX);
+    let perfectBtnLabel = streakRewardLabel(PERFECT_ATTENDANCE_REWARD, '領取');
+    let perfectBtnClass = 'login-streak-claim';
+    let perfectDisabled = false;
+    if (perfectClaimed) {
+      perfectBtnLabel = streakRewardLabel(PERFECT_ATTENDANCE_REWARD, '已領取');
+      perfectBtnClass += ' claimed';
+      perfectDisabled = true;
+    } else if (!allDone) {
+      perfectBtnLabel = '全勤未達成';
+      perfectBtnClass += ' disabled';
+      perfectDisabled = true;
+    }
+    const perfectGroup = `
+      <div class="login-streak-group login-streak-perfect">
+        <div class="login-streak-perfect-label">全勤獎 · 連續 ${STREAK_TOTAL_DAYS} 天全部達成</div>
+        <button type="button" class="${perfectBtnClass}"${perfectDisabled ? ' disabled' : ''} onclick="claimStreakReward(${PERFECT_ATTENDANCE_IDX})">${perfectBtnLabel}</button>
+      </div>
+    `;
+
     return `
       <div class="login-streak-card">
         <div class="login-streak-head">
-          <div class="login-streak-title">連續 5 天完成可領稱號</div>
+          <div class="login-streak-title">連簽 7 天領取獎勵</div>
         </div>
-        <div class="login-streak-groups">${groups}</div>
+        <div class="login-streak-groups">${weeklyGroups}${perfectGroup}</div>
       </div>
     `;
   }
   function claimStreakReward(groupIdx) {
     if (streakClaimedGroups.has(groupIdx)) return;
+    const reward = groupIdx === PERFECT_ATTENDANCE_IDX
+      ? PERFECT_ATTENDANCE_REWARD
+      : STREAK_REWARDS[groupIdx];
+    if (!reward) return;
     streakClaimedGroups.add(groupIdx);
-    showToast(`領取成功！+${STREAK_EXP_REWARDS[groupIdx]} EXP`);
+    showToast(streakToastText(reward));
     renderDailyTasks();
   }
 
