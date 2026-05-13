@@ -1,0 +1,17 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash('/Applications/Google Chrome.app/Contents/MacOS/Google Chrome' --headless --disable-gpu --no-sandbox --screenshot=/tmp/idx.png --window-size=1000,1200 file:///Users/scarkuo/Desktop/GameProject/sns/gloryPluginDocument/index.html)",
+      "Bash(awk -F: '$1>5400')",
+      "Bash(cp /Users/scarkuo/Desktop/GameProject/sns/gloryPluginDocument/index.html /tmp/menu-check.html)",
+      "Bash(python3)",
+      "Bash('/Applications/Google Chrome.app/Contents/MacOS/Google Chrome' --headless --disable-gpu --no-sandbox --virtual-time-budget=2000 --screenshot=/tmp/menu.png --window-size=900,1400 file:///tmp/menu-check.html)",
+      "Bash(cp /Users/scarkuo/Desktop/GameProject/sns/gloryPluginDocument/index.html *)",
+      "WebFetch(domain:raw.githubusercontent.com)",
+      "Bash(npx skills *)"
+    ],
+    "additionalDirectories": [
+      "/private/tmp"
+    ]
+  }
+}
