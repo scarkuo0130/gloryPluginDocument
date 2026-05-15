@@ -1719,6 +1719,62 @@
     text-shadow: 0 2px 6px rgba(0,0,0,0.8);
   }
 
+  /* ===== Border Variants bv-1 ~ bv-10 ===== */
+  /* bv-1: 雙層框 — 外 inset:5px + 內 inset:14px */
+  .bg-option.bv-1::before { inset: 5px; border-width: 2px; border-radius: 14px; }
+  .bg-option.bv-1::after {
+    content: '';
+    position: absolute; inset: 14px;
+    border: 1px solid var(--bg-accent, rgba(255,255,255,0.28));
+    border-radius: 8px;
+    pointer-events: none; z-index: 2;
+  }
+
+  /* bv-2: 霓虹光暈 — 無框線，純內光 */
+  .bg-option.bv-2::before {
+    border-color: transparent;
+    box-shadow: inset 0 0 28px var(--bg-glow, rgba(255,255,255,0.18)), 0 0 20px var(--bg-glow, rgba(255,255,255,0.14));
+  }
+
+  /* bv-3: 虛線框 */
+  .bg-option.bv-3::before { border-style: dashed; border-width: 2px; inset: 7px; border-radius: 11px; }
+
+  /* bv-4: 膠囊圓框 */
+  .bg-option.bv-4::before { inset: 9px; border-radius: 50px; border-width: 2px; }
+
+  /* bv-5: 粗邊強調框 + 外發光 */
+  .bg-option.bv-5::before {
+    inset: 5px; border-width: 3.5px; border-radius: 12px;
+    box-shadow: inset 0 0 20px var(--bg-glow, rgba(255,255,255,0.18)), 0 0 14px var(--bg-glow, rgba(255,255,255,0.12));
+  }
+
+  /* bv-6: 微傾斜裝飾框 */
+  .bg-option.bv-6::before { inset: 10px; border-radius: 4px; transform: rotate(1.5deg); border-width: 2px; }
+
+  /* bv-7: 極細髮絲框 + 縮小角標 */
+  .bg-option.bv-7::before { inset: 6px; border-width: 1px; border-radius: 13px; opacity: 0.9; }
+  .bg-option.bv-7 .bg-corners i { width: 16px; height: 16px; }
+
+  /* bv-8: 卡片外發光 + 超薄內框 */
+  .bg-option.bv-8 { box-shadow: 0 0 0 2.5px var(--bg-accent, rgba(255,255,255,0.40)), 0 0 24px var(--bg-glow, rgba(255,255,255,0.20)) !important; }
+  .bg-option.bv-8::before { inset: 13px; border-radius: 7px; border-width: 1px; }
+
+  /* bv-9: 直角幾何框 + 加粗角標 */
+  .bg-option.bv-9::before { inset: 8px; border-radius: 0; border-width: 2px; }
+  .bg-option.bv-9 .bg-corners i { width: 28px; height: 28px; }
+  .bg-option.bv-9 .bg-corners i.tl { border-top-width: 3.5px !important; border-left-width: 3.5px !important; }
+  .bg-option.bv-9 .bg-corners i.tr { border-top-width: 3.5px !important; border-right-width: 3.5px !important; }
+  .bg-option.bv-9 .bg-corners i.bl { border-bottom-width: 3.5px !important; border-left-width: 3.5px !important; }
+  .bg-option.bv-9 .bg-corners i.br { border-bottom-width: 3.5px !important; border-right-width: 3.5px !important; }
+
+  /* bv-10: 華麗框 — 粗邊 + 超大角標 + 內發光 */
+  .bg-option.bv-10::before { inset: 6px; border-width: 2px; border-radius: 10px; box-shadow: inset 0 0 20px var(--bg-glow, rgba(255,255,255,0.18)); }
+  .bg-option.bv-10 .bg-corners i { width: 34px; height: 34px; }
+  .bg-option.bv-10 .bg-corners i.tl { border-top-width: 4px !important; border-left-width: 4px !important; }
+  .bg-option.bv-10 .bg-corners i.tr { border-top-width: 4px !important; border-right-width: 4px !important; }
+  .bg-option.bv-10 .bg-corners i.bl { border-bottom-width: 4px !important; border-left-width: 4px !important; }
+  .bg-option.bv-10 .bg-corners i.br { border-bottom-width: 4px !important; border-right-width: 4px !important; }
+
   .input-group {
     background: rgba(0,0,0,0.3);
     border: 2px solid rgba(255,255,255,0.1);
@@ -4233,6 +4289,89 @@
     Object.assign(BACKGROUND_THEMES, Object.fromEntries(series.map(item => [item.key, item.value])));
   });
 
+  // ===== 第二批：各群組再增 10 張（11~20），每張搭配不同邊框變體 =====
+  function buildGeneratedBackplateSeries2(spec) {
+    const [c1, c2, c3, c4] = spec.colors;
+    const borderVariants = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+    const backgrounds = [
+      `radial-gradient(ellipse at 20% 80%, ${c3}99 0%, transparent 42%), linear-gradient(160deg, ${c1} 0%, ${c2} 52%, ${c3} 100%)`,
+      `linear-gradient(200deg, ${c1} 0%, ${c2} 44%, ${c4} 100%), radial-gradient(circle at 82% 18%, rgba(255,255,255,0.16) 0%, transparent 20%)`,
+      `linear-gradient(135deg, ${c1} 0%, ${c2} 38%, ${c3} 72%, ${c4} 100%), radial-gradient(circle at 50% 16%, rgba(255,255,255,0.18) 0%, transparent 22%)`,
+      `linear-gradient(0deg, ${c3} 0%, ${c2} 48%, ${c1} 100%), radial-gradient(ellipse at 50% 52%, rgba(255,255,255,0.14) 0%, transparent 32%)`,
+      `repeating-linear-gradient(60deg, rgba(255,255,255,0.04) 0 2px, transparent 2px 12px), linear-gradient(135deg, ${c1} 0%, ${c2} 56%, ${c3} 100%)`,
+      `linear-gradient(135deg, ${c1} 0%, ${c2} 50%, ${c3} 100%), linear-gradient(90deg, rgba(255,255,255,0.12) 0%, transparent 22%), linear-gradient(270deg, rgba(255,255,255,0.10) 0%, transparent 22%)`,
+      `linear-gradient(90deg, ${c1} 0%, ${c2} 50%, ${c3} 100%), radial-gradient(circle at 50% 50%, rgba(255,255,255,0.10) 0%, transparent 30%)`,
+      `repeating-linear-gradient(45deg, rgba(255,255,255,0.05) 0 3px, transparent 3px 20px), linear-gradient(180deg, ${c1} 0%, ${c2} 60%, ${c3} 100%)`,
+      `linear-gradient(135deg, ${c1} 0%, ${c4} 30%, ${c2} 65%, ${c3} 100%), radial-gradient(circle at 22% 78%, rgba(255,255,255,0.12) 0%, transparent 16%)`,
+      `linear-gradient(315deg, ${c1} 0%, ${c2} 48%, ${c3} 100%), radial-gradient(circle at 76% 76%, rgba(255,255,255,0.14) 0%, transparent 18%), radial-gradient(circle at 24% 24%, rgba(255,255,255,0.10) 0%, transparent 14%)`
+    ];
+    return backgrounds.map((background, idx) => ({
+      key: `${spec.prefix}_${String(idx + 11).padStart(2, '0')}`,
+      value: {
+        label: `${spec.label} ${String(idx + 11).padStart(2, '0')}`,
+        background,
+        accent: spec.accent,
+        glow: spec.glow,
+        textColor: spec.textColor,
+        textShadow: spec.textShadow,
+        borderVariant: borderVariants[idx]
+      }
+    }));
+  }
+
+  GENERATED_BACKPLATE_SPECS.forEach(spec => {
+    const series2 = buildGeneratedBackplateSeries2(spec);
+    BACKPLATE_REVIEW_GROUPS[spec.group].push(...series2.map(item => item.key));
+    Object.assign(BACKGROUND_THEMES, Object.fromEntries(series2.map(item => [item.key, item.value])));
+  });
+
+  // 手工定義群組（預設背板、新手背板1、彩金風暴）各補 10 張
+  (() => {
+    const BV = [1,2,3,4,5,6,7,8,9,10];
+    const extra = {
+      // 預設背板 11~20
+      default_11_arctic_fog:      { label: 'Arctic Fog',      borderVariant: BV[0],  accent: 'rgba(190,215,240,0.9)',  glow: 'rgba(180,215,255,0.20)', textColor: '#f0f8ff', textShadow: '0 2px 8px rgba(0,0,0,0.46)', background: 'radial-gradient(ellipse at 30% 70%, rgba(100,160,220,0.25) 0%, transparent 40%), linear-gradient(145deg, #141e2e 0%, #2b3d54 50%, #3d5268 100%)' },
+      default_12_cobalt_night:    { label: 'Cobalt Night',    borderVariant: BV[1],  accent: 'rgba(140,200,255,0.88)', glow: 'rgba(80,160,255,0.22)',  textColor: '#eaf4ff', textShadow: '0 2px 8px rgba(0,0,0,0.48)', background: 'linear-gradient(135deg, #0d1a2e 0%, #1a3055 55%, #2a4570 100%), radial-gradient(circle at 78% 22%, rgba(80,160,255,0.18) 0%, transparent 24%)' },
+      default_13_steel_bloom:     { label: 'Steel Bloom',     borderVariant: BV[2],  accent: 'rgba(200,185,230,0.88)', glow: 'rgba(180,150,255,0.18)', textColor: '#f5f0ff', textShadow: '0 2px 8px rgba(0,0,0,0.44)', background: 'linear-gradient(135deg, #1a1830 0%, #3a3260 55%, #504880 100%), radial-gradient(circle at 24% 76%, rgba(200,160,255,0.16) 0%, transparent 26%)' },
+      default_14_iron_mist:       { label: 'Iron Mist',       borderVariant: BV[3],  accent: 'rgba(195,210,225,0.88)', glow: 'rgba(170,195,220,0.18)', textColor: '#f2f6fa', textShadow: '0 2px 8px rgba(0,0,0,0.46)', background: 'repeating-linear-gradient(90deg, rgba(255,255,255,0.03) 0 1px, transparent 1px 18px), linear-gradient(160deg, #18222f 0%, #384858 55%, #4e6070 100%)' },
+      default_15_deep_teal:       { label: 'Deep Teal',       borderVariant: BV[4],  accent: 'rgba(140,220,210,0.88)', glow: 'rgba(80,200,190,0.22)',  textColor: '#e8fdfb', textShadow: '0 2px 8px rgba(0,0,0,0.44)', background: 'linear-gradient(135deg, #0d2430 0%, #144848 55%, #1e6860 100%), radial-gradient(circle at 70% 30%, rgba(100,220,200,0.16) 0%, transparent 24%)' },
+      default_16_slate_amber:     { label: 'Slate Amber',     borderVariant: BV[5],  accent: 'rgba(240,195,130,0.90)', glow: 'rgba(255,190,100,0.20)', textColor: '#fffaf2', textShadow: '0 2px 8px rgba(0,0,0,0.44)', background: 'linear-gradient(145deg, #1e2530 0%, #3d3822 55%, #5a4f2a 100%), radial-gradient(circle at 82% 20%, rgba(255,200,100,0.18) 0%, transparent 22%)' },
+      default_17_midnight_rose:   { label: 'Midnight Rose',   borderVariant: BV[6],  accent: 'rgba(230,175,195,0.88)', glow: 'rgba(210,120,160,0.20)', textColor: '#fff0f5', textShadow: '0 2px 8px rgba(0,0,0,0.46)', background: 'linear-gradient(135deg, #1e1020 0%, #3d1a30 55%, #5a2a44 100%), radial-gradient(circle at 28% 30%, rgba(255,140,180,0.14) 0%, transparent 22%)' },
+      default_18_graphite_glow:   { label: 'Graphite Glow',   borderVariant: BV[7],  accent: 'rgba(180,195,215,0.88)', glow: 'rgba(160,180,210,0.18)', textColor: '#f4f7fb', textShadow: '0 2px 8px rgba(0,0,0,0.48)', background: 'linear-gradient(135deg, #111820 0%, #2a3545 55%, #3a4858 100%), radial-gradient(circle at 50% 50%, rgba(200,220,255,0.10) 0%, transparent 36%)' },
+      default_19_navy_sheen:      { label: 'Navy Sheen',      borderVariant: BV[8],  accent: 'rgba(160,195,235,0.90)', glow: 'rgba(120,170,230,0.22)', textColor: '#eef4ff', textShadow: '0 2px 8px rgba(0,0,0,0.46)', background: 'repeating-linear-gradient(135deg, rgba(255,255,255,0.04) 0 2px, transparent 2px 18px), linear-gradient(180deg, #101c34 0%, #1e3458 55%, #2c4878 100%)' },
+      default_20_dusk_chrome:     { label: 'Dusk Chrome',     borderVariant: BV[9],  accent: 'rgba(210,200,235,0.88)', glow: 'rgba(190,175,230,0.20)', textColor: '#f6f4ff', textShadow: '0 2px 8px rgba(0,0,0,0.46)', background: 'linear-gradient(200deg, #1a1430 0%, #35285a 50%, #4a3870 100%), radial-gradient(ellipse at 50% 0%, rgba(255,255,255,0.10) 0%, transparent 30%)' },
+      // 新手背板 1，11~20
+      newbie1_11_coral_bliss:     { label: 'Coral Bliss',     borderVariant: BV[0],  accent: 'rgba(255,210,190,0.92)', glow: 'rgba(255,170,140,0.28)', textColor: '#fff',    textShadow: '0 2px 9px rgba(0,0,0,0.36)', background: 'linear-gradient(160deg, #ff6b6b 0%, #ff9f7f 55%, #ffd07f 100%), radial-gradient(circle at 78% 22%, rgba(255,255,255,0.16) 0%, transparent 20%)' },
+      newbie1_12_lavender_pop:    { label: 'Lavender Pop',    borderVariant: BV[1],  accent: 'rgba(230,215,255,0.92)', glow: 'rgba(200,170,255,0.26)', textColor: '#fff',    textShadow: '0 2px 9px rgba(0,0,0,0.36)', background: 'linear-gradient(135deg, #9b6fd4 0%, #d4a8ff 52%, #ffd6f5 100%), radial-gradient(circle at 30% 26%, rgba(255,255,255,0.14) 0%, transparent 18%)' },
+      newbie1_13_mango_rush:      { label: 'Mango Rush',      borderVariant: BV[2],  accent: 'rgba(255,225,140,0.94)', glow: 'rgba(255,190,80,0.28)',  textColor: '#4a2000', textShadow: '0 2px 5px rgba(255,255,255,0.26)', background: 'linear-gradient(135deg, #ff8c00 0%, #ffb347 52%, #ffe08a 100%), radial-gradient(circle at 70% 20%, rgba(255,255,255,0.18) 0%, transparent 20%)' },
+      newbie1_14_mint_spark:      { label: 'Mint Spark',      borderVariant: BV[3],  accent: 'rgba(195,255,230,0.92)', glow: 'rgba(100,230,180,0.26)', textColor: '#003a22', textShadow: '0 2px 5px rgba(255,255,255,0.28)', background: 'linear-gradient(135deg, #00b09b 0%, #78e3c4 52%, #c8fff0 100%), radial-gradient(circle at 24% 76%, rgba(255,255,255,0.14) 0%, transparent 18%)' },
+      newbie1_15_sky_candy:       { label: 'Sky Candy',       borderVariant: BV[4],  accent: 'rgba(215,240,255,0.92)', glow: 'rgba(120,200,255,0.26)', textColor: '#fff',    textShadow: '0 2px 9px rgba(0,0,0,0.34)', background: 'linear-gradient(135deg, #56ccf2 0%, #a8e6ff 52%, #e0f7ff 100%), radial-gradient(circle at 80% 20%, rgba(255,255,255,0.16) 0%, transparent 18%)' },
+      newbie1_16_cherry_glow:     { label: 'Cherry Glow',     borderVariant: BV[5],  accent: 'rgba(255,200,210,0.92)', glow: 'rgba(255,120,150,0.28)', textColor: '#fff',    textShadow: '0 2px 9px rgba(0,0,0,0.38)', background: 'linear-gradient(135deg, #c0392b 0%, #ff6f91 52%, #ffb3c4 100%), radial-gradient(circle at 26% 74%, rgba(255,255,255,0.14) 0%, transparent 18%)' },
+      newbie1_17_butter_drop:     { label: 'Butter Drop',     borderVariant: BV[6],  accent: 'rgba(255,240,160,0.94)', glow: 'rgba(255,210,80,0.28)',  textColor: '#4a3000', textShadow: '0 2px 5px rgba(255,255,255,0.26)', background: 'linear-gradient(135deg, #f7971e 0%, #ffd200 52%, #fff5a0 100%), radial-gradient(circle at 72% 22%, rgba(255,255,255,0.18) 0%, transparent 20%)' },
+      newbie1_18_twilight_pink:   { label: 'Twilight Pink',   borderVariant: BV[7],  accent: 'rgba(255,210,235,0.92)', glow: 'rgba(255,150,200,0.26)', textColor: '#fff',    textShadow: '0 2px 9px rgba(0,0,0,0.38)', background: 'linear-gradient(135deg, #8e2de2 0%, #e96fae 52%, #ffc3e4 100%), radial-gradient(circle at 28% 28%, rgba(255,255,255,0.14) 0%, transparent 18%)' },
+      newbie1_19_lime_breeze:     { label: 'Lime Breeze',     borderVariant: BV[8],  accent: 'rgba(210,255,185,0.92)', glow: 'rgba(130,230,80,0.28)',  textColor: '#1a3000', textShadow: '0 2px 5px rgba(255,255,255,0.28)', background: 'linear-gradient(135deg, #56ab2f 0%, #a8e063 52%, #d4f5a0 100%), radial-gradient(circle at 76% 24%, rgba(255,255,255,0.16) 0%, transparent 18%)' },
+      newbie1_20_ocean_swirl:     { label: 'Ocean Swirl',     borderVariant: BV[9],  accent: 'rgba(185,235,255,0.92)', glow: 'rgba(60,190,240,0.28)',  textColor: '#fff',    textShadow: '0 2px 9px rgba(0,0,0,0.36)', background: 'linear-gradient(135deg, #0575e6 0%, #48b0ff 52%, #a0deff 100%), radial-gradient(circle at 30% 70%, rgba(255,255,255,0.14) 0%, transparent 20%)' },
+      // 彩金風暴 11~20
+      jackpot_11_solar_flare:     { label: 'Solar Flare',     borderVariant: BV[0],  accent: 'rgba(255,220,90,0.96)',  glow: 'rgba(255,165,40,0.42)', textColor: '#fff8e0', textShadow: '0 2px 12px rgba(0,0,0,0.60)', background: 'radial-gradient(ellipse at 50% 110%, rgba(255,200,50,0.50) 0%, transparent 40%), linear-gradient(135deg, #3a0b0b 0%, #8b1a1a 44%, #e85d04 78%, #ffd60a 100%)' },
+      jackpot_12_crimson_vault:   { label: 'Crimson Vault',   borderVariant: BV[1],  accent: 'rgba(255,215,95,0.95)',  glow: 'rgba(255,100,60,0.40)', textColor: '#fff8e2', textShadow: '0 2px 12px rgba(0,0,0,0.60)', background: 'linear-gradient(135deg, #1a0010 0%, #660020 46%, #cc2200 76%, #ff8800 100%), radial-gradient(circle at 50% 52%, rgba(255,230,100,0.40) 0%, transparent 20%)' },
+      jackpot_13_golden_arc:      { label: 'Golden Arc',      borderVariant: BV[2],  accent: 'rgba(255,228,100,0.96)', glow: 'rgba(255,180,40,0.42)', textColor: '#fff7dc', textShadow: '0 2px 12px rgba(0,0,0,0.58)', background: 'radial-gradient(ellipse at 50% 0%, rgba(255,220,80,0.28) 0%, transparent 36%), linear-gradient(180deg, #260318 0%, #800c28 48%, #d44000 78%, #ffbb00 100%)' },
+      jackpot_14_obsidian_rain:   { label: 'Obsidian Rain',   borderVariant: BV[3],  accent: 'rgba(255,210,88,0.94)',  glow: 'rgba(255,140,50,0.38)', textColor: '#fff5dc', textShadow: '0 2px 12px rgba(0,0,0,0.62)', background: 'repeating-linear-gradient(0deg, rgba(255,200,60,0.12) 0 2px, transparent 2px 22px), linear-gradient(135deg, #160024 0%, #540c40 46%, #9e1a28 76%, #e86000 100%)' },
+      jackpot_15_phoenix_crest:   { label: 'Phoenix Crest',   borderVariant: BV[4],  accent: 'rgba(255,224,100,0.96)', glow: 'rgba(255,130,40,0.44)', textColor: '#fff8e4', textShadow: '0 2px 12px rgba(0,0,0,0.60)', background: 'linear-gradient(135deg, #2e0918 0%, #8c1424 44%, #c83410 72%, #ff9500 100%), radial-gradient(circle at 70% 30%, rgba(255,240,120,0.36) 0%, transparent 20%)' },
+      jackpot_16_blaze_king:      { label: 'Blaze King',      borderVariant: BV[5],  accent: 'rgba(255,220,88,0.95)',  glow: 'rgba(255,90,20,0.44)',  textColor: '#fff6e0', textShadow: '0 2px 12px rgba(0,0,0,0.62)', background: 'linear-gradient(135deg, #1a0608 0%, #6e100e 44%, #c42606 72%, #f87700 100%), radial-gradient(circle at 30% 70%, rgba(255,180,50,0.24) 0%, transparent 24%)' },
+      jackpot_17_thunder_win:     { label: 'Thunder Win',     borderVariant: BV[6],  accent: 'rgba(255,218,90,0.96)',  glow: 'rgba(255,160,60,0.40)', textColor: '#fff7e2', textShadow: '0 2px 12px rgba(0,0,0,0.58)', background: 'linear-gradient(160deg, #200438 0%, #6e0e56 42%, #b82040 68%, #f06000 100%), radial-gradient(circle at 50% 50%, rgba(255,226,100,0.32) 0%, transparent 18%)' },
+      jackpot_18_gold_eruption:   { label: 'Gold Eruption',   borderVariant: BV[7],  accent: 'rgba(255,222,100,0.96)', glow: 'rgba(255,170,50,0.42)', textColor: '#fff8de', textShadow: '0 2px 12px rgba(0,0,0,0.60)', background: 'radial-gradient(circle at 50% 55%, rgba(255,218,88,0.44) 0%, transparent 18%), linear-gradient(135deg, #22040c 0%, #78101c 44%, #c43200 72%, #ffa800 100%)' },
+      jackpot_19_scarlet_nova:    { label: 'Scarlet Nova',    borderVariant: BV[8],  accent: 'rgba(255,210,90,0.95)',  glow: 'rgba(255,100,50,0.40)', textColor: '#fff6e0', textShadow: '0 2px 12px rgba(0,0,0,0.60)', background: 'linear-gradient(135deg, #18020e 0%, #5e0a1e 42%, #aa2200 70%, #ff7a00 100%), linear-gradient(45deg, rgba(255,210,80,0.14) 0%, transparent 30%)' },
+      jackpot_20_royal_blaze:     { label: 'Royal Blaze',     borderVariant: BV[9],  accent: 'rgba(255,225,95,0.96)',  glow: 'rgba(255,150,40,0.44)', textColor: '#fff8e0', textShadow: '0 2px 12px rgba(0,0,0,0.60)', background: 'linear-gradient(135deg, #240618 0%, #7a1030 44%, #c22a0a 72%, #f99000 100%), radial-gradient(circle at 80% 80%, rgba(255,200,60,0.24) 0%, transparent 24%)' },
+    };
+    Object.assign(BACKGROUND_THEMES, extra);
+    const defaultExtra  = Object.keys(extra).filter(k => k.startsWith('default_1'));
+    const newbie1Extra  = Object.keys(extra).filter(k => k.startsWith('newbie1_1'));
+    const jackpotExtra  = Object.keys(extra).filter(k => k.startsWith('jackpot_1'));
+    BACKPLATE_REVIEW_GROUPS['預設背板'].push(...defaultExtra);
+    BACKPLATE_REVIEW_GROUPS['新手背板 1'].push(...newbie1Extra);
+    BACKPLATE_REVIEW_GROUPS['彩金風暴 - 白金'].push(...jackpotExtra);
+  })();
+
   function getBackgroundTheme(bgKey) {
     return BACKGROUND_THEMES[bgKey] || BACKGROUND_THEMES[DEFAULT_BG_THEME];
   }
@@ -4252,6 +4391,8 @@
       `--theme-bg: ${theme.background}`,
       `--theme-accent: ${theme.accent}`,
       `--theme-glow: ${theme.glow}`,
+      `--bg-accent: ${theme.accent}`,
+      `--bg-glow: ${theme.glow}`,
       `--theme-text-color: ${theme.textColor || '#fff'}`,
       `--theme-text-shadow: ${theme.textShadow || DEFAULT_BG_TEXT_SHADOW}`
     ].join('; ');
@@ -4264,9 +4405,13 @@
     el.style.setProperty('--theme-bg', theme.background);
     el.style.setProperty('--theme-accent', theme.accent);
     el.style.setProperty('--theme-glow', theme.glow);
+    el.style.setProperty('--bg-accent', theme.accent);
+    el.style.setProperty('--bg-glow', theme.glow);
     el.style.setProperty('--theme-text-color', theme.textColor || '#fff');
     el.style.setProperty('--theme-text-shadow', theme.textShadow || DEFAULT_BG_TEXT_SHADOW);
     el.classList.toggle('bg-animated-diamond', !!theme.animated);
+    for (let i = 1; i <= 10; i++) el.classList.remove(`bv-${i}`);
+    if (theme.borderVariant) el.classList.add(`bv-${theme.borderVariant}`);
     el.dataset.bgTheme = bgKey;
   }
 
@@ -5176,8 +5321,9 @@
       const theme = getBackgroundTheme(themeKey);
       const selectedCls = appliedThemeKey === themeKey ? 'selected' : '';
       const alias = String(index + 1).padStart(3, '0');
+      const bvCls = theme.borderVariant ? ` bv-${theme.borderVariant}` : '';
       return `
-        <div class="bg-option ${selectedCls}" data-bg="${themeKey}" role="button" tabindex="0" aria-label="套用 ${theme.label}">
+        <div class="bg-option ${selectedCls}${bvCls}" data-bg="${themeKey}" role="button" tabindex="0" aria-label="套用 ${theme.label}">
           <div class="bg-corners"><i class="tl"></i><i class="tr"></i><i class="bl"></i><i class="br"></i></div>
           <span class="bg-name">${alias}</span>
         </div>

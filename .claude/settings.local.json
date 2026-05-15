@@ -8,7 +8,20 @@
       "Bash('/Applications/Google Chrome.app/Contents/MacOS/Google Chrome' --headless --disable-gpu --no-sandbox --virtual-time-budget=2000 --screenshot=/tmp/menu.png --window-size=900,1400 file:///tmp/menu-check.html)",
       "Bash(cp /Users/scarkuo/Desktop/GameProject/sns/gloryPluginDocument/index.html *)",
       "WebFetch(domain:raw.githubusercontent.com)",
-      "Bash(npx skills *)"
+      "Bash(npx skills *)",
+      "Bash(python3 -c \"import json,sys; d=json.load\\(sys.stdin\\); mcps=d.get\\('mcpServers',{}\\); print\\(list\\(mcps.keys\\(\\)\\)\\)\")",
+      "Bash(python3 -c \"import json,sys; d=json.load\\(sys.stdin\\); print\\(json.dumps\\({k:v for k,v in d.items\\(\\) if 'mcp' in k.lower\\(\\)}, indent=2, ensure_ascii=False\\)\\)\")",
+      "Bash(python3 -c \"import json,sys; d=json.load\\(sys.stdin\\); print\\(json.dumps\\(d.get\\('mcpServers',{}\\), indent=2, ensure_ascii=False\\)\\)\")",
+      "WebSearch",
+      "WebFetch(domain:developers.google.com)",
+      "WebFetch(domain:www.merge.dev)",
+      "Bash(claude mcp *)",
+      "Bash(cat ~/.claude.json | python3 -c \"import json,sys; d=json.load\\(sys.stdin\\); print\\(json.dumps\\(d.get\\('mcpServers',{}\\), indent=2, ensure_ascii=False\\)\\)\")",
+      "Read(//Users/scarkuo/**)",
+      "Bash(git -C /Users/scarkuo/Desktop/GameProject/sns/gloryPluginDocument status)",
+      "Bash(git -C /Users/scarkuo/Desktop/GameProject/sns/gloryPluginDocument log --oneline -3)",
+      "Bash(git -C /Users/scarkuo/Desktop/GameProject/sns/gloryPluginDocument add index.html .claude/settings.local.json)",
+      "Bash(git -C /Users/scarkuo/Desktop/GameProject/sns/gloryPluginDocument commit -m ' *)"
     ],
     "additionalDirectories": [
       "/private/tmp"
