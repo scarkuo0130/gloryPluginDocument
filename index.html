@@ -160,9 +160,11 @@
     gap: 14px;
     padding: 8px 18px 8px 10px;
     border-radius: 32px;
+    position: relative;
+    overflow: hidden;
     background: var(--user-bg, linear-gradient(135deg, #3a2570, #1a0f3e));
     background-size: cover;
-    border: 1.5px solid var(--theme-accent, rgba(255, 209, 102, 0.45));
+    border: none;
     box-shadow:
       0 8px 18px rgba(0,0,0,0.28),
       inset 0 0 18px var(--theme-glow, rgba(255,255,255,0.12));
@@ -799,7 +801,7 @@
       linear-gradient(135deg, rgba(20, 10, 40, 0.48), rgba(15, 8, 35, 0.66)),
       var(--user-bg, linear-gradient(135deg, #3a2570, #1a0f3e));
     background-size: cover;
-    border: 1.5px solid rgba(255, 209, 102, 0.25);
+    border: none;
     transition: background 0.4s, border-color 0.4s, box-shadow 0.4s;
     cursor: pointer;
   }
@@ -1288,13 +1290,15 @@
       linear-gradient(135deg, rgba(20, 10, 40, 0.48), rgba(15, 8, 35, 0.66)),
       var(--user-bg, linear-gradient(135deg, #3a2570, #1a0f3e));
     background-size: cover;
-    border: 2px solid rgba(255, 209, 102, 0.25);
+    border: none;
     border-radius: 20px;
     padding: 22px 24px;
+    position: relative;
+    overflow: hidden;
   }
   #profilePage .profile-info-card {
     background: var(--user-bg, linear-gradient(135deg, #3a2570, #1a0f3e));
-    border-color: var(--theme-accent, rgba(255, 209, 102, 0.25));
+    border: none;
     box-shadow:
       0 14px 30px rgba(0,0,0,0.24),
       inset 0 0 28px var(--theme-glow, rgba(255,255,255,0.12));
@@ -1685,32 +1689,10 @@
   }
 
   /* 內框（裝飾） */
-  .bg-option::before {
-    content: '';
-    position: absolute;
-    inset: 8px;
-    border: 1.5px solid var(--bg-accent, rgba(255,255,255,0.5));
-    border-radius: 11px;
-    pointer-events: none;
-    z-index: 2;
-    box-shadow: inset 0 0 16px var(--bg-glow, rgba(255,255,255,0.15));
-  }
+  .bg-option::before { display: none; }
 
-  /* 四個角落裝飾 */
-  .bg-option .bg-corners {
-    position: absolute; inset: 0; pointer-events: none; z-index: 3;
-  }
-  .bg-option .bg-corners i {
-    position: absolute;
-    width: 22px; height: 22px;
-    border-color: var(--bg-accent, #fff);
-    border-style: solid;
-    border-width: 0;
-  }
-  .bg-option .bg-corners i.tl { top: 5px; left: 5px;     border-top-width: 2.5px; border-left-width: 2.5px; }
-  .bg-option .bg-corners i.tr { top: 5px; right: 5px;    border-top-width: 2.5px; border-right-width: 2.5px; }
-  .bg-option .bg-corners i.bl { bottom: 5px; left: 5px;  border-bottom-width: 2.5px; border-left-width: 2.5px; }
-  .bg-option .bg-corners i.br { bottom: 5px; right: 5px; border-bottom-width: 2.5px; border-right-width: 2.5px; }
+  .bg-option .bg-corners { display: none; }
+  .bg-option .bg-corners i { display: none; }
   .bg-option .bg-lock {
     position: absolute;
     top: 8px; right: 12px;
@@ -1755,8 +1737,8 @@
   .bg-option.bv-7::before { inset: 6px; border-width: 1px; border-radius: 13px; opacity: 0.9; }
   .bg-option.bv-7 .bg-corners i { width: 16px; height: 16px; }
 
-  /* bv-8: 卡片外發光 + 超薄內框 */
-  .bg-option.bv-8 { box-shadow: 0 0 0 2.5px var(--bg-accent, rgba(255,255,255,0.40)), 0 0 24px var(--bg-glow, rgba(255,255,255,0.20)) !important; }
+  /* bv-8: 卡片外環 + 超薄內框 */
+  .bg-option.bv-8 { box-shadow: inset 0 0 0 2.5px var(--bg-accent, rgba(255,255,255,0.40)) !important; }
   .bg-option.bv-8::before { inset: 13px; border-radius: 7px; border-width: 1px; }
 
   /* bv-9: 直角幾何框 + 加粗角標 */
@@ -1774,6 +1756,69 @@
   .bg-option.bv-10 .bg-corners i.tr { border-top-width: 4px !important; border-right-width: 4px !important; }
   .bg-option.bv-10 .bg-corners i.bl { border-bottom-width: 4px !important; border-left-width: 4px !important; }
   .bg-option.bv-10 .bg-corners i.br { border-bottom-width: 4px !important; border-right-width: 4px !important; }
+
+  /* ===== data-bv: 套用於實際 UI 元件的安全框變體 ===== */
+  /* 主畫面只保留 3 種小尺寸安全框，避免亮色主題出現外溢感。 */
+  .status-profile::after,
+  .profile-info-card::after {
+    content: '';
+    position: absolute;
+    pointer-events: none;
+    z-index: 5;
+    inset: 6px;
+    border: none;
+    box-shadow: none;
+    border-radius: inherit;
+    transition: all 0.4s;
+    opacity: 0;
+  }
+  [data-bv] .status-profile::after,
+  [data-bv] .profile-info-card::after { opacity: 1; }
+
+  /* bv-1: 安全雙層框 */
+  [data-bv="1"] .status-profile::after,
+  [data-bv="1"] .profile-info-card::after {
+    inset: 3px;
+    border: 1.5px solid var(--theme-accent, rgba(255,255,255,0.54));
+    border-radius: inherit;
+    box-shadow:
+      inset 0 0 0 1px rgba(0,0,0,0.16),
+      inset 0 0 0 4px rgba(255,255,255,0.08);
+  }
+  [data-bv="1"] {
+    --bv-shadow:
+      inset 0 0 0 1.5px var(--theme-accent, rgba(255,255,255,0.4)),
+      inset 0 0 0 4px rgba(0,0,0,0.14);
+  }
+
+  /* bv-2: 安全柔光框 */
+  [data-bv="2"] .status-profile::after,
+  [data-bv="2"] .profile-info-card::after {
+    inset: 3px;
+    border: 1px solid rgba(255,255,255,0.22);
+    border-radius: inherit;
+    box-shadow:
+      inset 0 0 14px var(--theme-glow, rgba(255,255,255,0.16)),
+      inset 0 0 0 1px var(--theme-accent, rgba(255,255,255,0.18));
+  }
+  [data-bv="2"] {
+    --bv-shadow:
+      inset 0 0 14px var(--theme-glow, rgba(255,255,255,0.16)),
+      inset 0 0 0 1px rgba(255,255,255,0.16);
+  }
+
+  /* bv-3: 安全細描邊 */
+  [data-bv="3"] .status-profile::after,
+  [data-bv="3"] .profile-info-card::after {
+    inset: 2px;
+    border: 1px solid var(--theme-accent, rgba(255,255,255,0.46));
+    border-radius: inherit;
+    opacity: 0.92;
+  }
+  [data-bv="3"] {
+    --bv-shadow:
+      inset 0 0 0 1px var(--theme-accent, rgba(255,255,255,0.36));
+  }
 
   .input-group {
     background: rgba(0,0,0,0.3);
@@ -3478,8 +3523,9 @@
 
   .menu-header {
     background: var(--user-bg, linear-gradient(135deg, #3a2570, #1a0f3e));
-    border-color: var(--theme-accent, rgba(255,255,255,0.36));
+    border: none;
     box-shadow:
+      var(--bv-shadow, none),
       0 14px 30px rgba(0,0,0,0.24),
       inset 0 0 26px var(--theme-glow, rgba(255,255,255,0.12));
     backdrop-filter: none;
@@ -4364,13 +4410,62 @@
       jackpot_20_royal_blaze:     { label: 'Royal Blaze',     borderVariant: BV[9],  accent: 'rgba(255,225,95,0.96)',  glow: 'rgba(255,150,40,0.44)', textColor: '#fff8e0', textShadow: '0 2px 12px rgba(0,0,0,0.60)', background: 'linear-gradient(135deg, #240618 0%, #7a1030 44%, #c22a0a 72%, #f99000 100%), radial-gradient(circle at 80% 80%, rgba(255,200,60,0.24) 0%, transparent 24%)' },
     };
     Object.assign(BACKGROUND_THEMES, extra);
-    const defaultExtra  = Object.keys(extra).filter(k => k.startsWith('default_1'));
-    const newbie1Extra  = Object.keys(extra).filter(k => k.startsWith('newbie1_1'));
-    const jackpotExtra  = Object.keys(extra).filter(k => k.startsWith('jackpot_1'));
+    const defaultExtra  = Object.keys(extra).filter(k => /^default_(1\d|20)_/.test(k));
+    const newbie1Extra  = Object.keys(extra).filter(k => /^newbie1_(1\d|20)_/.test(k));
+    const jackpotExtra  = Object.keys(extra).filter(k => /^jackpot_(1\d|20)_/.test(k));
     BACKPLATE_REVIEW_GROUPS['預設背板'].push(...defaultExtra);
     BACKPLATE_REVIEW_GROUPS['新手背板 1'].push(...newbie1Extra);
     BACKPLATE_REVIEW_GROUPS['彩金風暴 - 白金'].push(...jackpotExtra);
   })();
+
+  const EXPERIMENTAL_BACKPLATE_SPECS = [
+    { group: '預設背板', prefix: 'default', label: '預設背板', colors: ['#18243a', '#3a4d6a', '#7a8ba0', '#d6dfeb'], accent: 'rgba(196,215,236,0.92)', glow: 'rgba(170,195,228,0.20)', textColor: '#f6fbff', textShadow: '0 2px 8px rgba(0,0,0,0.44)' },
+    { group: '新手背板 1', prefix: 'newbie1', label: '新手背板 1', colors: ['#7e4c9f', '#f47d8f', '#ffd067', '#fff0c7'], accent: 'rgba(255,219,138,0.94)', glow: 'rgba(255,207,104,0.28)', textColor: '#fffefb', textShadow: '0 2px 9px rgba(0,0,0,0.38)' },
+    { group: '彩金風暴 - 白金', prefix: 'jackpot', label: '彩金風暴 - 白金', colors: ['#2a0b42', '#7d1038', '#ff8b28', '#ffe18d'], accent: 'rgba(255,225,110,0.96)', glow: 'rgba(255,170,56,0.40)', textColor: '#fff8e2', textShadow: '0 2px 12px rgba(0,0,0,0.58)' },
+    ...GENERATED_BACKPLATE_SPECS
+  ];
+
+  function buildExperimentalBackplateSeries(spec) {
+    const [c1, c2, c3, c4] = spec.colors;
+    const safeText = spec.textColor || '#fff';
+    const safeShadow = spec.textShadow || DEFAULT_BG_TEXT_SHADOW;
+    const variants = [
+      { label: 'Arc Sweep', borderVariant: 1, background: `radial-gradient(ellipse at -10% 120%, ${c4}aa 0%, transparent 52%), radial-gradient(ellipse at 105% -5%, rgba(255,255,255,0.16) 0%, transparent 28%), linear-gradient(135deg, ${c1} 0%, ${c2} 54%, ${c3} 100%)` },
+      { label: 'Emblem Stamp', borderVariant: 2, background: `radial-gradient(circle at 50% 50%, transparent 0 22%, ${c4}33 22% 32%, transparent 32% 100%), radial-gradient(circle at 50% 50%, ${c4}18 0%, transparent 54%), linear-gradient(145deg, ${c1} 0%, ${c2} 52%, ${c3} 100%)` },
+      { label: 'Central Burst', borderVariant: 5, background: `radial-gradient(circle at 50% 54%, ${c4}aa 0%, ${c3}44 16%, transparent 34%), linear-gradient(135deg, ${c1} 0%, ${c2} 46%, ${c3} 100%)` },
+      { label: 'Corner Glow', borderVariant: 7, background: `radial-gradient(circle at 82% 18%, ${c4}bb 0%, transparent 24%), radial-gradient(circle at 18% 82%, rgba(255,255,255,0.12) 0%, transparent 20%), linear-gradient(135deg, ${c1} 0%, ${c2} 52%, ${c3} 100%)` },
+      { label: 'Horizon Split', borderVariant: 3, background: `linear-gradient(180deg, ${c1} 0%, ${c2} 48%, ${c3} 48%, ${c4} 100%), linear-gradient(0deg, rgba(255,255,255,0.10) 47.5%, rgba(255,255,255,0.18) 48%, rgba(255,255,255,0.10) 48.5%, transparent 49%)` },
+      { label: 'Velvet Metal', borderVariant: 4, background: `linear-gradient(135deg, ${c1} 0%, ${c2} 50%, ${c3} 100%), linear-gradient(115deg, rgba(255,255,255,0.12) 0%, transparent 22%, rgba(255,255,255,0.08) 42%, transparent 62%), radial-gradient(ellipse at 50% 120%, rgba(0,0,0,0.22) 0%, transparent 44%)` },
+      { label: 'Wheel Halo', borderVariant: 8, background: `repeating-conic-gradient(from 0deg at 50% 50%, transparent 0 10deg, ${c4}18 10deg 20deg), radial-gradient(circle at 50% 50%, transparent 0 24%, ${c4}22 24% 34%, transparent 34% 100%), linear-gradient(135deg, ${c1} 0%, ${c2} 52%, ${c3} 100%)` },
+      { label: 'Crest Frame', borderVariant: 9, background: `linear-gradient(135deg, ${c1} 0%, ${c2} 52%, ${c3} 100%), linear-gradient(90deg, ${c4}33 0 10%, transparent 10% 90%, ${c4}22 90% 100%), linear-gradient(180deg, ${c4}22 0 12%, transparent 12% 100%)` },
+      { label: 'Light Column', borderVariant: 10, background: `linear-gradient(90deg, transparent 0 22%, ${c4}18 22% 32%, transparent 32% 68%, ${c4}14 68% 78%, transparent 78% 100%), linear-gradient(135deg, ${c1} 0%, ${c2} 52%, ${c3} 100%)` },
+      { label: 'Fluid Flow', borderVariant: 6, background: `radial-gradient(ellipse at 18% 75%, ${c3}55 0%, transparent 38%), radial-gradient(ellipse at 78% 28%, ${c4}55 0%, transparent 34%), linear-gradient(135deg, ${c1} 0%, ${c2} 44%, ${c3} 100%)` },
+      { label: 'Facet Crystal', borderVariant: 2, background: `linear-gradient(145deg, ${c1} 0 24%, ${c2} 24% 48%, ${c3} 48% 76%, ${c4} 76% 100%), linear-gradient(35deg, rgba(255,255,255,0.14) 0 18%, transparent 18% 42%, rgba(255,255,255,0.08) 42% 58%, transparent 58% 100%)` },
+      { label: 'Shadow Crest', borderVariant: 1, background: `radial-gradient(ellipse at 50% 50%, rgba(0,0,0,0.18) 0%, transparent 46%), radial-gradient(circle at 50% 50%, transparent 0 28%, rgba(0,0,0,0.12) 28% 38%, transparent 38% 100%), linear-gradient(135deg, ${c1} 0%, ${c2} 52%, ${c3} 100%)` }
+    ];
+    const existingCount = BACKPLATE_REVIEW_GROUPS[spec.group]?.length || 0;
+    return variants.map((variant, idx) => {
+      const number = String(existingCount + idx + 1).padStart(2, '0');
+      return {
+        key: `${spec.prefix}_${number}`,
+        value: {
+          label: `${variant.label} ${number}`,
+          background: variant.background,
+          accent: spec.accent,
+          glow: spec.glow,
+          textColor: safeText,
+          textShadow: safeShadow,
+          borderVariant: variant.borderVariant
+        }
+      };
+    });
+  }
+
+  EXPERIMENTAL_BACKPLATE_SPECS.forEach(spec => {
+    const series = buildExperimentalBackplateSeries(spec);
+    BACKPLATE_REVIEW_GROUPS[spec.group].push(...series.map(item => item.key));
+    Object.assign(BACKGROUND_THEMES, Object.fromEntries(series.map(item => [item.key, item.value])));
+  });
 
   function getBackgroundTheme(bgKey) {
     return BACKGROUND_THEMES[bgKey] || BACKGROUND_THEMES[DEFAULT_BG_THEME];
@@ -5297,6 +5392,13 @@
     const currentBg = document.getElementById('currentBgPreview');
     applyBackgroundTheme(currentBg, bgKey);
     if (currentBg) currentBg.textContent = getBackgroundLabel(bgKey);
+    document.documentElement.dataset.bv = String(getSafeUserBorderVariant(getBackgroundTheme(bgKey).borderVariant));
+  }
+
+  function getSafeUserBorderVariant(borderVariant) {
+    if ([1, 5, 10].includes(borderVariant)) return 1;
+    if ([2, 6, 8].includes(borderVariant)) return 2;
+    return 3;
   }
 
   function applyCommittedTheme(bgKey) {
