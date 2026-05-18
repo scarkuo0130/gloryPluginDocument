@@ -445,12 +445,14 @@
     padding: 8px 16px 8px 10px;
     cursor: pointer;
     border-radius: 32px;
-    background:
-      linear-gradient(to right, rgba(15,10,30,0.65), rgba(15,10,30,0.85)),
-      var(--player-bg, rgba(255,255,255,0.05));
+    position: relative;
+    overflow: hidden;
+    background: var(--player-bg, rgba(255,255,255,0.05));
     background-size: cover;
-    border: 1.5px solid rgba(255, 209, 102, 0.45);
-    box-shadow: 0 4px 12px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.1);
+    border: none;
+    box-shadow:
+      0 8px 18px rgba(0,0,0,0.28),
+      inset 0 0 18px var(--theme-glow, rgba(255,255,255,0.12));
     flex-shrink: 0;
   }
   /* 訊息區：純文字，不帶背景與邊框 */
@@ -2180,9 +2182,14 @@
   }
 
   .lb-self {
-    border: 2px solid rgba(255, 209, 102, 0.6);
+    border: none;
     margin-top: 20px;
-    box-shadow: 0 0 0 4px rgba(255, 209, 102, 0.15);
+    border-radius: 32px;
+    background: var(--player-bg, rgba(255,255,255,0.05));
+    background-size: cover;
+    box-shadow:
+      0 8px 18px rgba(0,0,0,0.28),
+      inset 0 0 18px var(--theme-glow, rgba(255,255,255,0.12));
   }
   .lb-fixed-self {
     flex-shrink: 0;
@@ -2866,12 +2873,12 @@
     gap: 9px;
     cursor: pointer;
     border-radius: 32px;
-    background:
-      linear-gradient(to right, rgba(15,10,30,0.65), rgba(15,10,30,0.85)),
-      var(--player-bg, rgba(255,255,255,0.05));
+    background: var(--player-bg, rgba(255,255,255,0.05));
     background-size: cover;
-    border: 1.5px solid rgba(255, 209, 102, 0.45);
-    box-shadow: 0 4px 12px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.1);
+    border: none;
+    box-shadow:
+      0 8px 18px rgba(0,0,0,0.28),
+      inset 0 0 18px var(--theme-glow, rgba(255,255,255,0.12));
   }
   .active-player-meta .lb-menu-avatar {
     width: 39px;
@@ -3621,7 +3628,18 @@
     box-shadow: var(--glass-shadow-soft);
   }
 
-  .lb-self,
+  .lb-item.lb-self {
+    border: none;
+    border-radius: 32px;
+    background: var(--player-bg, rgba(255,255,255,0.05));
+    background-size: cover;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    box-shadow:
+      0 8px 18px rgba(0,0,0,0.28),
+      inset 0 0 18px var(--theme-glow, rgba(255,255,255,0.12));
+  }
+
   .ach-card.unlocked,
   .title-option.selected,
   .avatar-option.selected,
@@ -4531,6 +4549,7 @@
   // 跑馬燈訊息：每筆指定玩家 + 訊息（個人資訊從 profiles 取）
   const marqueeItems = [
     { player: 'Joan5428',   msg: '中得 100,000,000！',   icon: '🎉' },
+    { player: 'Joan5428',   msg: '梅杜莎單局派彩 280x！', icon: '💰' },
     { player: 'Sunny',      msg: '進入 TurnOver Top 3！', icon: '🏆' },
     { player: 'Hades',      msg: '派彩 1500x！',          icon: '💰' },
     { player: 'KingOfSpin', msg: '解鎖王者稱號！',         icon: '👑' },
@@ -5118,7 +5137,25 @@
     return activePlayerFeedAutoplay;
   }
 
+  function debugPinActivePlayer(playerName = 'Joan5428') {
+    const items = getActivePlayerFeedItems();
+    const index = items.findIndex(item => item.player === playerName);
+    if (index === -1) return null;
+    activePlayerFeedAutoplay = false;
+    if (activePlayerFeedTimer) clearInterval(activePlayerFeedTimer);
+    activePlayerFeedTimer = null;
+    activePlayerFeedIdx = index;
+    renderActivePlayerFeed();
+    return { player: playerName, index, autoplay: activePlayerFeedAutoplay };
+  }
+
+  function debugUnpinActivePlayer() {
+    return setActivePlayerFeedAutoplay(true);
+  }
+
   window.setActivePlayerFeedAutoplay = setActivePlayerFeedAutoplay;
+  window.debugPinActivePlayer = debugPinActivePlayer;
+  window.debugUnpinActivePlayer = debugUnpinActivePlayer;
 
   function openPromotionModal() {
     closeMenu();
@@ -6020,6 +6057,26 @@
       c.innerHTML = '';
     }
   }
+
+  function debugPinMarquee(playerName = 'Joan5428', occurrence = 1) {
+    const matches = marqueeItems
+      .map((item, index) => ({ item, index }))
+      .filter(entry => entry.item.player === playerName);
+    const target = matches[Math.max(0, occurrence - 1)];
+    if (!target) return null;
+    stopMarquee();
+    marqueeIdx = target.index;
+    playMarquee(true);
+    return { player: playerName, occurrence, index: target.index, item: target.item };
+  }
+
+  function debugStopMarquee() {
+    stopMarquee();
+    return true;
+  }
+
+  window.debugPinMarquee = debugPinMarquee;
+  window.debugStopMarquee = debugStopMarquee;
 
   function buildMqChip(it) {
     const p = profiles[it.player] || {};
