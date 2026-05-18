@@ -3953,7 +3953,7 @@
             <div id="currentAvatarPreview">🦊</div>
             <div id="currentAvatarText">目前頭像</div>
             <div id="currentTitlePreview">✦ 幸運兒</div>
-            <div class="profile-current-bg bg-sunset" id="currentBgPreview">日落</div>
+            <div class="profile-current-bg bg-sunset" id="currentBgPreview">預設背板</div>
           </div>
         </div>
 
@@ -4192,7 +4192,7 @@
     { id: 5, icon: '🎉', title: '歡迎加入', preview: '新手禮包已發送至帳號', time: '4/20 12:00', body: '新手禮包已發送至帳號。', unread: false }
   ];
 
-  const DEFAULT_BG_THEME = 'sunset';
+  const DEFAULT_BG_THEME = 'default_12_cobalt_night_solid';
   const DEFAULT_BG_TEXT_SHADOW = '0 3px 10px rgba(0,0,0,0.75), 0 0 4px rgba(0,0,0,0.6)';
   const BACKGROUND_THEMES = {
     sunset: {
@@ -4485,6 +4485,18 @@
     Object.assign(BACKGROUND_THEMES, Object.fromEntries(series.map(item => [item.key, item.value])));
   });
 
+  Object.assign(BACKGROUND_THEMES, {
+    default_12_cobalt_night_solid: {
+      label: 'Cobalt Night Solid',
+      background: '#1a3055',
+      accent: 'rgba(140,200,255,0.88)',
+      glow: 'rgba(80,160,255,0.22)',
+      textColor: '#eaf4ff',
+      textShadow: '0 2px 8px rgba(0,0,0,0.48)',
+      borderVariant: 2
+    }
+  });
+
   function getBackgroundTheme(bgKey) {
     return BACKGROUND_THEMES[bgKey] || BACKGROUND_THEMES[DEFAULT_BG_THEME];
   }
@@ -4495,6 +4507,41 @@
 
   function getBackgroundLabel(bgKey) {
     return getBackgroundTheme(bgKey).label;
+  }
+
+  const BG_MENU_ITEMS = [
+    { id: 'bg-default', themeKey: 'default_12_cobalt_night_solid', name: '預設背板' },
+    { id: 'bg-common', themeKey: 'default_12_cobalt_night', name: '一般' },
+    { id: 'bg-elite', themeKey: 'singleking_15', name: '菁英' },
+    { id: 'bg-master', themeKey: 'streakbronze_19', name: '大師' },
+    { id: 'bg-unique', themeKey: 'dailybronze_19', name: '獨特' },
+    { id: 'bg-legendary', themeKey: 'sunset', name: '傳奇' },
+    // { id: 'bg-chip-bronze', themeKey: 'singleking_15', name: '籌碼傳奇 - 銅' },
+    // { id: 'bg-daily-bronze', themeKey: 'singleking_15', name: '每日開盤 - 銅' },
+    // { id: 'bg-streak-bronze', themeKey: 'singleking_15', name: '連日長紅 - 銅' },
+    // { id: 'bg-chip-platinum', themeKey: 'sunset', name: '籌碼傳奇 - 白金' },
+    // { id: 'bg-streak-platinum', themeKey: 'sunset', name: '連日長紅 - 白金' },
+    // { id: 'bg-daily-platinum', themeKey: 'dailybronze_19', name: '每日開盤 - 白金' },
+    // { id: 'bg-royaltable-platinum', themeKey: 'streakbronze_19', name: '王桌名流 - 白金' },
+    // { id: 'bg-luckywheel-platinum', themeKey: 'luckywheel_13', name: '幸運轉輪 - 白金' },
+    // { id: 'bg-highroller-platinum', themeKey: 'luckywheel_13', name: '豪客流水 - 白金' },
+    // { id: 'bg-jackpot-platinum', themeKey: 'luckywheel_13', name: '彩金風暴 - 白金' },
+    // { id: 'bg-godmulti-platinum', themeKey: 'luckywheel_13', name: '爆倍盛宴 - 白金' },
+    // { id: 'bg-singleking-platinum', themeKey: 'luckywheel_13', name: '單局封王 - 白金' },
+    // { id: 'bg-supermulti-platinum', themeKey: 'luckywheel_13', name: '神倍時刻 - 白金' },
+    // { id: 'bg-superluck-platinum', themeKey: 'luckywheel_13', name: '超強運氣 - 白金' },
+  ];
+
+  function getBgMenuItem(menuId) {
+    return BG_MENU_ITEMS.find(item => item.id === menuId) || null;
+  }
+
+  function getBgMenuItemByKey(bgKey) {
+    return BG_MENU_ITEMS.find(item => item.themeKey === bgKey) || null;
+  }
+
+  function getBgMenuLabel(bgKey, menuId = null) {
+    return getBgMenuItem(menuId)?.name || getBgMenuItemByKey(bgKey)?.name || getBackgroundLabel(bgKey);
   }
 
   function getBackgroundInlineVars(bgKey, backgroundVar = '--player-bg') {
@@ -4808,6 +4855,7 @@
   // 文件模式固定使用跑馬燈效果 1，避免舊 localStorage 覆蓋預設展示。
   userOptions.marqueeEffect = 1;
   let appliedThemeKey = DEFAULT_BG_THEME;
+  let appliedThemeMenuId = 'bg-default';
 
   // ===== UI Logic =====
   let menuOpen = false;
@@ -5423,12 +5471,12 @@
     });
   });
 
-  function applyThemeToUserSurfaces(bgKey) {
+  function applyThemeToUserSurfaces(bgKey, menuId = null) {
     applyBackgroundTheme(document.documentElement, bgKey, '--user-bg');
     document.querySelectorAll('.menu-header').forEach(el => applyBackgroundTheme(el, bgKey, '--user-bg'));
     const currentBg = document.getElementById('currentBgPreview');
     applyBackgroundTheme(currentBg, bgKey);
-    if (currentBg) currentBg.textContent = getBackgroundLabel(bgKey);
+    if (currentBg) currentBg.textContent = getBgMenuLabel(bgKey, menuId);
     document.documentElement.dataset.bv = String(getSafeUserBorderVariant(getBackgroundTheme(bgKey).borderVariant));
   }
 
@@ -5438,33 +5486,31 @@
     return 3;
   }
 
-  function applyCommittedTheme(bgKey) {
+  function applyCommittedTheme(bgKey, menuId = null) {
     appliedThemeKey = bgKey;
+    appliedThemeMenuId = getBgMenuItem(menuId)?.id || getBgMenuItemByKey(bgKey)?.id || null;
     profiles.Joan5428.bgKey = bgKey;
-    applyThemeToUserSurfaces(bgKey);
+    applyThemeToUserSurfaces(bgKey, appliedThemeMenuId);
     renderLb(currentLbMetric);
     renderLeaderboardMenuCard();
     renderActivePlayerFeed();
   }
 
-  function applyUserBg(bgKey) {
-    applyCommittedTheme(bgKey);
+  function applyUserBg(bgKey, menuId = null) {
+    applyCommittedTheme(bgKey, menuId);
   }
-
-  const GENERATED_BG_THEME_KEYS = Object.values(BACKPLATE_REVIEW_GROUPS).flat();
 
   function renderBgLibraryGrid() {
     const container = document.getElementById('bgLibraryGrid');
     if (!container) return;
-    container.innerHTML = GENERATED_BG_THEME_KEYS.map((themeKey, index) => {
-      const theme = getBackgroundTheme(themeKey);
-      const selectedCls = appliedThemeKey === themeKey ? 'selected' : '';
-      const alias = String(index + 1).padStart(3, '0');
+    container.innerHTML = BG_MENU_ITEMS.map(item => {
+      const theme = getBackgroundTheme(item.themeKey);
+      const selectedCls = appliedThemeMenuId === item.id ? 'selected' : '';
       const bvCls = theme.borderVariant ? ` bv-${theme.borderVariant}` : '';
       return `
-        <div class="bg-option ${selectedCls}${bvCls}" data-bg="${themeKey}" role="button" tabindex="0" aria-label="套用 ${theme.label}">
+        <div class="bg-option ${selectedCls}${bvCls}" data-bg="${item.themeKey}" data-menu-id="${item.id}" role="button" tabindex="0" aria-label="套用 ${item.name}">
           <div class="bg-corners"><i class="tl"></i><i class="tr"></i><i class="bl"></i><i class="br"></i></div>
-          <span class="bg-name">${alias}</span>
+          <span class="bg-name">${item.name}</span>
         </div>
       `;
     }).join('');
@@ -5476,18 +5522,18 @@
     openProfileSelectModal('bgSelectModal');
   }
 
-  function selectBgTheme(themeKey) {
-    applyCommittedTheme(themeKey);
+  function selectBgTheme(themeKey, menuId = null) {
+    applyCommittedTheme(themeKey, menuId);
     renderBgLibraryGrid();
     playMemberSound('tap');
-    showToast('背板已更換：' + getBackgroundLabel(themeKey));
+    showToast('背板已更換：' + getBgMenuLabel(themeKey, menuId));
     closeProfileSelectModal('bgSelectModal');
   }
 
   document.getElementById('bgLibraryGrid')?.addEventListener('click', event => {
     const option = event.target.closest('.bg-option[data-bg]');
     if (!option) return;
-    selectBgTheme(option.dataset.bg);
+    selectBgTheme(option.dataset.bg, option.dataset.menuId);
   });
 
   document.getElementById('bgLibraryGrid')?.addEventListener('keydown', event => {
@@ -5495,7 +5541,7 @@
     const option = event.target.closest('.bg-option[data-bg]');
     if (!option) return;
     event.preventDefault();
-    selectBgTheme(option.dataset.bg);
+    selectBgTheme(option.dataset.bg, option.dataset.menuId);
   });
 
   syncBackgroundThemeOptions();
