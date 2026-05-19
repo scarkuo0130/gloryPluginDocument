@@ -159,7 +159,7 @@
     align-items: center;
     gap: 14px;
     padding: 8px 18px 8px 10px;
-    border-radius: 32px;
+    border-radius: 20px;
     position: relative;
     overflow: hidden;
     background: var(--user-bg, linear-gradient(135deg, #3a2570, #1a0f3e));
@@ -444,7 +444,7 @@
     gap: 10px;
     padding: 8px 16px 8px 10px;
     cursor: pointer;
-    border-radius: 32px;
+    border-radius: 20px;
     position: relative;
     overflow: hidden;
     background: var(--player-bg, rgba(255,255,255,0.05));
@@ -471,7 +471,7 @@
     min-width: 520px;
     padding: 18px 30px;
     cursor: pointer;
-    border-radius: 34px;
+    border-radius: 20px;
     background:
       linear-gradient(135deg, rgba(255,255,255,0.18), rgba(20,10,40,0.18)),
       linear-gradient(to right, rgba(15,10,30,0.7), rgba(15,10,30,0.88)),
@@ -796,7 +796,7 @@
     gap: 20px;
     padding: 18px 18px 24px 18px;
     margin: -8px -8px 8px -8px;
-    border-radius: 24px;
+    border-radius: 20px;
     overflow: hidden;
     /* 同步顯示玩家背板 */
     background:
@@ -1115,7 +1115,7 @@
     gap: 10px;
     min-height: 40px;
     padding: 5px 10px;
-    border-radius: 16px;
+    border-radius: 20px;
     border: 1px solid rgba(255,255,255,0.18);
     background:
       linear-gradient(to right, rgba(15,10,30,0.55), rgba(15,10,30,0.82)),
@@ -1123,6 +1123,34 @@
     background-size: cover;
     box-shadow: inset 0 1px 0 rgba(255,255,255,0.08);
     overflow: hidden;
+  }
+  /* 小型玩家資訊欄（用於 F：主選單排行榜預覽卡） */
+  .player-card--list-mini {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-height: 40px;
+    padding: 5px 10px;
+    border-radius: 20px;
+    border: 1px solid rgba(255,255,255,0.18);
+    background:
+      linear-gradient(to right, rgba(15,10,30,0.55), rgba(15,10,30,0.82)),
+      var(--player-bg, rgba(255,255,255,0.08));
+    background-size: cover;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.08);
+    overflow: hidden;
+  }
+  /* F 場景的 row container：含 rank + value，本身透明 */
+  .lb-menu-row--with-rank {
+    background: transparent;
+    border: none;
+    box-shadow: none;
+    padding: 0;
+    min-height: 0;
+    overflow: visible;
+    gap: 6px;
   }
   .lb-menu-rank-wrap {
     width: 44px;
@@ -1404,6 +1432,12 @@
     font-size: 22px;
     font-weight: 800;
     line-height: 1.4;
+  }
+  /* C/D 統一規格：.player-card--profile-other 在「他人」場景隱藏自己才有的資訊 */
+  .player-card--profile-other .profile-id-line,
+  .player-card--profile-other .profile-exp-track,
+  .player-card--profile-other .profile-next-unlock {
+    display: none;
   }
   .profile-current-card {
     min-height: 116px;
@@ -2068,12 +2102,22 @@
   .lb-item {
     display: flex;
     align-items: center;
+    gap: 12px;
+    padding: 6px 8px;
+    margin-bottom: 12px;
+    background: transparent;
+    border: none;
+  }
+  /* 玩家資訊欄（lb-item 內，含 avatar + 名稱/稱號），自帶背板 */
+  .player-card--list {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    align-items: center;
     gap: 18px;
-    padding: 18px 20px;
+    padding: 12px 16px;
     border: 2px solid rgba(255,255,255,0.08);
     border-radius: 20px;
-    margin-bottom: 12px;
-    /* 用玩家背板透出底色，再覆蓋暗色保留可讀性 */
     background:
       linear-gradient(to right, rgba(15,10,30,0.55), rgba(15,10,30,0.85)),
       var(--player-bg, rgba(255,255,255,0.05));
@@ -2182,9 +2226,13 @@
   }
 
   .lb-self {
-    border: none;
     margin-top: 20px;
-    border-radius: 32px;
+    background: transparent;
+    border: none;
+  }
+  /* 底部固定自身列：玩家資訊欄改用無暗膜（更突出） */
+  .lb-self .player-card--list {
+    border: none;
     background: var(--player-bg, rgba(255,255,255,0.05));
     background-size: cover;
     box-shadow:
@@ -2865,33 +2913,36 @@
   .active-player-meta {
     margin-bottom: 5px;
   }
-  /* 活躍玩家面板內的玩家列：對齊 .mq-user / .status-profile 的 chip 風格 */
-  .active-player-meta .lb-menu-row {
+  /* 純玩家資訊欄 chip（用於 G：活躍玩家面板。無 row 容器、無 rank/value、無暗膜） */
+  .player-card--list-chip {
+    display: flex;
+    align-items: center;
+    gap: 9px;
     min-height: 42px;
     max-height: 80px;
     padding: 5px 14px 5px 6px;
-    gap: 9px;
-    cursor: pointer;
-    border-radius: 32px;
+    border-radius: 20px;
+    border: none;
     background: var(--player-bg, rgba(255,255,255,0.05));
     background-size: cover;
-    border: none;
     box-shadow:
       0 8px 18px rgba(0,0,0,0.28),
       inset 0 0 18px var(--theme-glow, rgba(255,255,255,0.12));
+    cursor: pointer;
+    overflow: hidden;
   }
-  .active-player-meta .lb-menu-avatar {
+  .player-card--list-chip .lb-menu-avatar {
     width: 39px;
     height: 39px;
     font-size: 23px;
   }
-  .active-player-meta .lb-menu-player {
+  .player-card--list-chip .lb-menu-player {
     font-size: 21px;
   }
-  .active-player-meta .lb-menu-title {
+  .player-card--list-chip .lb-menu-title {
     font-size: 17px;
   }
-  .active-player-meta .lb-menu-lv {
+  .player-card--list-chip .lb-menu-lv {
     font-size: 17px;
   }
   .active-player-event {
@@ -3618,7 +3669,8 @@
     color: rgba(255,255,255,0.68);
   }
 
-  .lb-item {
+  /* Glassmorphism polish 改套用在 .player-card--list 上（背板層） */
+  .player-card--list {
     border-color: rgba(255,255,255,0.28);
     background:
       linear-gradient(135deg, rgba(255,255,255,0.25), rgba(10,12,24,0.42)),
@@ -3628,9 +3680,8 @@
     box-shadow: var(--glass-shadow-soft);
   }
 
-  .lb-item.lb-self {
+  .lb-self .player-card--list {
     border: none;
-    border-radius: 32px;
     background: var(--player-bg, rgba(255,255,255,0.05));
     background-size: cover;
     backdrop-filter: none;
@@ -3770,7 +3821,7 @@
 
       <!-- Account Status Bar -->
       <div class="status-bar" id="statusBar" onclick="onStatusBarClick(event)">
-        <div class="status-profile">
+        <div class="status-profile player-card player-card--status">
           <div class="avatar-wrap">
             <div class="avatar" id="statusAvatar">🦊</div>
           </div>
@@ -3800,7 +3851,7 @@
 
       <!-- Main Menu -->
       <div class="menu" id="mainMenu">
-        <div class="menu-header" onclick="openPage('profilePage')">
+        <div class="menu-header player-card player-card--menu" onclick="openPage('profilePage')">
           <div class="menu-avatar" id="menuAvatar">🦊</div>
           <div class="menu-user-info">
             <div class="menu-user-name-line">
@@ -3828,15 +3879,20 @@
               <div class="menu-item-kicker" id="lbMenuKicker">總排名 · Turnover</div>
               <div class="menu-item-label">排行榜</div>
               <div class="lb-menu-preview" id="lbMenuPreview">
-                <div class="lb-menu-row">
-                  <div class="lb-menu-rank">1</div>
-                  <div class="lb-menu-avatar">👑</div>
-                  <div class="lb-menu-meta">
-                    <div class="lb-menu-name">
-                      <span class="lb-menu-lv">Lv.38</span>
-                      <span class="lb-menu-player">KingOfSpin</span>
+                <div class="lb-menu-row lb-menu-row--with-rank">
+                  <div class="lb-menu-rank-wrap">
+                    <div class="lb-menu-trend up">▲</div>
+                    <div class="lb-menu-rank">1</div>
+                  </div>
+                  <div class="player-card player-card--list-mini">
+                    <div class="lb-menu-avatar">👑</div>
+                    <div class="lb-menu-meta">
+                      <div class="lb-menu-name">
+                        <span class="lb-menu-lv">Lv.38</span>
+                        <span class="lb-menu-player">KingOfSpin</span>
+                      </div>
+                      <div class="lb-menu-title">✦ 王者</div>
                     </div>
-                    <div class="lb-menu-title">✦ 王者</div>
                   </div>
                   <div class="lb-menu-value">125,000,000</div>
                 </div>
@@ -3907,7 +3963,7 @@
         <div class="page-body">
           <div class="profile-section">
             <div class="profile-section-title">基本資訊</div>
-            <div class="profile-info-card">
+            <div class="profile-info-card player-card player-card--profile player-card--profile-self">
               <div class="profile-info-top">
                 <div class="profile-info-avatar" id="profileInfoAvatar">🦊</div>
                 <div>
@@ -4038,14 +4094,14 @@
         <div class="page-body">
           <div class="profile-section">
             <div class="profile-section-title">基本資訊</div>
-            <div class="profile-info-card">
+            <div class="profile-info-card player-card player-card--profile player-card--profile-other">
               <div class="profile-info-top">
                 <div class="profile-info-avatar" id="playerProfileAvatar">🎮</div>
                 <div>
                   <div class="profile-name-line">
                     <div class="profile-info-value" id="playerProfileName">玩家名稱</div>
                   </div>
-                  <div class="profile-id-line" id="playerProfileId" style="display:none;">ID: --</div>
+                  <div class="profile-id-line" id="playerProfileId">ID: --</div>
                   <div class="profile-info-title" id="playerProfileTitle"></div>
                 </div>
               </div>
@@ -4055,6 +4111,8 @@
                   <div class="profile-info-value" id="playerProfileLv">LV. --</div>
                 </div>
               </div>
+              <div class="profile-exp-track"><div class="profile-exp-fill"></div></div>
+              <div class="profile-next-unlock">Next 解鎖 5 個機台、新頭像、新背板</div>
             </div>
           </div>
           <div class="ach-tabs">
@@ -5052,18 +5110,20 @@
       const trend = getLeaderboardTrendDirection(item.metricKey, index);
       const trendArrow = trend === 'down' ? '▼' : '▲';
       return `
-        <div class="lb-menu-row" style="${playerTheme}">
+        <div class="lb-menu-row lb-menu-row--with-rank">
           <div class="lb-menu-rank-wrap">
             <div class="lb-menu-trend ${trend}">${trendArrow}</div>
             <div class="lb-menu-rank">${player.rank}</div>
           </div>
-          <div class="lb-menu-avatar">${profile.avatar || '🎮'}</div>
-          <div class="lb-menu-meta">
-            <div class="lb-menu-name">
-              <span class="lb-menu-lv">Lv.${profile.lv ?? player.lv ?? '?'}</span>
-              <span class="lb-menu-player" onclick="event.stopPropagation(); openPlayerProfile('${player.name}')" style="cursor:pointer;">${player.name}</span>
+          <div class="player-card player-card--list-mini" style="${playerTheme}">
+            <div class="lb-menu-avatar">${profile.avatar || '🎮'}</div>
+            <div class="lb-menu-meta">
+              <div class="lb-menu-name">
+                <span class="lb-menu-lv">Lv.${profile.lv ?? player.lv ?? '?'}</span>
+                <span class="lb-menu-player" onclick="event.stopPropagation(); openPlayerProfile('${player.name}')" style="cursor:pointer;">${player.name}</span>
+              </div>
+              ${profile.title ? `<div class="lb-menu-title">✦ ${profile.title}</div>` : ''}
             </div>
-            ${profile.title ? `<div class="lb-menu-title">✦ ${profile.title}</div>` : ''}
           </div>
           <div class="lb-menu-value">${player.value}</div>
         </div>
@@ -5128,7 +5188,7 @@
   function renderActivePlayerMeta(playerName) {
     const profile = profiles[playerName] || {};
     return `
-      <div class="lb-menu-row" style="${getBackgroundInlineVars(profile.bgKey)}" onclick="event.stopPropagation(); openPlayerProfile('${playerName}')">
+      <div class="player-card player-card--list-chip" style="${getBackgroundInlineVars(profile.bgKey)}" onclick="event.stopPropagation(); openPlayerProfile('${playerName}')">
         <div class="lb-menu-avatar">${profile.avatar || '🎮'}</div>
         <div class="lb-menu-meta">
           <div class="lb-menu-name">
@@ -5625,24 +5685,24 @@
       const trend = getLeaderboardListTrendDirection(tab, x.rank);
       const trendArrow = trend === 'down' ? '▼' : '▲';
       return `
-        <div class="lb-item ${x.self ? 'lb-self' : ''}" style="${playerTheme}">
+        <div class="lb-item ${x.self ? 'lb-self' : ''}">
           <div class="lb-rank-wrap">
             <div class="lb-trend ${trend}">${trendArrow}</div>
             <div class="lb-rank ${rankCls}">${medal}</div>
           </div>
-          <div class="lb-avatar" style="background: ${getBackgroundStyle(p.bgKey)}">${p.avatar || '👤'}</div>
-          <div class="lb-item-top" style="flex:1; min-width:0;">
-            <div class="lb-info">
+          <div class="player-card player-card--list" style="${playerTheme}">
+            <div class="lb-avatar" style="background: ${getBackgroundStyle(p.bgKey)}">${p.avatar || '👤'}</div>
+            <div class="lb-info" style="flex:1; min-width:0;">
               <div class="lb-name">
                 <span class="lb-level">Lv.${x.lv}</span>
                 <span class="lb-player-name"${x.self ? '' : ` onclick="event.stopPropagation(); openPlayerProfile('${x.name}')" style="cursor:pointer;"`}>${x.name}${x.self ? ' (你)' : ''}</span>
               </div>
               ${p.title ? `<div class="lb-title">✦ ${p.title}</div>` : ''}
             </div>
-            <div class="lb-value-wrap">
-              <div class="lb-value">${x.value}</div>
-              <div class="lb-value-label">${metricMeta.valueLabel}</div>
-            </div>
+          </div>
+          <div class="lb-value-wrap">
+            <div class="lb-value">${x.value}</div>
+            <div class="lb-value-label">${metricMeta.valueLabel}</div>
           </div>
         </div>
       `;

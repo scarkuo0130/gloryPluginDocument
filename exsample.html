@@ -1,0 +1,1044 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<title>玩家資訊版面盤點 · Player Info Layout Inventory</title>
+<style>
+  :root {
+    --player-bg: linear-gradient(135deg, #1a3055 0%, #2a4570 55%, #50a0ff 100%),
+                 radial-gradient(circle at 78% 22%, rgba(80,160,255,0.18) 0%, transparent 24%);
+    --theme-glow: rgba(80,160,255,0.22);
+    --theme-accent: rgba(140,200,255,0.88);
+    --theme-text-color: #eaf4ff;
+    --theme-text-shadow: 0 2px 8px rgba(0,0,0,0.48);
+    --user-bg: var(--player-bg);
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0; padding: 0;
+    background: linear-gradient(180deg, #090b13 0%, #142133 30%, #24192e 70%, #0b101c 100%);
+    color: #fff;
+    font-family: -apple-system, BlinkMacSystemFont, 'PingFang TC', 'Microsoft JhengHei', sans-serif;
+    min-height: 100vh;
+  }
+  .header {
+    padding: 32px 40px 16px;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+  }
+  .header h1 { margin: 0 0 8px; font-size: 28px; color: #ffd166; }
+  .header p { margin: 4px 0; color: rgba(255,255,255,0.7); font-size: 14px; }
+  .legend {
+    display: flex; gap: 18px; flex-wrap: wrap;
+    padding: 14px 40px;
+    background: rgba(255,255,255,0.03);
+    font-size: 13px;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+  }
+  .legend-item {
+    display: flex; align-items: center; gap: 6px;
+    color: rgba(255,255,255,0.75);
+  }
+  .legend-dot {
+    width: 12px; height: 12px; border-radius: 50%;
+    display: inline-block;
+  }
+  .legend-bg { background: linear-gradient(135deg, #4a90e2, #c0392b); }
+  .legend-av { background: linear-gradient(135deg, #ff6b9d, #ffc042); }
+  .legend-lv { background: linear-gradient(135deg, #ffd166, #ff8c42); }
+  .legend-name { background: #ffffff; }
+  .legend-title { background: rgba(255, 209, 102, 0.5); border: 1px solid #ffd166; }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(420px, 1fr));
+    gap: 24px;
+    padding: 32px 40px;
+  }
+  .case {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 18px;
+    overflow: hidden;
+    display: flex; flex-direction: column;
+  }
+  .case-head {
+    padding: 14px 18px;
+    background: linear-gradient(135deg, rgba(255,209,102,0.12), rgba(255,140,66,0.06));
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+  }
+  .case-no {
+    display: inline-block;
+    font-size: 12px; font-weight: 800;
+    color: #2a1810;
+    background: linear-gradient(135deg, #ffd166, #ff8c42);
+    padding: 3px 8px;
+    border-radius: 6px;
+    margin-right: 8px;
+  }
+  .case-title { font-size: 17px; font-weight: 800; color: #fff; display: inline; }
+  .case-where {
+    font-size: 12px; color: rgba(255,255,255,0.55);
+    margin-top: 6px;
+  }
+  .case-stage {
+    padding: 22px 18px;
+    background:
+      repeating-linear-gradient(45deg, rgba(255,255,255,0.02) 0 10px, transparent 10px 20px),
+      linear-gradient(180deg, #0a0e1c, #1a1024);
+    min-height: 140px;
+    display: flex; align-items: center; justify-content: center;
+    flex: 1;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+    overflow-x: auto;
+  }
+  .case-meta {
+    padding: 12px 16px;
+    font-size: 12px;
+    color: rgba(255,255,255,0.7);
+    line-height: 1.6;
+  }
+  .case-meta b { color: #ffd166; }
+  .tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; }
+  .tag {
+    display: inline-flex; align-items: center; gap: 4px;
+    padding: 2px 8px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 700;
+  }
+  .tag-bg { background: rgba(74, 144, 226, 0.18); color: #6fb1ff; border: 1px solid rgba(74,144,226,0.4); }
+  .tag-av { background: rgba(255, 107, 157, 0.15); color: #ffadc8; border: 1px solid rgba(255,107,157,0.4); }
+  .tag-lv { background: rgba(255, 209, 102, 0.15); color: #ffd166; border: 1px solid rgba(255,209,102,0.5); }
+  .tag-name { background: rgba(255,255,255,0.1); color: #fff; border: 1px solid rgba(255,255,255,0.25); }
+  .tag-title { background: rgba(255, 209, 102, 0.08); color: #ffd166; border: 1px dashed rgba(255,209,102,0.6); }
+  .tag-extra { background: rgba(200,200,200,0.08); color: rgba(255,255,255,0.6); border: 1px dashed rgba(255,255,255,0.3); }
+
+  /* ===== A: status-profile（狀態列）===== */
+  .demo-status-profile {
+    display: inline-flex; align-items: center;
+    gap: 14px;
+    padding: 8px 18px 8px 10px;
+    border-radius: 20px;
+    background: var(--user-bg);
+    box-shadow: 0 8px 18px rgba(0,0,0,0.28), inset 0 0 18px var(--theme-glow);
+  }
+  .demo-status-profile .av {
+    width: 75px; height: 75px; border-radius: 50%;
+    background: linear-gradient(135deg, #ff6b9d, #ffc042);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 40px; border: 3px solid #ffd166; flex-shrink: 0;
+  }
+  .demo-status-profile .info { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+  .demo-status-profile .name-line { display: flex; align-items: center; gap: 8px; }
+  .demo-status-profile .lv {
+    color: #ffd166; font-size: 22px; font-weight: 800; line-height: 1;
+  }
+  .demo-status-profile .name { font-size: 26px; font-weight: 700; color: #fff; line-height: 1; }
+  .demo-status-profile .ttl {
+    align-self: flex-start;
+    padding: 3px 12px; font-size: 18px; font-weight: 700; color: #ffd166;
+    background: linear-gradient(135deg, rgba(255,209,102,0.15), rgba(255,140,66,0.15));
+    border: 1.5px solid rgba(255,209,102,0.5);
+    border-radius: 10px;
+    line-height: 1.3;
+  }
+  .demo-status-profile .exp {
+    margin-top: 4px; width: 100%;
+    height: 6px; border-radius: 3px;
+    background: rgba(0,0,0,0.35);
+    overflow: hidden;
+  }
+  .demo-status-profile .exp::after {
+    content: ''; display: block;
+    width: 65%; height: 100%;
+    background: linear-gradient(90deg, #ffd166, #ff8c42);
+  }
+
+  /* ===== B: menu-header ===== */
+  .demo-menu-header {
+    width: 440px;
+    padding: 18px 18px 24px 18px;
+    border-radius: 20px;
+    background:
+      linear-gradient(135deg, rgba(20,10,40,0.48), rgba(15,8,35,0.66)),
+      var(--user-bg);
+    background-size: cover;
+    box-shadow: 0 14px 30px rgba(0,0,0,0.24), inset 0 0 26px var(--theme-glow);
+    display: flex; align-items: center; gap: 20px;
+  }
+  .demo-menu-header .av {
+    width: 110px; height: 110px; border-radius: 50%;
+    background: linear-gradient(135deg, #ff6b9d, #ffc042);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 56px; border: 5px solid #ffd166; flex-shrink: 0;
+  }
+  .demo-menu-header .info { flex: 1; display: flex; flex-direction: column; }
+  .demo-menu-header .name-line {
+    display: flex; align-items: center; gap: 10px;
+    margin-bottom: 4px;
+  }
+  .demo-menu-header .lv {
+    color: #ffd166; font-size: 26px; font-weight: 800; line-height: 1;
+  }
+  .demo-menu-header .name { font-size: 30px; font-weight: 700; color: #fff; line-height: 1; }
+  .demo-menu-header .ttl {
+    align-self: flex-start;
+    margin-bottom: 6px;
+    padding: 3px 12px; font-size: 17px; font-weight: 700; color: #ffd166;
+    background: linear-gradient(135deg, rgba(255,209,102,0.15), rgba(255,140,66,0.15));
+    border: 1.5px solid rgba(255,209,102,0.5);
+    border-radius: 10px; line-height: 1.3;
+  }
+  .demo-menu-header .id { font-size: 18px; color: rgba(255,255,255,0.5); }
+
+  /* ===== C: profile-info-card（自己）===== */
+  .demo-profile-card {
+    width: 440px;
+    padding: 22px 24px;
+    border-radius: 20px;
+    background: var(--user-bg);
+    background-size: cover;
+    box-shadow: 0 14px 30px rgba(0,0,0,0.24), inset 0 0 28px var(--theme-glow);
+  }
+  .demo-profile-card .top { display: flex; gap: 18px; align-items: center; margin-bottom: 18px; }
+  .demo-profile-card .av {
+    width: 86px; height: 86px; border-radius: 50%;
+    background: linear-gradient(135deg, #ff6b9d, #ffc042);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 46px; border: 3px solid #ffd166; flex-shrink: 0;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.28);
+  }
+  .demo-profile-card .name-line { display: flex; align-items: center; gap: 10px; }
+  .demo-profile-card .name { font-size: 30px; font-weight: 900; color: #fff; line-height: 1; }
+  .demo-profile-card .rename-btn {
+    width: 40px; height: 40px; border-radius: 50%;
+    background: rgba(255,255,255,0.12);
+    color: #ffd166; font-size: 22px; font-weight: 900;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .demo-profile-card .id {
+    margin-top: 5px;
+    color: rgba(255,255,255,0.62); font-size: 18px; font-weight: 700;
+  }
+  .demo-profile-card .ttl {
+    display: inline-block; margin-top: 8px;
+    padding: 4px 12px; font-size: 18px; font-weight: 800; color: #ffd166;
+    background: rgba(255,209,102,0.15); border: 1.5px solid rgba(255,209,102,0.45);
+    border-radius: 10px;
+  }
+  .demo-profile-card .vip-lbl {
+    font-size: 20px; font-weight: 700; color: rgba(255,255,255,0.58);
+  }
+  .demo-profile-card .vip-val {
+    margin-top: 6px;
+    font-size: 30px; font-weight: 900; color: #fff;
+  }
+  .demo-profile-card .exp-track {
+    margin: 18px 0 14px;
+    height: 18px; border-radius: 999px;
+    background: rgba(255,255,255,0.12);
+    border: 1px solid rgba(255,255,255,0.08);
+    overflow: hidden;
+  }
+  .demo-profile-card .exp-track::after {
+    content: ''; display: block; width: 72%; height: 100%;
+    background: linear-gradient(90deg, #ffd166, #ff8c42);
+    border-radius: 999px;
+  }
+  .demo-profile-card .next {
+    color: #ffd166; font-size: 22px; font-weight: 800; line-height: 1.4;
+  }
+
+  /* ===== D: profile-info-card（他人，無 EXP / Next）===== */
+  .demo-profile-card-other {
+    width: 440px;
+    padding: 22px 24px;
+    border-radius: 20px;
+    background: var(--user-bg);
+    background-size: cover;
+    box-shadow: 0 14px 30px rgba(0,0,0,0.24), inset 0 0 28px var(--theme-glow);
+  }
+  .demo-profile-card-other .top { display: flex; gap: 18px; align-items: center; margin-bottom: 18px; }
+  .demo-profile-card-other .av {
+    width: 86px; height: 86px; border-radius: 50%;
+    background: linear-gradient(135deg, #ff6b9d, #ffc042);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 46px; border: 3px solid #ffd166; flex-shrink: 0;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.28);
+  }
+  .demo-profile-card-other .name { font-size: 30px; font-weight: 900; color: #fff; line-height: 1; }
+  .demo-profile-card-other .ttl {
+    display: inline-block; margin-top: 8px;
+    padding: 4px 12px; font-size: 18px; font-weight: 800; color: #ffd166;
+    background: rgba(255,209,102,0.15); border: 1.5px solid rgba(255,209,102,0.45);
+    border-radius: 10px;
+  }
+  .demo-profile-card-other .vip-lbl {
+    font-size: 20px; font-weight: 700; color: rgba(255,255,255,0.58);
+  }
+  .demo-profile-card-other .vip-val {
+    margin-top: 6px;
+    font-size: 30px; font-weight: 900; color: #fff;
+  }
+
+  /* ===== E: lb-item（排行榜列）— rank-wrap / val-wrap 在資訊欄外 ===== */
+  .demo-lb-item {
+    width: 100%;
+    display: flex; align-items: center; gap: 8px;
+    padding: 4px 6px;
+    background: transparent;
+    border: none;
+  }
+  .demo-lb-item .rank-wrap {
+    display: flex; align-items: center; gap: 4px;
+    width: 50px; flex-shrink: 0;
+  }
+  .demo-lb-item .trend { width: 10px; text-align: center; font-size: 12px; font-weight: 900; line-height: 1; color: #55e486; }
+  .demo-lb-item .rank {
+    width: 36px; text-align: center;
+    font-size: 28px; font-weight: 800; line-height: 1;
+  }
+  /* 玩家資訊欄：自帶背板 */
+  .demo-lb-item .player-card--list-demo {
+    flex: 1; min-width: 0;
+    display: flex; align-items: center; gap: 12px;
+    padding: 8px 12px;
+    border-radius: 20px;
+    border: 2px solid rgba(255,255,255,0.08);
+    background:
+      linear-gradient(to right, rgba(15,10,30,0.55), rgba(15,10,30,0.85)),
+      var(--player-bg);
+    background-size: cover;
+  }
+  .demo-lb-item .av {
+    width: 48px; height: 48px; border-radius: 50%;
+    background: linear-gradient(135deg, #ff6b9d, #ffc042);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 24px; border: 3px solid rgba(255,209,102,0.6); flex-shrink: 0;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+  }
+  .demo-lb-item .info { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 3px; }
+  .demo-lb-item .name-line { display: flex; gap: 8px; align-items: center; }
+  .demo-lb-item .lv {
+    font-size: 15px; font-weight: 800; color: #ffd166; line-height: 1; flex-shrink: 0;
+  }
+  .demo-lb-item .name { color: #fff; font-size: 18px; font-weight: 700; }
+  .demo-lb-item .ttl { font-size: 13px; font-weight: 700; color: #ffd166; line-height: 1.2; }
+  .demo-lb-item .val-wrap { text-align: right; flex-shrink: 0; min-width: 80px; }
+  .demo-lb-item .val {
+    color: #ffd166; font-size: 16px; font-weight: 800; line-height: 1.15;
+  }
+  .demo-lb-item .val-lbl { margin-top: 4px; font-size: 11px; color: rgba(255,255,255,0.48); }
+
+  /* ===== F: lb-menu-row（含 rank/value）— rank / value 在資訊欄外 ===== */
+  .demo-lb-menu-row {
+    width: 100%;
+    display: flex; align-items: center; gap: 6px;
+    background: transparent;
+    border: none;
+    padding: 0;
+  }
+  .demo-lb-menu-row .rank-wrap {
+    width: 44px; flex-shrink: 0;
+    display: flex; align-items: center; gap: 4px;
+  }
+  .demo-lb-menu-row .trend {
+    width: 12px; text-align: center; font-size: 13px; font-weight: 900; line-height: 1;
+    color: #55e486;
+  }
+  .demo-lb-menu-row .rank {
+    width: 28px; text-align: center;
+    color: rgba(255,255,255,0.95); font-size: 18px; font-weight: 900;
+  }
+  /* 玩家資訊欄子層：自帶背板 */
+  .demo-lb-menu-row .player-card--list-mini-demo {
+    flex: 1; min-width: 0;
+    display: flex; align-items: center; gap: 10px;
+    min-height: 40px;
+    padding: 5px 10px;
+    border-radius: 20px;
+    border: 1px solid rgba(255,255,255,0.18);
+    background:
+      linear-gradient(to right, rgba(15,10,30,0.55), rgba(15,10,30,0.82)),
+      var(--player-bg);
+    background-size: cover;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.08);
+  }
+  .demo-lb-menu-row .av {
+    width: 34px; height: 34px; border-radius: 50%;
+    background: rgba(0,0,0,0.18);
+    border: 1px solid rgba(255,255,255,0.26);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 20px; flex-shrink: 0;
+  }
+  .demo-lb-menu-row .info { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+  .demo-lb-menu-row .name-line { display: flex; gap: 8px; align-items: center; }
+  .demo-lb-menu-row .lv {
+    color: #ffd166; font-size: 15px; font-weight: 800; line-height: 1; flex-shrink: 0;
+  }
+  .demo-lb-menu-row .name { font-size: 17px; font-weight: 800; color: #fff; }
+  .demo-lb-menu-row .ttl { font-size: 13px; color: #ffd166; font-weight: 700; line-height: 1.1; }
+  .demo-lb-menu-row .val {
+    color: #ffd166; font-size: 17px; font-weight: 900; flex-shrink: 0; margin-left: 4px;
+  }
+
+  /* ===== G: active-player lb-menu-row（無 rank/value，smaller）===== */
+  .demo-active-row {
+    width: 100%; max-width: 360px;
+    display: flex; align-items: center; gap: 9px;
+    min-height: 42px;
+    padding: 5px 14px 5px 6px;
+    border-radius: 20px;
+    background: var(--player-bg);
+    background-size: cover;
+    box-shadow: 0 8px 18px rgba(0,0,0,0.28), inset 0 0 18px var(--theme-glow);
+  }
+  .demo-active-row .av {
+    width: 39px; height: 39px; border-radius: 50%;
+    background: rgba(0,0,0,0.18);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 23px; border: 1px solid rgba(255,255,255,0.26); flex-shrink: 0;
+  }
+  .demo-active-row .info { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+  .demo-active-row .name-line { display: flex; gap: 8px; align-items: center; }
+  .demo-active-row .lv { color: #ffd166; font-size: 17px; font-weight: 800; line-height: 1; flex-shrink: 0; }
+  .demo-active-row .name { font-size: 21px; font-weight: 800; color: #fff; line-height: 1; }
+  .demo-active-row .ttl { font-size: 17px; color: #ffd166; font-weight: 700; line-height: 1.1; }
+
+  /* ===== H: mq-user（跑馬燈標準）===== */
+  .demo-mq-user {
+    display: inline-flex; align-items: center; gap: 10px;
+    padding: 8px 16px 8px 10px;
+    border-radius: 20px;
+    background: var(--player-bg);
+    background-size: cover;
+    box-shadow: 0 8px 18px rgba(0,0,0,0.28), inset 0 0 18px var(--theme-glow);
+  }
+  .demo-mq-user .av {
+    width: 50px; height: 50px; border-radius: 50%;
+    background: linear-gradient(135deg, #ff6b9d, #ffc042);
+    border: 2px solid #ffd166;
+    display: inline-flex; align-items: center; justify-content: center;
+    font-size: 28px; flex-shrink: 0;
+  }
+  .demo-mq-user .info { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+  .demo-mq-user .name-line { display: flex; align-items: center; gap: 8px; }
+  .demo-mq-user .lv {
+    color: #ffd166; font-size: 18px; font-weight: 800; line-height: 1;
+  }
+  .demo-mq-user .name { font-size: 22px; font-weight: 800; color: #fff; line-height: 1; }
+  .demo-mq-user .ttl {
+    font-size: 16px; color: #ffd166; font-weight: 700; line-height: 1.1;
+  }
+
+  /* ===== I: mq-effect3-card（特殊大卡）===== */
+  .demo-mq-effect3-wrap {
+    display: flex; flex-direction: column; align-items: center; gap: 10px;
+  }
+  .demo-mq-effect3-wrap .congrats {
+    font-size: 28px; font-weight: 900; color: #fff6d6;
+    text-transform: uppercase; letter-spacing: 0.5px;
+    text-shadow: 0 0 12px rgba(255,209,102,0.9), 0 0 28px rgba(255,140,66,0.65);
+  }
+  .demo-mq-effect3 {
+    width: 100%; max-width: 480px;
+    padding: 18px 30px;
+    border-radius: 20px;
+    background:
+      linear-gradient(135deg, rgba(255,255,255,0.18), rgba(20,10,40,0.18)),
+      linear-gradient(to right, rgba(15,10,30,0.7), rgba(15,10,30,0.88)),
+      var(--player-bg);
+    background-size: cover;
+    border: 2.5px solid rgba(255,209,102,0.72);
+    box-shadow:
+      0 14px 34px rgba(0,0,0,0.44),
+      0 0 44px rgba(255,209,102,0.28),
+      inset 0 1px 0 rgba(255,255,255,0.18);
+    display: flex; align-items: center; justify-content: center; gap: 14px;
+  }
+  .demo-mq-effect3 .av {
+    width: 50px; height: 50px; border-radius: 50%;
+    background: linear-gradient(135deg, #ff6b9d, #ffc042);
+    border: 2px solid #ffd166;
+    display: inline-flex; align-items: center; justify-content: center;
+    font-size: 28px; flex-shrink: 0;
+  }
+  .demo-mq-effect3 .meta { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+  .demo-mq-effect3 .name-row { display: flex; gap: 10px; align-items: center; }
+  .demo-mq-effect3 .lv {
+    background: linear-gradient(135deg, #ffd166, #ff8c42);
+    color: #2a1810; padding: 3px 10px; border-radius: 10px;
+    font-size: 16px; font-weight: 800; letter-spacing: 0.5px;
+  }
+  .demo-mq-effect3 .name {
+    font-size: 28px; font-weight: 800; color: #fff; line-height: 1.1;
+    text-shadow: 0 2px 6px rgba(0,0,0,0.5);
+  }
+  .demo-mq-effect3 .ttl {
+    font-size: 20px; font-weight: 700; color: #ffd166; line-height: 1.1;
+    text-shadow: 0 2px 6px rgba(0,0,0,0.45);
+  }
+  .demo-mq-effect3-wrap .bottom {
+    font-size: 22px; font-weight: 900; color: #ffd166;
+    text-shadow: 0 0 18px rgba(255,209,102,0.62), 0 4px 10px rgba(0,0,0,0.55);
+  }
+
+  .summary {
+    padding: 24px 40px 40px;
+  }
+  .summary h2 { color: #ffd166; font-size: 22px; margin-bottom: 12px; }
+  .summary table {
+    width: 100%; border-collapse: collapse;
+    background: rgba(255,255,255,0.04);
+    border-radius: 12px; overflow: hidden;
+    font-size: 13px;
+  }
+  .summary th, .summary td {
+    padding: 10px 14px;
+    text-align: left;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+  }
+  .summary th { background: rgba(255,209,102,0.1); color: #ffd166; font-weight: 800; }
+  .summary td { color: rgba(255,255,255,0.85); }
+  .summary .y { color: #55e486; font-weight: 800; }
+  .summary .n { color: rgba(255,255,255,0.3); }
+  .summary .partial { color: #ffd166; }
+
+  .notes {
+    margin: 24px 40px 60px;
+    padding: 20px 24px;
+    background: rgba(255,209,102,0.06);
+    border-left: 3px solid #ffd166;
+    border-radius: 8px;
+    font-size: 14px; line-height: 1.7;
+    color: rgba(255,255,255,0.85);
+  }
+  .notes h3 { color: #ffd166; margin: 0 0 10px; font-size: 16px; }
+  .notes ul { margin: 8px 0; padding-left: 20px; }
+  .notes li { margin-bottom: 6px; }
+  .notes code {
+    background: rgba(0,0,0,0.35);
+    padding: 1px 6px; border-radius: 4px;
+    font-size: 12px; color: #ffd166;
+  }
+
+  .spec-callout {
+    margin: 24px 40px 0;
+    padding: 20px 24px;
+    background: linear-gradient(135deg, rgba(85, 228, 134, 0.10), rgba(255, 209, 102, 0.06));
+    border-left: 3px solid #55e486;
+    border-radius: 10px;
+  }
+  .spec-callout h2 { color: #55e486; margin: 0 0 8px; font-size: 18px; }
+  .spec-callout p { margin: 4px 0; font-size: 13px; color: rgba(255,255,255,0.78); line-height: 1.6; }
+  .spec-callout table { margin-top: 12px; width: 100%; border-collapse: collapse; font-size: 13px; }
+  .spec-callout th, .spec-callout td { padding: 8px 12px; text-align: left; border-bottom: 1px solid rgba(255,255,255,0.08); }
+  .spec-callout th { color: #55e486; font-weight: 800; background: rgba(0,0,0,0.18); }
+  .spec-callout .y { color: #55e486; font-weight: 800; }
+  .spec-callout .n { color: rgba(255,255,255,0.32); }
+  .spec-callout code {
+    background: rgba(0,0,0,0.35); padding: 1px 6px;
+    border-radius: 4px; font-size: 12px; color: #ffd166;
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>玩家資訊版面盤點 · Player Info Layout Inventory</h1>
+  <p>核心五要素重要度（由高至低）：<b style="color:#6fb1ff">背板</b> → <b style="color:#ffadc8">頭像</b> → <b style="color:#ffd166">等級</b> → 名稱 → <b style="color:#ffd166;font-style:italic">稱號</b></p>
+  <p>本檔列出 index.html 中所有出現玩家資訊的版面，作為「規格統一」前的盤點依據。</p>
+</div>
+
+<div class="legend">
+  <div class="legend-item"><span class="legend-dot legend-bg"></span> 背板（--user-bg / --player-bg）</div>
+  <div class="legend-item"><span class="legend-dot legend-av"></span> 頭像（Avatar emoji + 漸層圓）</div>
+  <div class="legend-item"><span class="legend-dot legend-lv"></span> 等級（Lv. badge / inline）</div>
+  <div class="legend-item"><span class="legend-dot legend-name"></span> 名稱（玩家暱稱）</div>
+  <div class="legend-item"><span class="legend-dot legend-title"></span> 稱號（✦ Title）</div>
+</div>
+
+<div class="spec-callout">
+  <h2>✓ A / B 統一規格（已確認）</h2>
+  <p>A（status-profile）與 B（menu-header）屬於<b>同一元件家族</b>，共享 5 核心要素 + <code>--user-bg</code> 背板套用 + <code>border-radius: 20px</code>。</p>
+  <p>差異點僅在<b>場景擴展屬性</b>與<b>尺寸延展</b>：</p>
+  <table>
+    <thead>
+      <tr><th>屬性</th><th>A · status-profile（狀態列）</th><th>B · menu-header（主選單）</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>核心 5 要素（背板/頭像/Lv/名稱/稱號）</td><td class="y">✓</td><td class="y">✓</td></tr>
+      <tr><td>border-radius</td><td class="y">20px</td><td class="y">20px</td></tr>
+      <tr><td>背板套用</td><td><code>--user-bg</code></td><td><code>--user-bg</code></td></tr>
+      <tr><td><b>ID</b></td><td class="n">hide（常駐空間有限）</td><td class="y">show</td></tr>
+      <tr><td><b>EXP 進度條</b></td><td class="y">show（常駐需感知升級）</td><td class="n">hide</td></tr>
+      <tr><td>頭像尺寸</td><td>75px（小）</td><td>110px（大）</td></tr>
+      <tr><td>名稱字級</td><td>26px</td><td>30px</td></tr>
+    </tbody>
+  </table>
+  <p style="margin-top: 12px;">📐 <b>規格決策</b>：A、B 結構統一、屬性以場景需求延展。尺寸不強制相同，以「常駐 vs 點開」的視覺層級差異化。</p>
+</div>
+
+<div class="spec-callout">
+  <h2>✓ C / D 統一規格（已確認）</h2>
+  <p>C（自己）與 D（他人）共用同一份 HTML 結構與 CSS，差異點僅由 <b>CSS modifier 控制顯隱</b>，不需要兩套元件。</p>
+  <table>
+    <thead>
+      <tr><th>屬性</th><th>C · profile-self（自己）</th><th>D · profile-other（他人）</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>共用 class</td><td colspan="2" class="y" style="text-align:center;"><code>.player-card.player-card--profile</code></td></tr>
+      <tr><td>變體 modifier</td><td><code>.player-card--profile-self</code></td><td><code>.player-card--profile-other</code></td></tr>
+      <tr><td>HTML 結構</td><td colspan="2" class="y" style="text-align:center;">完全相同（含 ID / EXP / Next 元素）</td></tr>
+      <tr><td><b>ID</b></td><td class="y">show</td><td class="n">CSS hide</td></tr>
+      <tr><td><b>EXP 進度條</b></td><td class="y">show</td><td class="n">CSS hide</td></tr>
+      <tr><td><b>Next 解鎖訊息</b></td><td class="y">show</td><td class="n">CSS hide</td></tr>
+      <tr><td>✎ rename 按鈕</td><td class="y">show</td><td class="n">HTML 內不寫（功能性元件，非資訊欄位）</td></tr>
+    </tbody>
+  </table>
+  <p style="margin-top: 12px;">📐 <b>規格決策</b>：HTML 結構完全相同，由 <code>.player-card--profile-other</code> modifier 一次 hide「他人不該看的資訊」。差異不再分散在 HTML，集中在 CSS。</p>
+</div>
+
+<div class="spec-callout">
+  <h2>✓ E 重構規格（已確認）</h2>
+  <p>E 的玩家資訊欄獨立為 <code>.player-card.player-card--list</code>，排名、數值改為 <code>.lb-item</code> row 的 sibling，<b>移出資訊欄</b>。</p>
+  <table>
+    <thead>
+      <tr><th>區塊</th><th>原結構（混在一起）</th><th>新結構（職責分離）</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>排名 + 趨勢 <code>.lb-rank-wrap</code></td><td>在 <code>.lb-item</code> 內、共用背板</td><td class="y">外移到 row 上、無背板</td></tr>
+      <tr><td>玩家資訊欄（avatar + Lv/名稱/稱號）</td><td>分散在 <code>.lb-item</code> + <code>.lb-item-top</code> 中</td><td class="y">獨立成 <code>.player-card--list</code>、自帶背板</td></tr>
+      <tr><td>數值 + 單位 <code>.lb-value-wrap</code></td><td>在 <code>.lb-item-top</code> 內、共用背板</td><td class="y">外移到 row 上、無背板</td></tr>
+    </tbody>
+  </table>
+  <p style="margin-top: 12px;">📐 <b>規格決策</b>：背板（<code>--player-bg</code>）只覆蓋「玩家資訊欄」這一個視覺單位，排名 / 數值在玩家資訊欄外，視覺上是「列容器 row」的職責。其他成員（H/I 跑馬燈玩家 chip）也用同個 <code>.player-card</code> 家族標籤標識。</p>
+</div>
+
+<div class="spec-callout">
+  <h2>✓ F 重構規格（已確認）— 與 E 同模式</h2>
+  <p>F 採用與 E 相同的「row container + 玩家資訊欄子層」模式，但<b>不影響 G</b>（active-player 場景仍用原 <code>.lb-menu-row</code>，不加 with-rank modifier）。</p>
+  <table>
+    <thead>
+      <tr><th>區塊</th><th>原結構</th><th>新結構</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>外層容器</td><td><code>.lb-menu-row</code>（自帶背板）</td><td class="y"><code>.lb-menu-row.lb-menu-row--with-rank</code>（透明 row）</td></tr>
+      <tr><td>排名 + 趨勢</td><td>在 row 內、共用背板</td><td class="y">外移到 row 上、無背板</td></tr>
+      <tr><td>玩家資訊欄</td><td>無獨立元素</td><td class="y"><code>.player-card--list-mini</code>、自帶背板</td></tr>
+      <tr><td>數值 <code>.lb-menu-value</code></td><td>在 row 內、共用背板</td><td class="y">外移到 row 上、無背板</td></tr>
+    </tbody>
+  </table>
+  <p style="margin-top: 12px;">📐 <b>差異點</b>：F 用 <code>.player-card--list-mini</code>（小尺寸，min-height: 40px、avatar 34px），E 用 <code>.player-card--list</code>（大尺寸，avatar 78px）。兩者結構模式相同，尺寸不同。</p>
+</div>
+
+<div class="spec-callout">
+  <h2>✓ E / F / G 統一規格家族（已確認）</h2>
+  <p>E、F、G 屬於同一「玩家資訊欄」家族，共用 <code>.player-card</code> base，依場景需求選擇 size 變體：</p>
+  <table>
+    <thead>
+      <tr><th>版面</th><th>變體 class</th><th>場景</th><th>背板處理</th><th>外層 row</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>E</td><td><code>.player-card--list</code></td><td>排行榜列（大）</td><td>暗膜疊背板</td><td>有（rank + value）</td></tr>
+      <tr><td>F</td><td><code>.player-card--list-mini</code></td><td>選單預覽列（中）</td><td>暗膜疊背板</td><td>有（rank + value）</td></tr>
+      <tr><td>G</td><td><code>.player-card--list-chip</code></td><td>活躍玩家面板（純 chip）</td><td>純背板（無暗膜）</td><td>無</td></tr>
+    </tbody>
+  </table>
+  <p style="margin-top: 12px;">📐 <b>規格決策</b>：「背板套用對象 = 玩家資訊欄」是 EFG 共通法則。<b>有 row container</b> 的場景（E/F）疊暗膜保證 rank/value 可讀；<b>無 row 容器</b> 的場景（G）讓玩家背板直接顯示，視覺更突出。H（跑馬燈）獨立維護，不納入此家族。</p>
+</div>
+
+<div class="grid">
+
+  <!-- A: status-profile -->
+  <div class="case">
+    <div class="case-head">
+      <span class="case-no">A</span>
+      <div class="case-title">status-profile</div>
+      <div class="case-where">出現位置：頂部狀態列（永遠可見） · 用途：玩家自身永久顯示</div>
+    </div>
+    <div class="case-stage">
+      <div class="demo-status-profile player-card player-card--status">
+        <div class="av">🦊</div>
+        <div class="info">
+          <div class="name-line">
+            <span class="lv">Lv.12</span>
+            <span class="name">Joan5428</span>
+          </div>
+          <div class="ttl">✦ 幸運兒</div>
+          <div class="exp"></div>
+        </div>
+      </div>
+    </div>
+    <div class="case-meta">
+      <b>套用：</b> <code>--user-bg</code> + <code>data-bv</code>（背板＋邊框變體）<br>
+      <b>主體：</b> <code>.player-card.player-card--status</code>（原 <code>.status-profile</code>，圓角 20px）
+      <div class="tags">
+        <span class="tag tag-bg">背板</span>
+        <span class="tag tag-av">頭像 60px</span>
+        <span class="tag tag-lv">等級</span>
+        <span class="tag tag-name">名稱</span>
+        <span class="tag tag-title">稱號</span>
+        <span class="tag tag-extra">+ EXP 進度條</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- B: menu-header -->
+  <div class="case">
+    <div class="case-head">
+      <span class="case-no">B</span>
+      <div class="case-title">menu-header</div>
+      <div class="case-where">出現位置：主選單頂部 · 用途：玩家自身（含 ID）</div>
+    </div>
+    <div class="case-stage">
+      <div class="demo-menu-header player-card player-card--menu">
+        <div class="av">🦊</div>
+        <div class="info">
+          <div class="name-line">
+            <span class="lv">Lv.12</span>
+            <span class="name">Joan5428</span>
+          </div>
+          <div class="ttl">✦ 幸運兒</div>
+          <div class="id">ID: 88472103</div>
+        </div>
+      </div>
+    </div>
+    <div class="case-meta">
+      <b>套用：</b> <code>--user-bg</code>（背板整個鋪滿 header）<br>
+      <b>主體：</b> <code>.player-card.player-card--menu</code>（原 <code>.menu-header</code>，圓角 20px）
+      <div class="tags">
+        <span class="tag tag-bg">背板</span>
+        <span class="tag tag-av">頭像 64px</span>
+        <span class="tag tag-lv">等級</span>
+        <span class="tag tag-name">名稱</span>
+        <span class="tag tag-title">稱號</span>
+        <span class="tag tag-extra">+ ID</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- C: profile-info-card（自己） -->
+  <div class="case">
+    <div class="case-head">
+      <span class="case-no">C</span>
+      <div class="case-title">profile-info-card（自己）</div>
+      <div class="case-where">出現位置：個人資料頁 · 用途：自己的完整資訊</div>
+    </div>
+    <div class="case-stage">
+      <div class="demo-profile-card player-card player-card--profile player-card--profile-self">
+        <div class="top">
+          <div class="av">🦊</div>
+          <div>
+            <div class="name-line">
+              <div class="name">Joan5428</div>
+              <div class="rename-btn">✎</div>
+            </div>
+            <div class="id">ID: 88472103</div>
+            <div class="ttl">✦ 幸運兒</div>
+          </div>
+        </div>
+        <div class="vip-lbl">VIP</div>
+        <div class="vip-val">LV. 21</div>
+        <div class="exp-track"></div>
+        <div class="next">Next 解鎖 5 個機台、新頭像、新背板</div>
+      </div>
+    </div>
+    <div class="case-meta">
+      <b>套用：</b> <code>data-bv</code> + <code>--user-bg</code><br>
+      <b>主體：</b> <code>.player-card.player-card--profile.player-card--profile-self</code>（圓角 20px）
+      <div class="tags">
+        <span class="tag tag-bg">背板 (35% opacity)</span>
+        <span class="tag tag-av">頭像 80px</span>
+        <span class="tag tag-name">名稱 24px</span>
+        <span class="tag tag-title">稱號</span>
+        <span class="tag tag-extra">+ ID + VIP + EXP + Next 解鎖</span>
+      </div>
+      <p style="color:#ff8c42; margin-top:6px;">⚠ 此處 <b>沒有 Lv.</b>，VIP 與 Lv 概念混合</p>
+    </div>
+  </div>
+
+  <!-- D: profile-info-card（他人） -->
+  <div class="case">
+    <div class="case-head">
+      <span class="case-no">D</span>
+      <div class="case-title">profile-info-card（他人）</div>
+      <div class="case-where">出現位置：玩家資料頁 · 用途：檢視其他玩家</div>
+    </div>
+    <div class="case-stage">
+      <div class="demo-profile-card-other player-card player-card--profile player-card--profile-other">
+        <div class="top">
+          <div class="av">👑</div>
+          <div>
+            <div class="name">KingOfSpin</div>
+            <div class="ttl">✦ 王者</div>
+          </div>
+        </div>
+        <div class="vip-lbl">VIP</div>
+        <div class="vip-val">LV. 38</div>
+      </div>
+    </div>
+    <div class="case-meta">
+      <b>套用：</b> <code>data-bv</code> + 該玩家 bgKey 背板<br>
+      <b>主體：</b> <code>.player-card.player-card--profile.player-card--profile-other</code>（CSS modifier 自動 hide ID/EXP/Next）
+      <div class="tags">
+        <span class="tag tag-bg">背板 (35%)</span>
+        <span class="tag tag-av">頭像 80px</span>
+        <span class="tag tag-name">名稱</span>
+        <span class="tag tag-title">稱號</span>
+        <span class="tag tag-extra">+ VIP（無 Lv，無 EXP）</span>
+      </div>
+      <p style="color:#ff8c42; margin-top:6px;">⚠ 同樣 <b>沒有 Lv.</b>，與 C 共用樣式但欄位刪減</p>
+    </div>
+  </div>
+
+  <!-- E: lb-item -->
+  <div class="case">
+    <div class="case-head">
+      <span class="case-no">E</span>
+      <div class="case-title">lb-item</div>
+      <div class="case-where">出現位置：排行榜頁 + 底部固定自身 · 用途：完整排名列</div>
+    </div>
+    <div class="case-stage">
+      <div class="demo-lb-item">
+        <div class="rank-wrap">
+          <div class="trend">▲</div>
+          <div class="rank">🥇</div>
+        </div>
+        <div class="player-card player-card--list player-card--list-demo">
+          <div class="av">👑</div>
+          <div class="info">
+            <div class="name-line">
+              <span class="lv">Lv.38</span>
+              <span class="name">KingOfSpin</span>
+            </div>
+            <div class="ttl">✦ 王者</div>
+          </div>
+        </div>
+        <div class="val-wrap">
+          <div class="val">125,000,000</div>
+          <div class="val-lbl">本週累積</div>
+        </div>
+      </div>
+    </div>
+    <div class="case-meta">
+      <b>套用：</b> <code>--player-bg</code>（背板套在 <b>玩家資訊欄</b> 內）<br>
+      <b>結構：</b> <code>.lb-item</code> row container<br>
+      &nbsp;&nbsp;├ <code>.lb-rank-wrap</code>（排名+趨勢，<b>在資訊欄外</b>）<br>
+      &nbsp;&nbsp;├ <code>.player-card.player-card--list</code>（玩家資訊欄，自帶背板）<br>
+      &nbsp;&nbsp;└ <code>.lb-value-wrap</code>（數值，<b>在資訊欄外</b>）
+      <div class="tags">
+        <span class="tag tag-bg">背板（資訊欄內）</span>
+        <span class="tag tag-av">頭像</span>
+        <span class="tag tag-lv">等級</span>
+        <span class="tag tag-name">名稱</span>
+        <span class="tag tag-title">稱號</span>
+        <span class="tag tag-extra">+ 排名 / 趨勢（外）</span>
+        <span class="tag tag-extra">+ 數值 / 單位（外）</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- F: lb-menu-row（含 rank + value） -->
+  <div class="case">
+    <div class="case-head">
+      <span class="case-no">F</span>
+      <div class="case-title">lb-menu-row（選單預覽版）</div>
+      <div class="case-where">出現位置：主選單 → 排行榜卡縮圖 · 用途：當前榜首預覽</div>
+    </div>
+    <div class="case-stage">
+      <div class="demo-lb-menu-row">
+        <div class="rank-wrap">
+          <div class="trend">▲</div>
+          <div class="rank">1</div>
+        </div>
+        <div class="player-card player-card--list-mini player-card--list-mini-demo">
+          <div class="av">👑</div>
+          <div class="info">
+            <div class="name-line">
+              <span class="lv">Lv.38</span>
+              <span class="name">KingOfSpin</span>
+            </div>
+            <div class="ttl">✦ 王者</div>
+          </div>
+        </div>
+        <div class="val">125,000,000</div>
+      </div>
+    </div>
+    <div class="case-meta">
+      <b>套用：</b> <code>--player-bg</code>（背板套在 <b>玩家資訊欄</b> 內）<br>
+      <b>結構：</b> <code>.lb-menu-row.lb-menu-row--with-rank</code> row container<br>
+      &nbsp;&nbsp;├ <code>.lb-menu-rank-wrap</code>（排名+趨勢，<b>在資訊欄外</b>）<br>
+      &nbsp;&nbsp;├ <code>.player-card.player-card--list-mini</code>（玩家資訊欄，自帶背板）<br>
+      &nbsp;&nbsp;└ <code>.lb-menu-value</code>（數值，<b>在資訊欄外</b>）
+      <div class="tags">
+        <span class="tag tag-bg">背板（資訊欄內）</span>
+        <span class="tag tag-av">頭像</span>
+        <span class="tag tag-lv">等級</span>
+        <span class="tag tag-name">名稱</span>
+        <span class="tag tag-title">稱號</span>
+        <span class="tag tag-extra">+ 排名 / 趨勢（外）</span>
+        <span class="tag tag-extra">+ 數值（外）</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- G: active-player-meta -->
+  <div class="case">
+    <div class="case-head">
+      <span class="case-no">G</span>
+      <div class="case-title">active-player-meta 內的 lb-menu-row</div>
+      <div class="case-where">出現位置：狀態列右側「活躍玩家面板」 · 用途：每 2 秒輪播一位</div>
+    </div>
+    <div class="case-stage">
+      <div class="demo-active-row player-card player-card--list-chip">
+        <div class="av">🎮</div>
+        <div class="info">
+          <div class="name-line">
+            <span class="lv">Lv.12</span>
+            <span class="name">Joan5428</span>
+          </div>
+          <div class="ttl">✦ 幸運兒</div>
+        </div>
+      </div>
+    </div>
+    <div class="case-meta">
+      <b>套用：</b> <code>--player-bg</code>（純玩家背板，無暗膜）<br>
+      <b>主體：</b> <code>.player-card.player-card--list-chip</code>（與 E/F 同家族，但無 row container、無暗膜）
+      <div class="tags">
+        <span class="tag tag-bg">背板</span>
+        <span class="tag tag-av">頭像 39px</span>
+        <span class="tag tag-lv">等級</span>
+        <span class="tag tag-name">名稱</span>
+        <span class="tag tag-title">稱號</span>
+      </div>
+      <p style="color:#55e486; margin-top:6px;">✓ 五要素剛好完整，無多餘欄位（最純淨版本）</p>
+    </div>
+  </div>
+
+  <!-- H: mq-user -->
+  <div class="case">
+    <div class="case-head">
+      <span class="case-no">H</span>
+      <div class="case-title">mq-user</div>
+      <div class="case-where">出現位置：跑馬燈 effect 1/2 · 用途：上榜訊息玩家標識</div>
+    </div>
+    <div class="case-stage">
+      <div class="demo-mq-user">
+        <div class="av">🦊</div>
+        <div class="info">
+          <div class="name-line">
+            <span class="lv">Lv.12</span>
+            <span class="name">Joan5428</span>
+          </div>
+          <div class="ttl">✦ 幸運兒</div>
+        </div>
+      </div>
+    </div>
+    <div class="case-meta">
+      <b>套用：</b> <code>--player-bg</code><br>
+      <b>主體：</b> <code>.mq-user</code>（圓角 32px，inline-flex 單列）
+      <div class="tags">
+        <span class="tag tag-bg">背板</span>
+        <span class="tag tag-av">頭像 32px</span>
+        <span class="tag tag-lv">等級</span>
+        <span class="tag tag-name">名稱</span>
+        <span class="tag tag-title">稱號</span>
+      </div>
+      <p style="color:#55e486; margin-top:6px;">✓ 與 G 結構幾乎相同（Lv+名稱同行、稱號獨佔下一行），差異在出現場景：H 在跑馬燈、G 在活躍玩家面板</p>
+    </div>
+  </div>
+
+  <!-- I: mq-effect3-card -->
+  <div class="case">
+    <div class="case-head">
+      <span class="case-no">I</span>
+      <div class="case-title">mq-effect3-card</div>
+      <div class="case-where">出現位置：跑馬燈 effect 3 · 用途：上榜訊息特殊大卡</div>
+    </div>
+    <div class="case-stage">
+      <div class="demo-mq-effect3-wrap">
+        <div class="congrats">Congratulations</div>
+        <div class="demo-mq-effect3">
+          <div class="av">🦊</div>
+          <div class="meta">
+            <div class="name-row">
+              <span class="lv">Lv.12</span>
+              <span class="name">Joan5428</span>
+            </div>
+            <div class="ttl">幸運兒</div>
+          </div>
+        </div>
+        <div class="bottom">Turnover 上榜第一名</div>
+      </div>
+    </div>
+    <div class="case-meta">
+      <b>套用：</b> <code>--player-bg</code> + 半透明黑色覆蓋層（強化文字可讀性）<br>
+      <b>主體：</b> <code>.mq-effect3-card</code>（圓角 34px，最少 520px 寬）
+      <div class="tags">
+        <span class="tag tag-bg">背板 (覆蓋黑膜)</span>
+        <span class="tag tag-av">頭像 36px</span>
+        <span class="tag tag-lv">等級</span>
+        <span class="tag tag-name">名稱</span>
+        <span class="tag tag-title">稱號</span>
+        <span class="tag tag-extra">+ Congratulations 標題 + 排行訊息</span>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div class="summary">
+  <h2>盤點對照表</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>版面</th>
+        <th>背板</th>
+        <th>頭像</th>
+        <th>等級</th>
+        <th>名稱</th>
+        <th>稱號</th>
+        <th>額外欄位</th>
+        <th>容器形狀</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td>A</td><td>status-profile</td><td class="y">✓</td><td class="y">60px</td><td class="y">22px</td><td class="y">20px</td><td class="y">✓</td><td>EXP 條</td><td>圓角 32px chip</td></tr>
+      <tr><td>B</td><td>menu-header</td><td class="y">✓</td><td class="y">64px</td><td class="y">14px</td><td class="y">22px</td><td class="y">✓</td><td>ID</td><td>圓角 20px 大區塊</td></tr>
+      <tr><td>C</td><td>profile-info-card（自）</td><td class="y">✓</td><td class="y">80px</td><td class="n">✗</td><td class="y">24px</td><td class="y">✓</td><td>ID + VIP + EXP + Next</td><td>圓角 24px 卡片</td></tr>
+      <tr><td>D</td><td>profile-info-card（他）</td><td class="y">✓</td><td class="y">80px</td><td class="n">✗</td><td class="y">24px</td><td class="y">✓</td><td>VIP</td><td>圓角 24px 卡片</td></tr>
+      <tr><td>E</td><td>lb-item</td><td class="y">✓</td><td class="y">44px</td><td class="y">12px</td><td class="y">16px</td><td class="y">✓</td><td>排名 + 趨勢 + 數值</td><td>圓角 18px 列</td></tr>
+      <tr><td>F</td><td>lb-menu-row</td><td class="y">✓</td><td class="y">40px</td><td class="y">14px</td><td class="y">16px</td><td class="y">✓</td><td>排名 + 數值</td><td>圓角 28px chip</td></tr>
+      <tr><td>G</td><td>active-player-meta</td><td class="y">✓</td><td class="y">39px</td><td class="y">15px</td><td class="y">17px</td><td class="y">✓</td><td class="n">—</td><td>圓角 32px chip</td></tr>
+      <tr><td>H</td><td>mq-user</td><td class="y">✓</td><td class="y">32px</td><td class="y">13px</td><td class="y">17px</td><td class="y">✓</td><td class="n">—</td><td>圓角 32px chip</td></tr>
+      <tr><td>I</td><td>mq-effect3-card</td><td class="y">✓</td><td class="y">36px</td><td class="y">13px</td><td class="y">19px</td><td class="y">✓</td><td>Congrats 標題 + 訊息</td><td>圓角 34px 大卡</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="notes">
+  <h3>⚠ 不一致與待統一的問題</h3>
+  <ul>
+    <li><b>C / D（profile-info-card）沒有 Lv 顯示</b>，反而用 VIP LV 替代。其他 7 個版面都顯示 Lv → 應統一處理「Lv vs VIP」的關係（兩者是同概念還是分開？）</li>
+    <li><b>H（mq-user）順序與眾不同</b>：Lv → 稱號 → 名稱（其他都是 Lv → 名稱 → 稱號）</li>
+    <li><b>頭像尺寸跨度大</b>：32px（mq-user）→ 80px（profile-card），共 6 種尺寸 → 可整理為 3 階規格（小 32-40 / 中 44-64 / 大 80）</li>
+    <li><b>圓角值不一致</b>：18 / 20 / 24 / 28 / 32 / 34 → 可統一為 18（列）/ 20（區塊）/ 32（chip）三檔</li>
+    <li><b>等級顯示有兩種樣式</b>：<code>.status-level</code>（純色文字）與 <code>.lv badge</code>（金橙漸層膠囊）→ 同一概念有兩種視覺</li>
+    <li><b>稱號顯示有三種樣式</b>：A 有膠囊外框；E/F/G 純色文字 <code>✦ 稱號</code>；H 有膠囊外框 → 可統一稱號 chip 規格</li>
+    <li><b>背板套用方式有 3 種</b>：(1) 整個容器作為 background（A、B、E、F、G、H）；(2) 半透明疊加 35% opacity（C、D）；(3) 加黑膜降亮（I）→ 影響可讀性的策略不一致</li>
+  </ul>
+  <h3>📐 統一規格建議方向</h3>
+  <ul>
+    <li>定義 3 級 chip：<code>chip-sm</code>（H、mq）、<code>chip-md</code>（E/F/G、列表用）、<code>chip-lg</code>（A、狀態列用）</li>
+    <li>定義 2 級卡片：<code>card-profile</code>（C/D、含 EXP/VIP）、<code>card-banner</code>（B/I、含背景全鋪）</li>
+    <li>確立稱號統一樣式 token：<code>--title-style: pill | text</code></li>
+    <li>確立等級統一樣式 token：<code>--lv-style: badge | inline</code></li>
+    <li>背板可讀性策略：根據文字密度決定是否加 overlay（密度高 → C/D 半透；低 → A/E 全鋪）</li>
+  </ul>
+</div>
+
+</body>
+</html>
