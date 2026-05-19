@@ -23,7 +23,9 @@
       "Bash(git -C /Users/scarkuo/Desktop/GameProject/sns/gloryPluginDocument add index.html .claude/settings.local.json)",
       "Bash(git -C /Users/scarkuo/Desktop/GameProject/sns/gloryPluginDocument commit -m ' *)",
       "Bash(git -C /Users/scarkuo/Desktop/GameProject/sns/gloryPluginDocument push)",
-      "Bash(node -e ' *)"
+      "Bash(node -e ' *)",
+      "WebFetch(domain:github.com)",
+      "Bash(gh api *)"
     ],
     "additionalDirectories": [
       "/private/tmp"

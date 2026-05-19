@@ -1,0 +1,740 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=1280">
+<title>Status Bar 設計重整 · 真實背板驗證</title>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+:root {
+  --gold: #ffd166;
+  --gold-dim: rgba(255,209,102,0.72);
+}
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "PingFang TC", sans-serif;
+  background: linear-gradient(135deg, #090b13 0%, #142133 42%, #24192e 72%, #0b101c 100%);
+  min-height: 100vh;
+  padding: 40px 60px 80px;
+  color: #fff;
+}
+
+/* ── page header ── */
+.pg-hd { text-align:center; margin-bottom:48px; }
+.pg-hd h1 { font-size:11px; letter-spacing:.22em; text-transform:uppercase; font-weight:800; color:var(--gold-dim); margin-bottom:6px; }
+.pg-hd p  { font-size:11px; color:rgba(255,255,255,.26); }
+
+/* ── section ── */
+.section { max-width:760px; margin:0 auto 56px; }
+.section-title {
+  font-size:10px; font-weight:800; letter-spacing:.2em; text-transform:uppercase;
+  color:rgba(255,255,255,.22); margin-bottom:20px; display:flex; align-items:center; gap:12px;
+}
+.section-title::after { content:''; flex:1; height:1px; background:rgba(255,255,255,.07); }
+
+/* ── variant row ── */
+.vr { display:flex; flex-direction:column; gap:10px; margin-bottom:36px; }
+.vr-hd { display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
+.vr-num  { font-size:10px; font-weight:800; letter-spacing:.18em; color:rgba(255,255,255,.2); }
+.vr-name { font-size:15px; font-weight:700; color:rgba(255,255,255,.82); }
+.vr-desc { font-size:11px; color:rgba(255,255,255,.3); }
+.vr-chip { font-size:9px; font-weight:800; padding:2px 8px; background:rgba(255,209,102,.12); border:1px solid rgba(255,209,102,.38); border-radius:10px; color:rgba(255,209,102,.88); letter-spacing:.1em; text-transform:uppercase; }
+
+.stage {
+  position:relative; background:rgba(0,0,0,.18); border-radius:14px;
+  padding:18px 16px 22px; overflow:hidden;
+}
+.stage::before {
+  content:''; position:absolute; inset:0; border-radius:14px;
+  background-image: linear-gradient(rgba(255,255,255,.018) 1px,transparent 1px), linear-gradient(90deg,rgba(255,255,255,.018) 1px,transparent 1px);
+  background-size:32px 32px; pointer-events:none;
+}
+.stage-lbl { position:absolute; bottom:6px; right:10px; font-size:9px; color:rgba(255,255,255,.14); letter-spacing:.06em; }
+
+.state-row { display:flex; align-items:center; gap:6px; }
+.state-lbl { font-size:10px; color:rgba(255,255,255,.22); margin-right:2px; }
+.stbtn {
+  font-size:10px; font-weight:600; padding:4px 11px; border-radius:20px;
+  border:1px solid rgba(255,255,255,.10); background:rgba(255,255,255,.03);
+  color:rgba(255,255,255,.32); cursor:pointer; transition:all .15s; user-select:none;
+}
+.stbtn:hover { background:rgba(255,255,255,.07); color:rgba(255,255,255,.6); }
+.stbtn.on { background:rgba(255,209,102,.12); border-color:rgba(255,209,102,.42); color:rgba(255,209,102,.9); }
+
+/* ════════════════════════════════
+   STATUS BAR BASE
+════════════════════════════════ */
+.sb {
+  position:relative; height:130px; border-radius:22px;
+  display:flex; align-items:center; overflow:hidden;
+  width:700px; max-width:100%;
+  transition:width .40s cubic-bezier(.4,0,.2,1);
+  user-select:none;
+}
+.sb.half { width:390px; }
+.sb.min  { width:44px; border-radius:22px; }
+
+/* collapse btn */
+.sb-cbtn {
+  flex-shrink:0; width:40px; height:100%;
+  display:flex; align-items:center; justify-content:center;
+  cursor:pointer; z-index:2; position:relative;
+  border-radius:22px 0 0 22px; transition:background .15s;
+}
+.sb-cbtn:hover  { background:rgba(255,209,102,.07); }
+.sb-cbtn:active { background:rgba(255,209,102,.14); }
+.sb-cbtn-ico { font-size:17px; font-weight:900; color:var(--gold-dim); line-height:1; display:block; transition:transform .38s; }
+.sb-cbtn-sep { position:absolute; right:0; top:18%; bottom:18%; width:1px; background:rgba(255,255,255,.14); }
+.sb.min .sb-cbtn { border-radius:22px; }
+.sb.min .sb-cbtn-ico { transform:rotate(180deg); }
+.sb.min .sb-cbtn-sep { display:none; }
+
+/* ── profile chip (LEFT) ── */
+/* The chip is a self-contained card — user's 背板 is INSIDE this boundary */
+.sb-prof-wrap {
+  flex-shrink:0; position:relative;
+  height:calc(100% - 14px); /* 7px top + 7px bottom padding in bar */
+  margin:7px 0 7px 5px;
+  border-radius:20px; overflow:hidden;
+  transition:opacity .22s;
+}
+.sb.min  .sb-prof-wrap { opacity:0; width:0; margin:0; }
+/* 背板 fills the chip */
+.sb-prof-bg {
+  position:absolute; inset:0; z-index:0;
+  background:var(--user-bg, linear-gradient(135deg,#3a2570,#1a0f3e));
+  background-size:cover;
+}
+/* readability overlay */
+.sb-prof-bg::after {
+  content:''; position:absolute; inset:0;
+  background:linear-gradient(135deg, rgba(0,0,0,.32), rgba(0,0,0,.18));
+}
+/* inner glow from theme */
+.sb-prof-bg::before {
+  content:''; position:absolute; inset:0;
+  box-shadow:inset 0 0 20px var(--theme-glow, rgba(255,255,255,.14));
+  z-index:1;
+}
+.sb-prof {
+  position:relative; z-index:2;
+  display:flex; align-items:center; gap:12px;
+  padding:8px 16px; height:100%;
+}
+
+.sb-av-wrap { position:relative; flex-shrink:0; width:72px; height:72px; }
+.sb-av {
+  width:72px; height:72px; border-radius:50%;
+  background:linear-gradient(135deg,#ff6b9d,#ffc042);
+  display:flex; align-items:center; justify-content:center;
+  font-size:36px; border:3px solid rgba(255,209,102,.65);
+}
+.sb-lv-badge {
+  position:absolute; bottom:-3px; right:-5px;
+  background:linear-gradient(135deg,#ffd166,#ff8c42); color:#1a0810;
+  font-size:14px; font-weight:900; padding:3px 8px;
+  border-radius:10px; line-height:1; white-space:nowrap;
+  border:2.5px solid rgba(0,0,0,.55);
+}
+.sb-info { display:flex; flex-direction:column; gap:4px; min-width:0; width:180px; }
+.sb-name-row { display:flex; align-items:center; gap:7px; white-space:nowrap; }
+.sb-lv   { font-size:17px; font-weight:800; color:var(--gold); flex-shrink:0; }
+.sb-name { font-size:20px; font-weight:700; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; color:#fff; }
+.sb-title-tag {
+  display:inline-flex; align-items:center; padding:3px 10px;
+  font-size:13px; font-weight:700; color:var(--gold);
+  background:rgba(255,209,102,.12); border:1px solid rgba(255,209,102,.32);
+  border-radius:7px; align-self:flex-start; white-space:nowrap;
+}
+.sb-title-tag::before { content:'✦ '; opacity:.65; }
+.sb-exp { height:9px; background:rgba(255,255,255,.10); border-radius:5px; overflow:hidden; max-width:170px; }
+.sb-exp-fill { height:100%; width:65%; background:linear-gradient(90deg,#ffd166,#ff8c42); border-radius:5px; }
+
+/* ── active zone (RIGHT) ── */
+.sb-act-outer {
+  flex:1; min-width:0; position:relative; overflow:hidden; height:100%;
+  background:rgba(0,0,0,.28); border-radius:0 18px 18px 0;
+  margin-left:6px;
+  transition:max-width .40s cubic-bezier(.4,0,.2,1), opacity .22s;
+  max-width:440px;
+}
+.sb-act-outer::after {
+  content:''; position:absolute; top:0; right:0; bottom:0; width:30px;
+  background:linear-gradient(to right,transparent,rgba(0,0,0,.42));
+  pointer-events:none; z-index:5;
+}
+.sb.half .sb-act-outer,
+.sb.min  .sb-act-outer { max-width:0; opacity:0; pointer-events:none; }
+
+/* mail dot */
+.sb-mail {
+  position:absolute; top:9px; left:10px;
+  width:14px; height:14px; background:#ff3860;
+  border-radius:50%; border:2px solid rgba(0,0,0,.5);
+  animation:mpulse 2.2s ease-in-out infinite; pointer-events:none;
+}
+@keyframes mpulse {
+  0%,100%{ box-shadow:0 0 5px rgba(255,56,96,.55); }
+  50%    { box-shadow:0 0 14px rgba(255,56,96,.95); }
+}
+
+/* ════════════ APPROACH A — 橫向捲動卡片 ════════════ */
+.act-a {
+  display:flex; align-items:center; gap:8px;
+  padding:0 14px; height:100%;
+  overflow-x:auto; overflow-y:hidden;
+  scrollbar-width:none; touch-action:pan-x;
+}
+.act-a::-webkit-scrollbar { display:none; }
+
+/* player chip */
+.ap-card {
+  position:relative; flex-shrink:0;
+  width:118px; height:100px;
+  border-radius:14px; overflow:hidden;
+  cursor:pointer;
+  transition:transform .18s;
+  border:1.5px solid rgba(255,255,255,.14);
+}
+.ap-card:hover { transform:translateY(-3px) scale(1.05); z-index:10; }
+.ap-card-bg {
+  position:absolute; inset:0; z-index:0;
+  background:var(--player-bg, #222); background-size:cover;
+}
+.ap-card-bg::after {
+  content:''; position:absolute; inset:0;
+  background:linear-gradient(180deg, rgba(0,0,0,.08) 0%, rgba(0,0,0,.18) 52%, rgba(0,0,0,.55) 100%);
+}
+.ap-card-bg::before {
+  content:''; position:absolute; inset:0;
+  box-shadow:inset 0 0 16px var(--theme-glow, rgba(255,255,255,.10));
+  z-index:1;
+}
+.ap-card-body {
+  position:absolute; inset:0; z-index:2;
+  display:flex; flex-direction:column; justify-content:space-between;
+  padding:8px 8px 7px;
+}
+.ap-ident { display:flex; align-items:center; gap:7px; }
+.ap-av-wrap { position:relative; width:40px; height:40px; flex-shrink:0; }
+.ap-av {
+  width:40px; height:40px; border-radius:50%;
+  display:flex; align-items:center; justify-content:center;
+  font-size:20px; background:rgba(0,0,0,.22);
+  border:2px solid rgba(255,255,255,.44);
+}
+.ap-lv {
+  position:absolute; bottom:-4px; right:-6px;
+  background:rgba(0,0,0,.82); color:var(--gold);
+  font-size:9px; font-weight:900; padding:2px 4px;
+  border-radius:5px; line-height:1;
+  border:1px solid rgba(255,209,102,.52); white-space:nowrap;
+}
+.ap-ident-info { flex:1; min-width:0; display:flex; flex-direction:column; gap:3px; }
+.ap-name {
+  font-size:11px; font-weight:700; color:#fff;
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+  text-shadow:0 1px 5px rgba(0,0,0,.95); line-height:1.3;
+}
+.ap-title {
+  font-size:10px; font-weight:600; color:rgba(255,209,102,.90);
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+  text-shadow:0 1px 5px rgba(0,0,0,.95); line-height:1.3;
+}
+.ap-title::before { content:'✦ '; opacity:.65; }
+.ap-act-row {
+  display:flex; align-items:center; justify-content:space-between;
+}
+.ap-win-lbl { font-size:11px; font-weight:600; color:rgba(255,255,255,.45); letter-spacing:.04em; }
+.ap-mult {
+  font-size:15px; font-weight:900; color:var(--gold);
+  text-shadow:0 0 12px rgba(255,185,30,.72); letter-spacing:-.5px;
+}
+
+/* ════════════ APPROACH B — 縱向活動流 ════════════ */
+.act-b {
+  display:flex; flex-direction:column; justify-content:center;
+  gap:8px; padding:12px 14px;
+  width:100%; height:130px;
+  overflow:hidden;
+}
+.feed-row {
+  display:flex; align-items:center; gap:10px;
+  flex-shrink:0; animation:feedIn .35s ease;
+}
+@keyframes feedIn {
+  from { opacity:0; transform:translateY(8px); }
+  to   { opacity:1; transform:translateY(0); }
+}
+/* player identity chip inside feed row */
+.feed-chip {
+  position:relative; flex-shrink:0;
+  width:170px; height:50px;
+  border-radius:25px; overflow:hidden;
+  display:flex; align-items:center; gap:8px;
+  padding:0 12px 0 8px;
+  cursor:pointer;
+}
+.feed-chip-bg {
+  position:absolute; inset:0;
+  background:var(--player-bg, #222); background-size:cover;
+}
+.feed-chip-bg::after {
+  content:''; position:absolute; inset:0;
+  background:rgba(0,0,0,.22);
+}
+.feed-chip-bg::before {
+  content:''; position:absolute; inset:0;
+  box-shadow:inset 0 0 14px var(--theme-glow, rgba(255,255,255,.12)); z-index:1;
+}
+.feed-av-wrap { position:relative; z-index:2; flex-shrink:0; width:34px; height:34px; }
+.feed-av {
+  width:34px; height:34px; border-radius:50%;
+  display:flex; align-items:center; justify-content:center;
+  font-size:17px; border:2px solid rgba(255,255,255,.44);
+  background:rgba(0,0,0,.2);
+}
+.feed-lv-badge {
+  position:absolute; bottom:-3px; right:-4px;
+  background:rgba(0,0,0,.82); color:var(--gold);
+  font-size:8px; font-weight:900; padding:2px 3px;
+  border-radius:4px; line-height:1; border:1px solid rgba(255,209,102,.5);
+}
+.feed-info { position:relative; z-index:2; flex:1; min-width:0; display:flex; flex-direction:column; gap:1px; }
+.feed-name  { font-size:12px; font-weight:700; color:var(--theme-text-color,#fff); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; text-shadow:0 1px 4px rgba(0,0,0,.9); }
+.feed-title { font-size:10px; font-weight:600; color:rgba(255,209,102,.88); text-shadow:0 1px 4px rgba(0,0,0,.9); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.feed-title::before { content:'✦ '; opacity:.65; }
+
+/* event text */
+.feed-event {
+  flex:1; min-width:0;
+  font-size:13px; font-weight:700; color:rgba(255,255,255,.82);
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+  text-shadow:0 1px 4px rgba(0,0,0,.8);
+}
+.feed-event em {
+  font-style:normal; color:var(--gold);
+  font-size:15px; font-weight:900;
+  text-shadow:0 0 10px rgba(255,185,30,.7);
+}
+
+/* ════════════ APPROACH C — 緊湊縱向 ════════════ */
+.act-c {
+  display:flex; flex-direction:column; justify-content:center;
+  gap:0; padding:8px 14px;
+  width:100%; height:130px;
+  overflow:hidden;
+}
+.c-row {
+  display:flex; align-items:center; gap:10px;
+  flex:1; max-height:55px; padding:3px 0;
+  animation:feedIn .35s ease;
+}
+.c-row + .c-row { border-top:1px solid rgba(255,255,255,.07); }
+/* compact chip: no bg image, just accent color */
+.c-chip {
+  display:flex; align-items:center; gap:7px;
+  flex-shrink:0; width:155px; height:38px;
+  border-radius:19px; overflow:hidden; position:relative;
+  padding:0 10px 0 7px;
+  background:rgba(255,255,255,.06);
+  border:1px solid rgba(255,255,255,.10);
+}
+.c-chip-bg {
+  position:absolute; inset:0;
+  background:var(--player-bg,#222); background-size:cover; opacity:.75;
+}
+.c-chip-bg::after { content:''; position:absolute; inset:0; background:rgba(0,0,0,.42); }
+/* content sits above background — explicit z-index, no > * override */
+.c-av-wrap { position:relative; z-index:2; flex-shrink:0; width:26px; height:26px; }
+.c-av { width:26px; height:26px; border-radius:50%; font-size:14px; display:flex; align-items:center; justify-content:center; border:1.5px solid rgba(255,255,255,.4); background:rgba(0,0,0,.2); }
+.c-lv-badge { position:absolute; bottom:-3px; right:-5px; background:rgba(0,0,0,.82); color:var(--gold); font-size:7px; font-weight:900; padding:1px 3px; border-radius:4px; line-height:1; border:1px solid rgba(255,209,102,.5); white-space:nowrap; z-index:3; }
+.c-meta { position:relative; z-index:2; flex:1; min-width:0; display:flex; flex-direction:column; }
+.c-name  { font-size:11px; font-weight:700; color:var(--theme-text-color,#fff); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; text-shadow:0 1px 3px rgba(0,0,0,.9); line-height:1.3; }
+.c-title { font-size:9px; font-weight:600; color:rgba(255,209,102,.85); text-shadow:0 1px 3px rgba(0,0,0,.9); line-height:1.3; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.c-event { flex:1; min-width:0; font-size:12px; font-weight:700; color:rgba(255,255,255,.72); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; text-shadow:0 1px 3px rgba(0,0,0,.8); }
+.c-event em { font-style:normal; color:var(--gold); font-size:14px; font-weight:900; text-shadow:0 0 8px rgba(255,185,30,.65); }
+
+/* ════════════ BAR VISUAL THEMES ════════════ */
+/* Glass (V1) */
+.bar-glass {
+  background: linear-gradient(135deg,rgba(255,255,255,.26),rgba(255,255,255,.08)), rgba(255,255,255,.04);
+  border:1.5px solid rgba(255,255,255,.38);
+  backdrop-filter:blur(28px) saturate(1.65); -webkit-backdrop-filter:blur(28px) saturate(1.65);
+  box-shadow:0 16px 40px rgba(0,0,0,.22), inset 0 1.5px 0 rgba(255,255,255,.52);
+}
+.bar-glass .sb-cbtn-sep { background:rgba(255,255,255,.22); }
+.bar-glass .sb-act-outer { background:rgba(0,0,0,.18); }
+
+/* Dark (V2) */
+.bar-dark {
+  background:linear-gradient(155deg,rgba(22,10,46,.96),rgba(9,5,22,.98));
+  border:1.5px solid rgba(255,192,52,.46);
+  box-shadow:0 18px 46px rgba(0,0,0,.68), inset 0 1.5px 0 rgba(255,212,90,.22);
+}
+.bar-dark .sb-cbtn-ico  { color:rgba(255,192,52,.88); }
+.bar-dark .sb-cbtn-sep  { background:rgba(255,192,52,.28); }
+.bar-dark .sb-title-tag { color:#ffd166; background:rgba(255,192,52,.10); border-color:rgba(255,192,52,.36); }
+.bar-dark .sb-act-outer { background:rgba(0,0,0,.38); }
+</style>
+</head>
+<body>
+
+<div class="pg-hd">
+  <h1>Status Bar 設計重整 · 真實背板驗證</h1>
+  <p>使用系統真實背板資料（lava / galaxy / ocean / sunset / gold / jade）· 3 種活躍玩家顯示方式 · 毛玻璃與深色金框兩種底框</p>
+</div>
+
+<!-- ═══════════════════════════════
+     APPROACH A — 橫向捲動卡片
+═══════════════════════════════ -->
+<div class="section">
+  <div class="section-title">方案 A · 橫向捲動卡片</div>
+
+  <div class="vr">
+    <div class="vr-hd">
+      <span class="vr-num">A1</span>
+      <span class="vr-name">毛玻璃底框</span>
+      <span class="vr-desc">主玩家 lava 背板 · 活躍玩家各自背板橫向排列</span>
+    </div>
+    <div class="stage">
+      <div class="sb bar-glass" id="sbA1"
+           style="--user-bg:radial-gradient(circle at 30% 70%,rgba(255,60,0,.85) 0%,transparent 40%),radial-gradient(circle at 70% 30%,rgba(255,200,0,.55) 0%,transparent 40%),linear-gradient(135deg,#1a0606 0%,#6d0e0e 35%,#c0392b 65%,#ff4500 100%); --theme-glow:rgba(255,80,0,.4);">
+        <div class="sb-cbtn" onclick="cycle('sbA1')"><span class="sb-cbtn-ico">‹</span><div class="sb-cbtn-sep"></div></div>
+        <div class="sb-prof-wrap">
+          <div class="sb-prof-bg"></div>
+          <div class="sb-prof">
+            <div class="sb-av-wrap"><div class="sb-av">🦊</div><div class="sb-lv-badge">Lv.12</div></div>
+            <div class="sb-info">
+              <div class="sb-name-row"><span class="sb-lv">Lv.12</span><span class="sb-name">Joan5428</span></div>
+              <div class="sb-title-tag">幸運兒</div>
+              <div class="sb-exp"><div class="sb-exp-fill"></div></div>
+            </div>
+          </div>
+        </div>
+        <div class="sb-act-outer"><div class="act-a" id="aA1"></div></div>
+        <div class="sb-mail"></div>
+      </div>
+      <span class="stage-lbl">700 × 130 canvas px</span>
+    </div>
+    <div class="state-row">
+      <span class="state-lbl">收合：</span>
+      <button class="stbtn on" onclick="toState('sbA1','full',this)">展開</button>
+      <button class="stbtn"    onclick="toState('sbA1','half',this)">半收</button>
+      <button class="stbtn"    onclick="toState('sbA1','min',this)">全收</button>
+    </div>
+  </div>
+
+  <div class="vr">
+    <div class="vr-hd">
+      <span class="vr-num">A2</span>
+      <span class="vr-name">深色金框</span>
+      <span class="vr-desc">主玩家 galaxy 背板 · 驗證深色底框下的背板呈現</span>
+    </div>
+    <div class="stage">
+      <div class="sb bar-dark" id="sbA2"
+           style="--user-bg:radial-gradient(1.5px 1.5px at 18% 28%,#fff,transparent 50%),radial-gradient(2px 2px at 82% 18%,#fff,transparent 50%),radial-gradient(circle at 30% 40%,#6c5ce7 0%,#2d1b4e 60%,#0a0420 100%); --theme-glow:rgba(140,130,255,.3);">
+        <div class="sb-cbtn" onclick="cycle('sbA2')"><span class="sb-cbtn-ico">‹</span><div class="sb-cbtn-sep"></div></div>
+        <div class="sb-prof-wrap">
+          <div class="sb-prof-bg"></div>
+          <div class="sb-prof">
+            <div class="sb-av-wrap"><div class="sb-av">🦊</div><div class="sb-lv-badge">Lv.12</div></div>
+            <div class="sb-info">
+              <div class="sb-name-row"><span class="sb-lv">Lv.12</span><span class="sb-name">Joan5428</span></div>
+              <div class="sb-title-tag">幸運兒</div>
+              <div class="sb-exp"><div class="sb-exp-fill"></div></div>
+            </div>
+          </div>
+        </div>
+        <div class="sb-act-outer"><div class="act-a" id="aA2"></div></div>
+        <div class="sb-mail"></div>
+      </div>
+      <span class="stage-lbl">700 × 130 canvas px</span>
+    </div>
+    <div class="state-row">
+      <span class="state-lbl">收合：</span>
+      <button class="stbtn on" onclick="toState('sbA2','full',this)">展開</button>
+      <button class="stbtn"    onclick="toState('sbA2','half',this)">半收</button>
+      <button class="stbtn"    onclick="toState('sbA2','min',this)">全收</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════
+     APPROACH B — 縱向活動流
+═══════════════════════════════ -->
+<div class="section">
+  <div class="section-title">方案 B · 縱向活動流（接近原始設計，改良排版）</div>
+
+  <div class="vr">
+    <div class="vr-hd">
+      <span class="vr-num">B1</span>
+      <span class="vr-name">毛玻璃底框</span>
+      <span class="vr-desc">每行 = 玩家身份 chip + 事件文字（Win × 倍率）· 自動 2 秒換一輪</span>
+      <span class="vr-chip">最接近原本邏輯</span>
+    </div>
+    <div class="stage">
+      <div class="sb bar-glass" id="sbB1"
+           style="--user-bg:repeating-linear-gradient(45deg,rgba(255,255,255,.18) 0 2px,transparent 2px 14px),radial-gradient(ellipse at 50% 0%,rgba(255,255,255,.4),transparent 50%),linear-gradient(180deg,#ffe066 0%,#ffd166 35%,#c08a1a 100%); --theme-glow:rgba(180,130,30,.5);">
+        <div class="sb-cbtn" onclick="cycle('sbB1')"><span class="sb-cbtn-ico">‹</span><div class="sb-cbtn-sep"></div></div>
+        <div class="sb-prof-wrap">
+          <div class="sb-prof-bg"></div>
+          <div class="sb-prof">
+            <div class="sb-av-wrap"><div class="sb-av">🦊</div><div class="sb-lv-badge">Lv.12</div></div>
+            <div class="sb-info">
+              <div class="sb-name-row"><span class="sb-lv" style="color:#c08a1a">Lv.12</span><span class="sb-name" style="color:#2a1810">Joan5428</span></div>
+              <div class="sb-title-tag" style="color:#6b3a00;background:rgba(0,0,0,.1);border-color:rgba(0,0,0,.2)">幸運兒</div>
+              <div class="sb-exp"><div class="sb-exp-fill"></div></div>
+            </div>
+          </div>
+        </div>
+        <div class="sb-act-outer"><div class="act-b" id="aB1"></div></div>
+        <div class="sb-mail"></div>
+      </div>
+      <span class="stage-lbl">700 × 130 canvas px</span>
+    </div>
+    <div class="state-row">
+      <span class="state-lbl">收合：</span>
+      <button class="stbtn on" onclick="toState('sbB1','full',this)">展開</button>
+      <button class="stbtn"    onclick="toState('sbB1','half',this)">半收</button>
+      <button class="stbtn"    onclick="toState('sbB1','min',this)">全收</button>
+    </div>
+  </div>
+
+  <div class="vr">
+    <div class="vr-hd">
+      <span class="vr-num">B2</span>
+      <span class="vr-name">深色金框</span>
+      <span class="vr-desc">主玩家 ocean 背板</span>
+    </div>
+    <div class="stage">
+      <div class="sb bar-dark" id="sbB2"
+           style="--user-bg:repeating-linear-gradient(45deg,transparent 0 14px,rgba(255,255,255,.06) 14px 16px),radial-gradient(ellipse at 50% 0%,rgba(255,255,255,.18),transparent 60%),linear-gradient(180deg,#1e90ff 0%,#00b4d8 50%,#2ed573 100%); --theme-glow:rgba(46,213,115,.25);">
+        <div class="sb-cbtn" onclick="cycle('sbB2')"><span class="sb-cbtn-ico">‹</span><div class="sb-cbtn-sep"></div></div>
+        <div class="sb-prof-wrap">
+          <div class="sb-prof-bg"></div>
+          <div class="sb-prof">
+            <div class="sb-av-wrap"><div class="sb-av">🦊</div><div class="sb-lv-badge">Lv.12</div></div>
+            <div class="sb-info">
+              <div class="sb-name-row"><span class="sb-lv">Lv.12</span><span class="sb-name">Joan5428</span></div>
+              <div class="sb-title-tag">幸運兒</div>
+              <div class="sb-exp"><div class="sb-exp-fill"></div></div>
+            </div>
+          </div>
+        </div>
+        <div class="sb-act-outer"><div class="act-b" id="aB2"></div></div>
+        <div class="sb-mail"></div>
+      </div>
+      <span class="stage-lbl">700 × 130 canvas px</span>
+    </div>
+    <div class="state-row">
+      <span class="state-lbl">收合：</span>
+      <button class="stbtn on" onclick="toState('sbB2','full',this)">展開</button>
+      <button class="stbtn"    onclick="toState('sbB2','half',this)">半收</button>
+      <button class="stbtn"    onclick="toState('sbB2','min',this)">全收</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════
+     APPROACH C — 緊湊縱向（半透明 chip）
+═══════════════════════════════ -->
+<div class="section">
+  <div class="section-title">方案 C · 緊湊雙行（背板低透明度暗示，非全呈現）</div>
+
+  <div class="vr">
+    <div class="vr-hd">
+      <span class="vr-num">C1</span>
+      <span class="vr-name">毛玻璃底框</span>
+      <span class="vr-desc">玩家背板以半透明疊在 chip 底層（節省空間，2 行完整資訊）</span>
+    </div>
+    <div class="stage">
+      <div class="sb bar-glass" id="sbC1"
+           style="--user-bg:radial-gradient(ellipse at 75% 100%,rgba(255,230,150,.6),transparent 50%),radial-gradient(circle at 75% 80%,#ffe066 0%,#ff8c42 18%,transparent 22%),linear-gradient(180deg,#6c3483 0%,#c0392b 35%,#ff6b9d 65%,#ffc042 100%); --theme-glow:rgba(255,209,102,.25);">
+        <div class="sb-cbtn" onclick="cycle('sbC1')"><span class="sb-cbtn-ico">‹</span><div class="sb-cbtn-sep"></div></div>
+        <div class="sb-prof-wrap">
+          <div class="sb-prof-bg"></div>
+          <div class="sb-prof">
+            <div class="sb-av-wrap"><div class="sb-av">🦊</div><div class="sb-lv-badge">Lv.12</div></div>
+            <div class="sb-info">
+              <div class="sb-name-row"><span class="sb-lv">Lv.12</span><span class="sb-name">Joan5428</span></div>
+              <div class="sb-title-tag">幸運兒</div>
+              <div class="sb-exp"><div class="sb-exp-fill"></div></div>
+            </div>
+          </div>
+        </div>
+        <div class="sb-act-outer"><div class="act-c" id="aC1"></div></div>
+        <div class="sb-mail"></div>
+      </div>
+      <span class="stage-lbl">700 × 130 canvas px</span>
+    </div>
+    <div class="state-row">
+      <span class="state-lbl">收合：</span>
+      <button class="stbtn on" onclick="toState('sbC1','full',this)">展開</button>
+      <button class="stbtn"    onclick="toState('sbC1','half',this)">半收</button>
+      <button class="stbtn"    onclick="toState('sbC1','min',this)">全收</button>
+    </div>
+  </div>
+
+  <div class="vr">
+    <div class="vr-hd">
+      <span class="vr-num">C2</span>
+      <span class="vr-name">深色金框</span>
+      <span class="vr-desc">主玩家 jade 翡翠背板</span>
+    </div>
+    <div class="stage">
+      <div class="sb bar-dark" id="sbC2"
+           style="--user-bg:repeating-linear-gradient(135deg,transparent 0 18px,rgba(255,255,255,.05) 18px 20px),radial-gradient(circle at 70% 30%,rgba(255,230,130,.35),transparent 45%),linear-gradient(135deg,#0f3d2e 0%,#16a085 50%,#2ed573 100%); --theme-glow:rgba(46,213,115,.25);">
+        <div class="sb-cbtn" onclick="cycle('sbC2')"><span class="sb-cbtn-ico">‹</span><div class="sb-cbtn-sep"></div></div>
+        <div class="sb-prof-wrap">
+          <div class="sb-prof-bg"></div>
+          <div class="sb-prof">
+            <div class="sb-av-wrap"><div class="sb-av">🦊</div><div class="sb-lv-badge">Lv.12</div></div>
+            <div class="sb-info">
+              <div class="sb-name-row"><span class="sb-lv">Lv.12</span><span class="sb-name">Joan5428</span></div>
+              <div class="sb-title-tag">幸運兒</div>
+              <div class="sb-exp"><div class="sb-exp-fill"></div></div>
+            </div>
+          </div>
+        </div>
+        <div class="sb-act-outer"><div class="act-c" id="aC2"></div></div>
+        <div class="sb-mail"></div>
+      </div>
+      <span class="stage-lbl">700 × 130 canvas px</span>
+    </div>
+    <div class="state-row">
+      <span class="state-lbl">收合：</span>
+      <button class="stbtn on" onclick="toState('sbC2','full',this)">展開</button>
+      <button class="stbtn"    onclick="toState('sbC2','half',this)">半收</button>
+      <button class="stbtn"    onclick="toState('sbC2','min',this)">全收</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ── Real player data (from system profiles + BACKGROUND_THEMES) ── */
+const PLAYERS = [
+  {
+    name:'KingOfSpin', avatar:'👑', lv:38, title:'王者',
+    bg:'radial-gradient(circle at 30% 70%,rgba(255,60,0,.85) 0%,transparent 40%),radial-gradient(circle at 70% 30%,rgba(255,200,0,.55) 0%,transparent 40%),linear-gradient(135deg,#1a0606 0%,#6d0e0e 35%,#c0392b 65%,#ff4500 100%)',
+    glow:'rgba(255,80,0,.4)', mult:'×20', event:'梅杜莎 <em>×20</em>'
+  },
+  {
+    name:'Hades', avatar:'🐲', lv:32, title:'賭神',
+    bg:'radial-gradient(1.5px 1.5px at 18% 28%,#fff,transparent 50%),radial-gradient(2px 2px at 82% 18%,#fff,transparent 50%),radial-gradient(circle at 30% 40%,#6c5ce7 0%,#2d1b4e 60%,#0a0420 100%)',
+    glow:'rgba(140,130,255,.3)', mult:'×45', event:'荷魯斯 <em>×45</em>'
+  },
+  {
+    name:'Misella', avatar:'🐍', lv:25, title:'不敗',
+    bg:'repeating-linear-gradient(45deg,transparent 0 14px,rgba(255,255,255,.06) 14px 16px),radial-gradient(ellipse at 50% 0%,rgba(255,255,255,.18),transparent 60%),linear-gradient(180deg,#1e90ff 0%,#00b4d8 50%,#2ed573 100%)',
+    glow:'rgba(46,213,115,.25)', mult:'×88', event:'奧林匹斯 <em>×88</em>'
+  },
+  {
+    name:'Sunny', avatar:'🦁', lv:28, title:'幸運兒',
+    bg:'radial-gradient(ellipse at 75% 100%,rgba(255,230,150,.6),transparent 50%),radial-gradient(circle at 75% 80%,#ffe066 0%,#ff8c42 18%,transparent 22%),linear-gradient(180deg,#6c3483 0%,#c0392b 35%,#ff6b9d 65%,#ffc042 100%)',
+    glow:'rgba(255,209,102,.25)', mult:'×12', event:'梅杜莎 <em>×12</em>'
+  },
+  {
+    name:'Dede', avatar:'🐯', lv:24, title:'至尊',
+    bg:'repeating-linear-gradient(45deg,rgba(255,255,255,.18) 0 2px,transparent 2px 14px),radial-gradient(ellipse at 50% 0%,rgba(255,255,255,.4),transparent 50%),linear-gradient(180deg,#ffe066 0%,#ffd166 35%,#c08a1a 100%)',
+    glow:'rgba(180,130,30,.55)', mult:'×33', event:'黃金神廟 <em>×33</em>'
+  },
+  {
+    name:'Jesse', avatar:'🐼', lv:22, title:'傳奇',
+    bg:'repeating-linear-gradient(135deg,transparent 0 18px,rgba(255,255,255,.05) 18px 20px),radial-gradient(circle at 70% 30%,rgba(255,230,130,.35),transparent 45%),linear-gradient(135deg,#0f3d2e 0%,#16a085 50%,#2ed573 100%)',
+    glow:'rgba(46,213,115,.25)', mult:'×18', event:'經典777 <em>×18</em>'
+  },
+];
+
+/* ── Render A: horizontal scroll cards ── */
+function renderA(containerId) {
+  const el = document.getElementById(containerId);
+  if (!el) return;
+  PLAYERS.forEach(p => {
+    el.insertAdjacentHTML('beforeend', `
+      <div class="ap-card" style="--player-bg:${p.bg};--theme-glow:${p.glow}">
+        <div class="ap-card-bg"></div>
+        <div class="ap-card-body">
+          <div class="ap-ident">
+            <div class="ap-av-wrap"><div class="ap-av">${p.avatar}</div><div class="ap-lv">Lv.${p.lv}</div></div>
+            <div class="ap-ident-info"><div class="ap-name">${p.name}</div><div class="ap-title">${p.title}</div></div>
+          </div>
+          <div class="ap-act-row"><span class="ap-win-lbl">Win</span><span class="ap-mult">${p.mult}</span></div>
+        </div>
+      </div>`);
+  });
+}
+
+/* ── Render B: vertical 2-row cycling feed ── */
+function renderB(containerId) {
+  const el = document.getElementById(containerId);
+  if (!el) return;
+  let idx = 0;
+  function show() {
+    const a = PLAYERS[idx % PLAYERS.length];
+    const b = PLAYERS[(idx+1) % PLAYERS.length];
+    el.innerHTML = [a,b].map(p => `
+      <div class="feed-row">
+        <div class="feed-chip" style="--player-bg:${p.bg};--theme-glow:${p.glow}">
+          <div class="feed-chip-bg"></div>
+          <div class="feed-av-wrap"><div class="feed-av">${p.avatar}</div><div class="feed-lv-badge">Lv.${p.lv}</div></div>
+          <div class="feed-info"><div class="feed-name">${p.name}</div><div class="feed-title">${p.title}</div></div>
+        </div>
+        <div class="feed-event">Win ${p.event}</div>
+      </div>`).join('');
+    idx++;
+  }
+  show();
+  setInterval(show, 2500);
+}
+
+/* ── Render C: compact 2-row ── */
+function renderC(containerId) {
+  const el = document.getElementById(containerId);
+  if (!el) return;
+  let idx = 0;
+  function show() {
+    const a = PLAYERS[idx % PLAYERS.length];
+    const b = PLAYERS[(idx+1) % PLAYERS.length];
+    el.innerHTML = [a,b].map(p => `
+      <div class="c-row">
+        <div class="c-chip" style="--player-bg:${p.bg};--theme-glow:${p.glow}">
+          <div class="c-chip-bg"></div>
+          <div class="c-av-wrap"><div class="c-av">${p.avatar}</div><div class="c-lv-badge">Lv.${p.lv}</div></div>
+          <div class="c-meta"><div class="c-name">${p.name}</div><div class="c-title">${p.title}</div></div>
+        </div>
+        <div class="c-event">Win ${p.event}</div>
+      </div>`).join('');
+    idx++;
+  }
+  show();
+  setInterval(show, 2500);
+}
+
+/* ── Init ── */
+renderA('aA1'); renderA('aA2');
+renderB('aB1'); renderB('aB2');
+renderC('aC1'); renderC('aC2');
+
+/* ── Collapse states ── */
+const ORDER = ['full','half','min'];
+function applyState(id,state) {
+  const bar = document.getElementById(id);
+  bar.classList.remove('half','min');
+  if(state !== 'full') bar.classList.add(state);
+}
+function cycle(id) {
+  const bar = document.getElementById(id);
+  let cur = 0;
+  if(bar.classList.contains('half')) cur=1;
+  if(bar.classList.contains('min'))  cur=2;
+  const next = ORDER[(cur+1)%3];
+  applyState(id,next);
+  bar.closest('.vr').querySelectorAll('.stbtn').forEach((b,i)=>b.classList.toggle('on',ORDER[i]===next));
+}
+function toState(id,state,btn) {
+  applyState(id,state);
+  btn.closest('.state-row').querySelectorAll('.stbtn').forEach(b=>b.classList.toggle('on',b===btn));
+}
+</script>
+</body>
+</html>
