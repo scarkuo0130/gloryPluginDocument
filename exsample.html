@@ -14,6 +14,8 @@
     --user-bg: var(--player-bg);
   }
   * { box-sizing: border-box; }
+  /* .player-card 規格家族統一 border */
+  .player-card { border: 1px solid rgba(255, 255, 255, 0.18); }
   html, body {
     margin: 0; padding: 0;
     background: linear-gradient(180deg, #090b13 0%, #142133 30%, #24192e 70%, #0b101c 100%);
@@ -305,7 +307,6 @@
     display: flex; align-items: center; gap: 12px;
     padding: 8px 12px;
     border-radius: 20px;
-    border: 2px solid rgba(255,255,255,0.08);
     background:
       linear-gradient(to right, rgba(15,10,30,0.55), rgba(15,10,30,0.85)),
       var(--player-bg);
@@ -358,7 +359,6 @@
     min-height: 40px;
     padding: 5px 10px;
     border-radius: 20px;
-    border: 1px solid rgba(255,255,255,0.18);
     background:
       linear-gradient(to right, rgba(15,10,30,0.55), rgba(15,10,30,0.82)),
       var(--player-bg);

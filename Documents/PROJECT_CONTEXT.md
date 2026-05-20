@@ -519,3 +519,110 @@ fmtNum(n)                                 // n.toLocaleString()
 7. **稱號鎖定**：標題選項 `data-title` 搭配 `.locked` class 控制，鎖定項點擊只顯示 toast，不改變選擇。
 
 8. **機台等級限制**：`machine.lv > userLevel` 時機台顯示為鎖定，點擊只顯示 toast 不切換。
+
+---
+
+## 二十一、玩家資訊欄 `.player-card` 規格家族（2026-05-19 重構）
+
+> 全專案所有「顯示玩家資訊」的版面被歸納為同一個元件家族 `.player-card`，由 7 個變體（modifier class）依場景延展。完整視覺呈現與差異對比在 [`exsample.html`](../exsample.html)。
+
+### 21.1 核心五要素（重要度由高至低）
+
+```text
+背板（--user-bg / --player-bg）
+  ↓
+頭像（avatar，金邊圓形）
+  ↓
+等級（Lv.XX）
+  ↓
+名稱（玩家暱稱）
+  ↓
+稱號（✦ Title）
+```
+
+任何 `.player-card` 變體都必須完整呈現這 5 要素，差異只在「**擴展屬性**」（ID、EXP、Next 訊息、排名、數值等）和「**尺寸**」。
+
+### 21.2 家族變體列表
+
+| 變體 class | 對應版面 | 場景 | 背板處理 | 外層 row | 擴展屬性 |
+|-----------|----------|------|----------|---------|----------|
+| `.player-card--status` | A：`.status-profile` | 頂部狀態列（常駐）| 純背板 | 無 | + EXP 條 |
+| `.player-card--menu` | B：`.menu-header` | 主選單頭部 | 純背板（漸層黑膜疊加）| 無 | + ID |
+| `.player-card--profile-self` | C：`.profile-info-card`（自己）| 個人資料頁 | 純背板 | 無 | + ID + VIP + EXP + Next + ✎ rename |
+| `.player-card--profile-other` | D：`.profile-info-card`（他人）| 玩家資料頁 | 純背板 | 無 | + VIP（ID/EXP/Next 由 CSS hide）|
+| `.player-card--list` | E：排行榜列 | 排行榜頁 | **暗膜疊背板** | **有**（rank + value 在外）| — |
+| `.player-card--list-mini` | F：選單預覽列 | 主選單排行榜預覽卡 | **暗膜疊背板** | **有**（rank + value 在外）| — |
+| `.player-card--list-chip` | G：活躍玩家面板 | 狀態列右側活躍玩家 chip | 純背板（無暗膜，inset glow）| 無 | — |
+
+### 21.3 統一規格規則
+
+1. **border-radius 統一為 20px**（全 7 個變體一致）
+2. **border 統一為 `1px solid rgba(255, 255, 255, 0.18)`**：定義在 `.player-card` 基礎 class，所有變體繼承
+3. **背板套用對象 = 玩家資訊欄本身**（不是外層 row）
+4. **「有 row container（E/F）→ 疊暗膜」**：因為 row 上有 rank/value 等周邊資訊，暗膜保證可讀性
+5. **「無 row 容器（A/B/C/D/G）→ 純背板」**：玩家身份是視覺主角，直接顯示玩家背板更突出
+
+```css
+/* .player-card 規格家族基礎（line 156 附近） */
+.player-card {
+  border: 1px solid rgba(255, 255, 255, 0.18);
+}
+```
+
+所有變體（`.status-profile`、`.menu-header`、`.profile-info-card`、`.player-card--list`、`.player-card--list-mini`、`.player-card--list-chip`）原本各自設定的 `border: none` / `border: 2px solid ...` / `border: 1px solid ...` 全部移除，讓 `.player-card` 統一規則生效。
+
+### 21.4 變體模式（架構層面）
+
+```text
+A、B（自己常駐）       → 5 要素 + 場景擴展（EXP / ID）
+C、D（個人資料頁）     → 5 要素 + 完整擴展，CSS modifier 控制顯隱
+E、F（列表項，含 row） → row container（透明）+ 玩家資訊欄（背板）+ sibling（rank/value）
+G（純 chip）          → 玩家資訊欄獨立呈現，無外層
+```
+
+### 21.5 不在此家族內
+
+- **H：`.mq-user`**（跑馬燈標準）— 場景特殊（跑馬燈 inline-flex + 動畫），獨立維護
+- **I：`.mq-effect3-card`**（跑馬燈大卡）— 同上，獨立維護
+
+### 21.6 內部子元素 class（保留各自命名）
+
+雖然外層容器歸納為 `.player-card` 家族，但**內部子元素 class 不強制統一**：
+
+- E、F：`.lb-avatar` / `.lb-info` / `.lb-name` / `.lb-title` / `.lb-level`
+- G：`.lb-menu-avatar` / `.lb-menu-meta` / `.lb-menu-name` / `.lb-menu-title` / `.lb-menu-lv`
+- A：`.avatar` / `.status-info` / `.status-name` / `.status-title` / `.status-level`
+- B：`.menu-avatar` / `.menu-user-info` / `.menu-user-name` / `.menu-user-title` / `.menu-user-level-inline`
+- C/D：`.profile-info-avatar` / `.profile-info-value` / `.profile-info-title` / `.profile-id-line`
+
+原因：內部 class 屬於「**內容**」職責，跟「**容器**」職責分開維護。容器決定外觀（家族規格），內容決定欄位（場景特化）。
+
+### 21.7 漸進式遷移策略（重要）
+
+`.player-card` 標籤是**追加**的，**不取代既有 class**。所有版面都保留原 class（如 `.status-profile`、`.menu-header`、`.profile-info-card`、`.lb-item` 等），新 class 並列存在：
+
+```html
+<div class="status-profile player-card player-card--status">…</div>
+<div class="menu-header player-card player-card--menu">…</div>
+<div class="profile-info-card player-card player-card--profile player-card--profile-self">…</div>
+```
+
+優點：既有 CSS / JS / selector 鏈不受影響，可隨時驗收 / 回退。
+之後可逐步把舊 class 的樣式搬到 `.player-card` 基礎層、移除舊 class，但目前不強制。
+
+### 21.8 例外：E、F、G 已從原 class 脫鉤的部分
+
+- E `.lb-item` 已改為**透明 row container**，原本的 background / border / radius 全部搬到內部新增的 `.player-card--list`
+- F 主選單 hardcoded HTML 與 `renderLeaderboardMenuCard` 動態 render 都改用 `.lb-menu-row.lb-menu-row--with-rank`（modifier 把 .lb-menu-row 變透明 row），內部包 `.player-card--list-mini`
+- G `renderActivePlayerMeta` 不再使用 `.lb-menu-row`，改為獨立的 `.player-card.player-card--list-chip`
+
+這三個版面是真正「重構」過的，其餘 A/B/C/D 只是「掛標籤」。
+
+### 21.9 規格盤點視覺呈現
+
+`exsample.html`（專案 root）作為規格家族的「**設計系統文件**」，列出全部 9 個版面（含 H/I）的：
+
+- demo 視覺呈現（並排對比）
+- 場景說明、套用變數、結構解析
+- 規格決策 callout（每個合併規格的決定理由）
+- 不一致與待統一的問題清單（A~I 維度對照表）

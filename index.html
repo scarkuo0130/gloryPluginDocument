@@ -152,6 +152,11 @@
     background: rgba(255, 209, 102, 0.08);
   }
 
+  /* ===== .player-card 規格家族基礎（所有玩家資訊欄變體共用） ===== */
+  .player-card {
+    border: 1px solid rgba(255, 255, 255, 0.18);
+  }
+
   /* 玩家個人資料 chip（avatar + status-info）— 對齊 .mq-user 跑馬燈 chip 風格 */
   .status-profile {
     flex-shrink: 0;
@@ -164,7 +169,6 @@
     overflow: hidden;
     background: var(--user-bg, linear-gradient(135deg, #3a2570, #1a0f3e));
     background-size: cover;
-    border: none;
     box-shadow:
       0 8px 18px rgba(0,0,0,0.28),
       inset 0 0 18px var(--theme-glow, rgba(255,255,255,0.12));
@@ -803,7 +807,6 @@
       linear-gradient(135deg, rgba(20, 10, 40, 0.48), rgba(15, 8, 35, 0.66)),
       var(--user-bg, linear-gradient(135deg, #3a2570, #1a0f3e));
     background-size: cover;
-    border: none;
     transition: background 0.4s, border-color 0.4s, box-shadow 0.4s;
     cursor: pointer;
   }
@@ -1134,7 +1137,6 @@
     min-height: 40px;
     padding: 5px 10px;
     border-radius: 20px;
-    border: 1px solid rgba(255,255,255,0.18);
     background:
       linear-gradient(to right, rgba(15,10,30,0.55), rgba(15,10,30,0.82)),
       var(--player-bg, rgba(255,255,255,0.08));
@@ -1320,7 +1322,6 @@
       linear-gradient(135deg, rgba(20, 10, 40, 0.48), rgba(15, 8, 35, 0.66)),
       var(--user-bg, linear-gradient(135deg, #3a2570, #1a0f3e));
     background-size: cover;
-    border: none;
     border-radius: 20px;
     padding: 22px 24px;
     position: relative;
@@ -1328,7 +1329,6 @@
   }
   #profilePage .profile-info-card {
     background: var(--user-bg, linear-gradient(135deg, #3a2570, #1a0f3e));
-    border: none;
     box-shadow:
       0 14px 30px rgba(0,0,0,0.24),
       inset 0 0 28px var(--theme-glow, rgba(255,255,255,0.12));
@@ -2106,7 +2106,6 @@
     padding: 6px 8px;
     margin-bottom: 12px;
     background: transparent;
-    border: none;
   }
   /* 玩家資訊欄（lb-item 內，含 avatar + 名稱/稱號），自帶背板 */
   .player-card--list {
@@ -2116,7 +2115,6 @@
     align-items: center;
     gap: 18px;
     padding: 12px 16px;
-    border: 2px solid rgba(255,255,255,0.08);
     border-radius: 20px;
     background:
       linear-gradient(to right, rgba(15,10,30,0.55), rgba(15,10,30,0.85)),
@@ -2228,11 +2226,9 @@
   .lb-self {
     margin-top: 20px;
     background: transparent;
-    border: none;
   }
   /* 底部固定自身列：玩家資訊欄改用無暗膜（更突出） */
   .lb-self .player-card--list {
-    border: none;
     background: var(--player-bg, rgba(255,255,255,0.05));
     background-size: cover;
     box-shadow:
@@ -2922,7 +2918,6 @@
     max-height: 80px;
     padding: 5px 14px 5px 6px;
     border-radius: 20px;
-    border: none;
     background: var(--player-bg, rgba(255,255,255,0.05));
     background-size: cover;
     box-shadow:
@@ -3581,7 +3576,6 @@
 
   .menu-header {
     background: var(--user-bg, linear-gradient(135deg, #3a2570, #1a0f3e));
-    border: none;
     box-shadow:
       var(--bv-shadow, none),
       0 14px 30px rgba(0,0,0,0.24),
@@ -3671,7 +3665,6 @@
 
   /* Glassmorphism polish 改套用在 .player-card--list 上（背板層） */
   .player-card--list {
-    border-color: rgba(255,255,255,0.28);
     background:
       linear-gradient(135deg, rgba(255,255,255,0.25), rgba(10,12,24,0.42)),
       var(--player-bg, rgba(255,255,255,0.05));
@@ -3681,7 +3674,6 @@
   }
 
   .lb-self .player-card--list {
-    border: none;
     background: var(--player-bg, rgba(255,255,255,0.05));
     background-size: cover;
     backdrop-filter: none;
