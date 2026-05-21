@@ -226,6 +226,19 @@
     white-space: nowrap;
     min-width: 0;
   }
+  /* 名稱 / 稱號溢出時跑馬燈（由右到左、3s 頭 + 3s 捲 + 3s 尾 loop） */
+  .status-name .name-text.is-marquee,
+  .status-title.is-marquee {
+    text-overflow: clip;
+  }
+  /* 稱號 marquee 啟動時，::before 的 ✦ 改由 JS 前綴到 inner 文字裡，避免疊字 */
+  .status-title.is-marquee::before { content: none; }
+  .status-name .name-text.is-marquee .marquee-inner,
+  .status-title.is-marquee .marquee-inner {
+    display: inline-block;
+    white-space: nowrap;
+    /* 動畫 keyframes 由 JS 動態建立並 inject */
+  }
   .status-level {
     flex-shrink: 0;
     color: #ffd166;
@@ -1224,15 +1237,22 @@
     text-overflow: ellipsis;
     min-width: 0;
   }
-  /* 第二行：稱號，獨立一行 */
+  /* 第二行：稱號，獨立一行（統一膠囊外框，對齊 ABCDH 規格） */
   .lb-menu-title {
+    display: inline-block;
+    align-self: flex-start;
+    max-width: 100%;
+    padding: 1px 8px;
     font-size: 13px;
     color: #ffd166;
     font-weight: 700;
+    background: linear-gradient(135deg, rgba(255, 209, 102, 0.15), rgba(255, 140, 66, 0.15));
+    border: 1.5px solid rgba(255, 209, 102, 0.5);
+    border-radius: 8px;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    line-height: 1.1;
+    line-height: 1.3;
   }
   .lb-menu-value {
     flex-shrink: 0;
@@ -2196,12 +2216,19 @@
     white-space: nowrap;
     min-width: 0;
   }
-  /* 第二行：稱號（無外框） */
+  /* 第二行：稱號（統一膠囊外框，對齊 ABCDH 規格） */
   .lb-title {
+    display: inline-block;
+    align-self: flex-start;
+    max-width: 100%;
+    padding: 2px 10px;
     font-size: 16px;
     font-weight: 700;
     color: #ffd166;
-    line-height: 1.2;
+    background: linear-gradient(135deg, rgba(255, 209, 102, 0.15), rgba(255, 140, 66, 0.15));
+    border: 1.5px solid rgba(255, 209, 102, 0.5);
+    border-radius: 10px;
+    line-height: 1.3;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -2321,6 +2348,25 @@
     display: grid;
     grid-template-columns: repeat(7, 1fr);
     gap: 8px;
+  }
+  .login-weekday-row {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 8px;
+    padding: 0 12px;
+    margin-bottom: 10px;
+  }
+  .login-weekday {
+    text-align: center;
+    font-size: 16px;
+    font-weight: 800;
+    color: rgba(255, 209, 102, 0.85);
+    letter-spacing: 1px;
+  }
+  .login-day.empty {
+    background: transparent;
+    border-color: transparent;
+    pointer-events: none;
   }
   .login-streak-perfect {
     border: 1.5px solid rgba(255, 209, 102, 0.45);
@@ -2865,7 +2911,6 @@
   .active-player-body {
     flex: 1;
     min-width: 0;
-    padding: 6px 12px;
     overflow: hidden;
     cursor: default;
   }
@@ -3541,13 +3586,6 @@
     border-color: rgba(255,255,255,0.30);
     box-shadow: inset 0 1px 0 rgba(255,255,255,0.30);
   }
-  /* 排行榜稱號：純文字，無外框 */
-  .lb-title {
-    background: none !important;
-    border: none !important;
-    box-shadow: none !important;
-    padding: 0 !important;
-  }
 
   .overlay {
     background: rgba(4, 8, 18, 0.34);
@@ -3820,9 +3858,9 @@
           <div class="status-info">
             <div class="status-name">
               <span class="status-level" id="statusLevel">Lv.12</span>
-              <span class="name-text" id="statusName">Joan5428</span>
+              <span class="name-text" id="statusName">Joan5428abcdefg</span>
             </div>
-            <div class="status-title" id="statusTitle">幸運兒</div>
+            <div class="status-title" id="statusTitle">Luckyman abcdefghijklmnop</div>
             <div class="status-exp"><div class="status-exp-fill" id="expFill"></div></div>
           </div>
         </div>
@@ -4234,6 +4272,11 @@
 </div>
 
 <script>
+  // 版號（每次有實質改動請手動 +1，方便確認瀏覽器是否載到最新版）
+  // console 輸入 `ver` 可查看
+  window.ver = '2026.05.21-006';
+  console.log('%cindex.html ver: ' + window.ver, 'color:#ffd166;font-weight:bold');
+
   const mails = [
     { id: 1, icon: '🎁', title: '每日簽到獎勵', preview: '恭喜獲得 100 EXP，請點擊領取', time: '今天 09:12', body: '恭喜獲得 100 EXP，請點擊領取。', unread: true },
     { id: 2, icon: '🏆', title: 'TurnOver 排行榜獎勵', preview: '你進入第 8 名！獎勵已發送', time: '今天 02:33', body: '你進入第 8 名！獎勵已發送至帳號。', unread: true },
@@ -5498,6 +5541,7 @@
     document.getElementById('statusName').textContent = name;
     document.getElementById('menuUserName').textContent = name;
     document.getElementById('profileInfoName').textContent = name;
+    refreshStatusNameMarquee();
     if (error) error.textContent = '';
     playMemberSound('success');
     showToast('暱稱已更新');
@@ -5757,10 +5801,10 @@
 
   // 連簽獎勵：4 週各 7 天，每週一個獎勵；第 5 個為 28 天全勤獎
   const STREAK_REWARDS = [
-    { type: 'exp',        value: 500 },
-    { type: 'title',      value: '連簽達人' },
-    { type: 'background', value: '黃金' },
-    { type: 'exp',        value: 2000 },
+    { type: 'exp', value: 500 },
+    { type: 'exp', value: 1000 },
+    { type: 'exp', value: 1500 },
+    { type: 'exp', value: 2000 },
   ];
   const PERFECT_ATTENDANCE_REWARD = { type: 'avatar', value: '🏆' };
   const PERFECT_ATTENDANCE_IDX = STREAK_REWARDS.length; // 4
@@ -5788,26 +5832,63 @@
 
   const streakClaimedGroups = new Set();
   function renderLoginStreak() {
-    const allTasksClaimed = dailyTasks.every(t => t.status === 'done');
-    const isDayDone = (day) => day !== 7 && (day < dailyTaskCompleteCount || (day === dailyTaskCompleteCount && allTasksClaimed));
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = now.getMonth();
+    const today = now.getDate();
+    const todayDow = now.getDay(); // 0=Sun
 
-    const weeklyGroups = STREAK_REWARDS.map((reward, gi) => {
-      const startDay = gi * STREAK_DAYS_PER_GROUP + 1;
-      const days = Array.from({ length: STREAK_DAYS_PER_GROUP }, (_, di) => {
-        const day = startDay + di;
-        const isMissed = day === 7;
+    // 連簽起始日（週日）：示範用當週週日往前 3 週，讓「今天」落在第 4 週方便 demo
+    const streakStart = new Date(year, month, today - todayDow - 21);
+    // 斷簽 demo：streak 起始 +8 天（W2 週一）
+    const missedDate = new Date(streakStart);
+    missedDate.setDate(streakStart.getDate() + 8);
+    const todayDate = new Date(year, month, today);
+
+    const sameDate = (a, b) =>
+      a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth() && a.getDate() === b.getDate();
+    const allTasksClaimed = dailyTasks.every(t => t.status === 'done');
+    const isDateDone = (d) => {
+      if (sameDate(d, missedDate)) return false;
+      if (sameDate(d, todayDate)) return allTasksClaimed;
+      return d < todayDate;
+    };
+
+    const STREAK_GROUP_SIZE = 7;
+    const STREAK_GROUP_COUNT = STREAK_REWARDS.length; // 4
+
+    // 4 週日曆（每週週日 → 週六）
+    const weeks = [];
+    for (let wi = 0; wi < STREAK_GROUP_COUNT; wi++) {
+      const week = [];
+      for (let di = 0; di < STREAK_GROUP_SIZE; di++) {
+        const d = new Date(streakStart);
+        d.setDate(streakStart.getDate() + wi * 7 + di);
+        week.push(d);
+      }
+      weeks.push(week);
+    }
+
+    const weekdayHeader = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat']
+      .map(w => `<div class="login-weekday">${w}</div>`).join('');
+
+    const weeklyGroups = weeks.map((week, wi) => {
+      const days = week.map(d => {
+        const isMissed = sameDate(d, missedDate);
+        const isToday = sameDate(d, todayDate);
         const classes = [
           'login-day',
           isMissed ? 'missed' : '',
-          isDayDone(day) ? 'done' : '',
-          day === dailyTaskCompleteCount ? 'current-progress' : ''
+          isDateDone(d) ? 'done' : '',
+          isToday ? 'current-progress' : ''
         ].filter(Boolean).join(' ');
-        return `<div class="${classes}"><div class="login-day-num">${day}</div></div>`;
+        return `<div class="${classes}"><div class="login-day-num">${d.getDate()}</div></div>`;
       }).join('');
-      // 該組 7 天皆達成才能領取
-      const groupAllDone = Array.from({ length: STREAK_DAYS_PER_GROUP }, (_, di) => isDayDone(startDay + di)).every(Boolean);
-      const groupHasMissed = Array.from({ length: STREAK_DAYS_PER_GROUP }, (_, di) => (startDay + di) === 7).some(Boolean);
-      const claimed = streakClaimedGroups.has(gi);
+
+      const reward = STREAK_REWARDS[wi];
+      const groupAllDone = week.every(d => isDateDone(d));
+      const groupHasMissed = week.some(d => sameDate(d, missedDate));
+      const claimed = streakClaimedGroups.has(wi);
       let btnLabel = streakRewardLabel(reward, '領取');
       let btnClass = 'login-streak-claim';
       let disabled = false;
@@ -5824,16 +5905,18 @@
         btnClass += ' disabled';
         disabled = true;
       }
+
       return `
         <div class="login-streak-group">
           <div class="login-streak-row">${days}</div>
-          <button type="button" class="${btnClass}"${disabled ? ' disabled' : ''} onclick="claimStreakReward(${gi})">${btnLabel}</button>
+          <button type="button" class="${btnClass}"${disabled ? ' disabled' : ''} onclick="claimStreakReward(${wi})">${btnLabel}</button>
         </div>
       `;
     }).join('');
 
-    // 全勤獎：28 天全部達成才能領
-    const allDone = Array.from({ length: STREAK_TOTAL_DAYS }, (_, i) => isDayDone(i + 1)).every(Boolean);
+    // 四週額外獎勵：4 週 28 天皆完成才能領
+    const totalDays = STREAK_GROUP_COUNT * STREAK_GROUP_SIZE;
+    const allStreakDone = weeks.every(w => w.every(d => isDateDone(d)));
     const perfectClaimed = streakClaimedGroups.has(PERFECT_ATTENDANCE_IDX);
     let perfectBtnLabel = streakRewardLabel(PERFECT_ATTENDANCE_REWARD, '領取');
     let perfectBtnClass = 'login-streak-claim';
@@ -5842,23 +5925,26 @@
       perfectBtnLabel = streakRewardLabel(PERFECT_ATTENDANCE_REWARD, '已領取');
       perfectBtnClass += ' claimed';
       perfectDisabled = true;
-    } else if (!allDone) {
-      perfectBtnLabel = '全勤未達成';
+    } else if (!allStreakDone) {
+      perfectBtnLabel = '尚未達成';
       perfectBtnClass += ' disabled';
       perfectDisabled = true;
     }
     const perfectGroup = `
       <div class="login-streak-group login-streak-perfect">
-        <div class="login-streak-perfect-label">全勤獎 · 連續 ${STREAK_TOTAL_DAYS} 天全部達成</div>
+        <div class="login-streak-perfect-label">四週額外獎勵 · 連續 ${totalDays} 天達成</div>
         <button type="button" class="${perfectBtnClass}"${perfectDisabled ? ' disabled' : ''} onclick="claimStreakReward(${PERFECT_ATTENDANCE_IDX})">${perfectBtnLabel}</button>
       </div>
     `;
 
+    const monthLabel = `${year} 年 ${month + 1} 月`;
+
     return `
       <div class="login-streak-card">
         <div class="login-streak-head">
-          <div class="login-streak-title">連簽 7 天領取獎勵</div>
+          <div class="login-streak-title">${monthLabel}</div>
         </div>
+        <div class="login-weekday-row">${weekdayHeader}</div>
         <div class="login-streak-groups">${weeklyGroups}${perfectGroup}</div>
       </div>
     `;
@@ -6421,6 +6507,58 @@
       if (dragged) { e.stopPropagation(); e.preventDefault(); }
     }, true);
   }
+
+  // 狀態列名稱 / 稱號跑馬燈：以「容器寬 × 比例」為基準判斷溢出
+  // 用 Web Animations API 跑動畫（純 px 值），避免 CSS calc(var()) 在 compositor 上不 repaint
+  const _marqueeAnimations = new WeakMap();
+  // 各 target 可指定 prefix（::before 的內容移到 inner）與 ratio（觸發/距離基準）
+  // ratio < 1：壓縮可視寬以放大滑動距離（適合固定寬 flex slot 如 name 180px）
+  // ratio = 1：只在真的溢出時觸發（適合自動寬的元素如 title）
+  const STATUS_MARQUEE_TARGETS = [
+    { selector: '.status-name .name-text', prefix: '',   ratio: 0.6 },
+    { selector: '.status-title',           prefix: '✦ ', ratio: 1.0 }
+  ];
+  function applyStatusMarquee(el, prefix, ratio) {
+    // 取消舊動畫、還原為純文字以正確量測
+    const prevAnim = _marqueeAnimations.get(el);
+    if (prevAnim) { prevAnim.cancel(); _marqueeAnimations.delete(el); }
+    // 原始文字 = 已有 marquee-inner 的話從 inner.textContent 拆出 prefix；否則用 el.textContent
+    const inner0 = el.querySelector('.marquee-inner');
+    let text = inner0 ? inner0.textContent : el.textContent;
+    if (prefix && text.startsWith(prefix)) text = text.slice(prefix.length);
+    el.classList.remove('is-marquee');
+    el.textContent = text;
+    void el.offsetWidth;
+    const visibleW = el.clientWidth * ratio;
+    if (el.scrollWidth > visibleW + 1) {
+      el.innerHTML = '';
+      const inner = document.createElement('span');
+      inner.className = 'marquee-inner';
+      inner.textContent = prefix + text;
+      el.appendChild(inner);
+      el.classList.add('is-marquee');
+      const distance = Math.max(0, inner.offsetWidth - visibleW);
+      const anim = inner.animate(
+        [
+          { transform: 'translateX(0px)',            offset: 0 },
+          { transform: 'translateX(0px)',            offset: 1/3 },
+          { transform: `translateX(${-distance}px)`, offset: 2/3 },
+          { transform: `translateX(${-distance}px)`, offset: 1 }
+        ],
+        { duration: 9000, iterations: Infinity, easing: 'linear' }
+      );
+      _marqueeAnimations.set(el, anim);
+    }
+  }
+  function refreshStatusMarquees() {
+    STATUS_MARQUEE_TARGETS.forEach(({ selector, prefix, ratio }) => {
+      document.querySelectorAll(selector).forEach(el => applyStatusMarquee(el, prefix, ratio));
+    });
+  }
+  // 維持舊名（rename 函式還在呼叫）
+  const refreshStatusNameMarquee = refreshStatusMarquees;
+  window.addEventListener('resize', refreshStatusMarquees);
+  setTimeout(refreshStatusMarquees, 0);
 
   // 啟動跑馬燈循環播放（開合動畫 + 逐筆訊息）
   startPromotionCarousel();

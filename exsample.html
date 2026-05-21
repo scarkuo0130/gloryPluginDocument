@@ -325,7 +325,13 @@
     font-size: 15px; font-weight: 800; color: #ffd166; line-height: 1; flex-shrink: 0;
   }
   .demo-lb-item .name { color: #fff; font-size: 18px; font-weight: 700; }
-  .demo-lb-item .ttl { font-size: 13px; font-weight: 700; color: #ffd166; line-height: 1.2; }
+  .demo-lb-item .ttl {
+    display: inline-block; align-self: flex-start;
+    padding: 2px 10px; font-size: 13px; font-weight: 700; color: #ffd166;
+    background: linear-gradient(135deg, rgba(255,209,102,0.15), rgba(255,140,66,0.15));
+    border: 1.5px solid rgba(255,209,102,0.5);
+    border-radius: 10px; line-height: 1.3;
+  }
   .demo-lb-item .val-wrap { text-align: right; flex-shrink: 0; min-width: 80px; }
   .demo-lb-item .val {
     color: #ffd166; font-size: 16px; font-weight: 800; line-height: 1.15;
@@ -378,7 +384,13 @@
     color: #ffd166; font-size: 15px; font-weight: 800; line-height: 1; flex-shrink: 0;
   }
   .demo-lb-menu-row .name { font-size: 17px; font-weight: 800; color: #fff; }
-  .demo-lb-menu-row .ttl { font-size: 13px; color: #ffd166; font-weight: 700; line-height: 1.1; }
+  .demo-lb-menu-row .ttl {
+    display: inline-block; align-self: flex-start;
+    padding: 1px 8px; font-size: 13px; font-weight: 700; color: #ffd166;
+    background: linear-gradient(135deg, rgba(255,209,102,0.15), rgba(255,140,66,0.15));
+    border: 1.5px solid rgba(255,209,102,0.5);
+    border-radius: 8px; line-height: 1.3;
+  }
   .demo-lb-menu-row .val {
     color: #ffd166; font-size: 17px; font-weight: 900; flex-shrink: 0; margin-left: 4px;
   }
@@ -404,7 +416,13 @@
   .demo-active-row .name-line { display: flex; gap: 8px; align-items: center; }
   .demo-active-row .lv { color: #ffd166; font-size: 17px; font-weight: 800; line-height: 1; flex-shrink: 0; }
   .demo-active-row .name { font-size: 21px; font-weight: 800; color: #fff; line-height: 1; }
-  .demo-active-row .ttl { font-size: 17px; color: #ffd166; font-weight: 700; line-height: 1.1; }
+  .demo-active-row .ttl {
+    display: inline-block; align-self: flex-start;
+    padding: 1px 8px; font-size: 17px; font-weight: 700; color: #ffd166;
+    background: linear-gradient(135deg, rgba(255,209,102,0.15), rgba(255,140,66,0.15));
+    border: 1.5px solid rgba(255,209,102,0.5);
+    border-radius: 8px; line-height: 1.3;
+  }
 
   /* ===== H: mq-user（跑馬燈標準）===== */
   .demo-mq-user {
@@ -429,7 +447,11 @@
   }
   .demo-mq-user .name { font-size: 22px; font-weight: 800; color: #fff; line-height: 1; }
   .demo-mq-user .ttl {
-    font-size: 16px; color: #ffd166; font-weight: 700; line-height: 1.1;
+    display: inline-block; align-self: flex-start;
+    padding: 2px 9px; font-size: 16px; font-weight: 700; color: #ffd166;
+    background: linear-gradient(135deg, rgba(255,209,102,0.15), rgba(255,140,66,0.15));
+    border: 1.5px solid rgba(255,209,102,0.5);
+    border-radius: 8px; line-height: 1.3;
   }
 
   /* ===== I: mq-effect3-card（特殊大卡）===== */
@@ -541,6 +563,25 @@
     background: rgba(0,0,0,0.35); padding: 1px 6px;
     border-radius: 4px; font-size: 12px; color: #ffd166;
   }
+
+  /* ===== 名稱 / 稱號 跑馬燈（僅 A · status-profile demo 套用，對齊 index.html 實作範圍）===== */
+  .demo-status-profile .name,
+  .demo-status-profile .ttl {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    min-width: 0;
+    max-width: 180px;
+  }
+  .demo-status-profile .name.is-marquee,
+  .demo-status-profile .ttl.is-marquee {
+    text-overflow: clip;
+  }
+  .demo-status-profile .name.is-marquee .marquee-inner,
+  .demo-status-profile .ttl.is-marquee .marquee-inner {
+    display: inline-block;
+    white-space: nowrap;
+  }
 </style>
 </head>
 <body>
@@ -649,6 +690,61 @@
   <p style="margin-top: 12px;">📐 <b>規格決策</b>：「背板套用對象 = 玩家資訊欄」是 EFG 共通法則。<b>有 row container</b> 的場景（E/F）疊暗膜保證 rank/value 可讀；<b>無 row 容器</b> 的場景（G）讓玩家背板直接顯示，視覺更突出。H（跑馬燈）獨立維護，不納入此家族。</p>
 </div>
 
+<div class="spec-callout">
+  <h2>✓ 名稱 / 稱號 跑馬燈規格（已實作於 index.html A · status-profile）</h2>
+  <p>當名稱或稱號文字寬度超過所在容器時，啟動由左到右的跑馬燈循環，<b>避免被 ellipsis 截斷</b>讓使用者看不到完整內容。</p>
+  <p>📌 <b>套用範圍 = 僅 A · status-profile</b>（index.html 與本文件 demo 一致）。B–G 變體評估後暫不套用（理由詳見下方表格）。A demo 填入長字串以展示效果，其他變體 demo 維持原本短字示意。</p>
+
+  <h3 style="color:#ffd166; font-size:15px; margin-top:14px;">觸發條件</h3>
+  <table>
+    <thead>
+      <tr><th>項目</th><th>規則</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>判斷邏輯</td><td><code>scrollWidth &gt; clientWidth × ratio + 1</code>（純粹比較容器與文字寬度，與字數無關）</td></tr>
+      <tr><td>觸發前提</td><td>目標元素必須有 <code>overflow:hidden; white-space:nowrap;</code> 且容器寬度有上限</td></tr>
+      <tr><td>name 的 ratio</td><td><code>0.6</code>（壓縮可視寬以放大滑動量；用於固定寬 flex slot，例如 A 的 180px）</td></tr>
+      <tr><td>title 的 ratio</td><td><code>1.0</code>（只有真的溢出才觸發；chip 自動長到撞 max-width 才會啟動）</td></tr>
+      <tr><td>滑動距離</td><td><code>innerWidth - clientWidth × ratio</code>，動態量測</td></tr>
+    </tbody>
+  </table>
+
+  <h3 style="color:#ffd166; font-size:15px; margin-top:14px;">節奏（9 秒 loop）</h3>
+  <table>
+    <thead>
+      <tr><th>階段</th><th>時間</th><th>動作</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>① 頭部停留</td><td>0 – 3s</td><td>transform: translateX(0)，文字頭部完整可見讓使用者閱讀</td></tr>
+      <tr><td>② 線性捲動</td><td>3s – 6s</td><td>translateX(0) → translateX(-distance)，linear easing</td></tr>
+      <tr><td>③ 尾部停留</td><td>6s – 9s</td><td>translateX(-distance)，尾部完整可見讓使用者閱讀</td></tr>
+      <tr><td>④ 循環</td><td>9s →</td><td>跳回 0，重複（無過渡，因為頭尾各停 3s 視覺已連續）</td></tr>
+    </tbody>
+  </table>
+
+  <h3 style="color:#ffd166; font-size:15px; margin-top:14px;">實作要點</h3>
+  <ul style="margin: 8px 0; padding-left: 20px; font-size:13px; color:rgba(255,255,255,0.78); line-height:1.7;">
+    <li><b>用 Web Animations API 不用 CSS @keyframes</b>：父層 <code>.canvas</code> 有 <code>transform: scale()</code> 形成 compositor context，CSS keyframes 的 transform 動畫會被推到 compositor 但**視覺不重繪**（JS 讀得到值、畫面卻不動）。WAAPI 走不同路徑、可靠。</li>
+    <li><b>不使用 will-change: transform</b>：與父層 transform 並存會強制獨立 layer，再加上 calc(var()) 容易卡在不重繪狀態。</li>
+    <li><b>稱號 ✦ 前綴處理</b>：若 title 用 <code>::before { content: '✦ '; }</code>，marquee 啟動時 ::before 不會跟著捲，會跟內文重疊。解法：is-marquee 時 <code>::before { content: none; }</code>，並把 ✦ 直接前綴到 inner span 的 textContent。</li>
+    <li><b>動態文字更新時要重跑量測</b>：rename / 輪播 / 頁面切換 / resize 都要呼叫 refreshXxxMarquee()，重建 inner span 和重算距離。</li>
+    <li><b>WeakMap 管理 animation 實例</b>：每個 element 對應一個 Animation，re-apply 時先 cancel() 舊的，避免 leak。</li>
+  </ul>
+
+  <h3 style="color:#ffd166; font-size:15px; margin-top:14px;">目前套用範圍</h3>
+  <table>
+    <thead>
+      <tr><th>變體</th><th>index.html</th><th>exsample.html demo</th><th>說明</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>A · status-profile（name）</td><td class="y">✓</td><td class="y">✓</td><td>狀態列常駐，最容易觸發</td></tr>
+      <tr><td>A · status-profile（title）</td><td class="y">✓</td><td class="y">✓</td><td>已掛上 ratio 1.0</td></tr>
+      <tr><td>B / C / D / E / F / G</td><td class="n">未套</td><td class="y">demo 展示</td><td>實作前評估：多個 marquee 同時跑視覺雜亂、效能考量、輪播頻繁重綁等議題未解，暫不在 index.html 啟用</td></tr>
+      <tr><td>H / I（跑馬燈內）</td><td class="n">不適用</td><td class="n">不適用</td><td>整個 chip 已在跑馬燈動，再疊跑馬燈會雙重動畫</td></tr>
+    </tbody>
+  </table>
+</div>
+
 <div class="grid">
 
   <!-- A: status-profile -->
@@ -664,9 +760,9 @@
         <div class="info">
           <div class="name-line">
             <span class="lv">Lv.12</span>
-            <span class="name">Joan5428</span>
+            <span class="name">Joan5428abcdefghijklmnop</span>
           </div>
-          <div class="ttl">✦ 幸運兒</div>
+          <div class="ttl">✦ Luckyman abcdefghijklmnop</div>
           <div class="exp"></div>
         </div>
       </div>
@@ -1027,7 +1123,7 @@
     <li><b>頭像尺寸跨度大</b>：32px（mq-user）→ 80px（profile-card），共 6 種尺寸 → 可整理為 3 階規格（小 32-40 / 中 44-64 / 大 80）</li>
     <li><b>圓角值不一致</b>：18 / 20 / 24 / 28 / 32 / 34 → 可統一為 18（列）/ 20（區塊）/ 32（chip）三檔</li>
     <li><b>等級顯示有兩種樣式</b>：<code>.status-level</code>（純色文字）與 <code>.lv badge</code>（金橙漸層膠囊）→ 同一概念有兩種視覺</li>
-    <li><b>稱號顯示有三種樣式</b>：A 有膠囊外框；E/F/G 純色文字 <code>✦ 稱號</code>；H 有膠囊外框 → 可統一稱號 chip 規格</li>
+    <li style="color:#55e486;"><b>✓ 稱號樣式已統一</b>：A–H 全採用金色膠囊（金橙漸層底 + <code>1.5px solid rgba(255,209,102,0.5)</code> border + <code>border-radius 8~10px</code>），字級依場景縮放（13–18px）。<code>✦</code> 前綴維持。</li>
     <li><b>背板套用方式有 3 種</b>：(1) 整個容器作為 background（A、B、E、F、G、H）；(2) 半透明疊加 35% opacity（C、D）；(3) 加黑膜降亮（I）→ 影響可讀性的策略不一致</li>
   </ul>
   <h3>📐 統一規格建議方向</h3>
@@ -1039,6 +1135,46 @@
     <li>背板可讀性策略：根據文字密度決定是否加 overlay（密度高 → C/D 半透；低 → A/E 全鋪）</li>
   </ul>
 </div>
+
+<script>
+  // 名稱 / 稱號跑馬燈：與 index.html 同邏輯（WAAPI、3s+3s+3s 節奏）
+  // exsample.html 為純文件 demo、無 .canvas scale 父層，但仍用 WAAPI 保持一致
+  const _exampleMarqueeAnimations = new WeakMap();
+  function applyExampleMarquee(el) {
+    const prev = _exampleMarqueeAnimations.get(el);
+    if (prev) { prev.cancel(); _exampleMarqueeAnimations.delete(el); }
+    const inner0 = el.querySelector('.marquee-inner');
+    const text = inner0 ? inner0.textContent : el.textContent;
+    el.classList.remove('is-marquee');
+    el.textContent = text;
+    void el.offsetWidth;
+    if (el.scrollWidth > el.clientWidth + 1) {
+      el.innerHTML = '';
+      const inner = document.createElement('span');
+      inner.className = 'marquee-inner';
+      inner.textContent = text;
+      el.appendChild(inner);
+      el.classList.add('is-marquee');
+      const distance = Math.max(0, inner.offsetWidth - el.clientWidth);
+      const anim = inner.animate(
+        [
+          { transform: 'translateX(0px)',            offset: 0 },
+          { transform: 'translateX(0px)',            offset: 1/3 },
+          { transform: `translateX(${-distance}px)`, offset: 2/3 },
+          { transform: `translateX(${-distance}px)`, offset: 1 }
+        ],
+        { duration: 9000, iterations: Infinity, easing: 'linear' }
+      );
+      _exampleMarqueeAnimations.set(el, anim);
+    }
+  }
+  function refreshExampleMarquees() {
+    // 只 A demo 套用，對齊 index.html 實作範圍
+    document.querySelectorAll('.demo-status-profile .name, .demo-status-profile .ttl').forEach(applyExampleMarquee);
+  }
+  window.addEventListener('resize', refreshExampleMarquees);
+  setTimeout(refreshExampleMarquees, 0);
+</script>
 
 </body>
 </html>

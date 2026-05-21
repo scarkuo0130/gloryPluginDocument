@@ -36,10 +36,19 @@
       "WebFetch(domain:raw.githubusercontent.com)",
       "WebFetch(domain:developers.google.com)",
       "WebFetch(domain:www.merge.dev)",
-      "WebFetch(domain:github.com)"
+      "WebFetch(domain:github.com)",
+      "Bash(command -v node npx playwright chromium)",
+      "mcp__chrome-devtools",
+      "mcp__googledrive",
+      "mcp__claw-bot",
+      "mcp__ruflo",
+      "Read(//var/folders/**)",
+      "Read(//private/var/folders/**)",
+      "Bash(git rm *)"
     ],
     "additionalDirectories": [
-      "/private/tmp"
+      "/private/tmp",
+      "/Users/scarkuo"
     ]
   }
 }
