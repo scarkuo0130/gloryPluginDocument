@@ -14,8 +14,75 @@
     --user-bg: var(--player-bg);
   }
   * { box-sizing: border-box; }
-  /* .player-card 規格家族統一 border */
-  .player-card { border: 1px solid rgba(255, 255, 255, 0.18); }
+  /* .player-card 規格家族統一 border + 提供 position context 給 .ach-stars 等絕對定位附件 */
+  .player-card {
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    position: relative;
+  }
+  /* ===== 成就標記 ✮：壓在 .player-card 上緣 border 中線 =====
+     觸發條件：每完成一個白金 1 以上成就（不含遊戲成就）+1 ✮，上限 11 個 */
+  .ach-stars {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    display: inline-flex;
+    gap: 2px;
+    line-height: 1;
+    white-space: nowrap;
+    pointer-events: none;
+    z-index: 6;
+  }
+  .ach-stars > span {
+    color: #ffd166;
+    font-size: 14px;
+    line-height: 1;
+    text-shadow:
+      0 0 4px rgba(255, 209, 102, 0.65),
+      0 1px 2px rgba(0, 0, 0, 0.55);
+  }
+  /* B / C / D 變體：✮ 不壓 border，改放框內（上 padding 區）、字級從 14 → 18 稍微放大 */
+  .demo-menu-header .ach-stars,
+  .demo-profile-card .ach-stars,
+  .demo-profile-card-other .ach-stars {
+    top: 10px;
+    transform: translateX(-50%);
+    gap: 3px;
+  }
+  .demo-menu-header .ach-stars > span,
+  .demo-profile-card .ach-stars > span,
+  .demo-profile-card-other .ach-stars > span {
+    font-size: 18px;
+  }
+  /* 徽章 award_1060795.png：稱號左方正方形 chip
+     高度 = 該變體 .ttl 的 box-height（由 --ttl-h 變數提供），寬度 = 高度（aspect-ratio 1:1） */
+  .ttl-row {
+    display: inline-flex;
+    align-items: stretch;
+    gap: 6px;
+    align-self: flex-start;
+    height: var(--ttl-h, auto);
+    max-width: 100%;
+    min-width: 0;
+  }
+  .ttl-badge {
+    flex-shrink: 0;
+    height: 100%;
+    width: auto;
+    aspect-ratio: 1 / 1;
+    object-fit: contain;
+    display: block;
+  }
+  /* 各變體 .ttl 的 box-height（font-size × line-height + padding y×2 + border 1.5→實算 1+1）*/
+  .demo-status-profile     { --ttl-h: calc(18px * 1.3 + 8px); }   /* A · 31.4px */
+  .demo-menu-header        { --ttl-h: calc(17px * 1.3 + 8px); }   /* B · 30.1px */
+  .demo-profile-card,
+  .demo-profile-card-other { --ttl-h: calc(18px * 1.2 + 10px); }  /* C/D · ~31.6px（normal line-height ≈1.2）*/
+  .demo-lb-item            { --ttl-h: calc(13px * 1.3 + 6px); }   /* E · 22.9px */
+  .demo-lb-menu-row        { --ttl-h: calc(13px * 1.3 + 4px); }   /* F · 20.9px */
+  .demo-active-row         { --ttl-h: calc(17px * 1.3 + 4px); }   /* G · 26.1px */
+  .demo-mq-user            { --ttl-h: calc(16px * 1.3 + 6px); }   /* H · 26.8px */
+  .demo-mq-effect3         { --ttl-h: calc(20px * 1.1); }         /* I · 22px（純文字，無 padding/border）*/
   html, body {
     margin: 0; padding: 0;
     background: linear-gradient(180deg, #090b13 0%, #142133 30%, #24192e 70%, #0b101c 100%);
@@ -185,12 +252,12 @@
   .demo-menu-header .name { font-size: 30px; font-weight: 700; color: #fff; line-height: 1; }
   .demo-menu-header .ttl {
     align-self: flex-start;
-    margin-bottom: 6px;
     padding: 3px 12px; font-size: 17px; font-weight: 700; color: #ffd166;
     background: linear-gradient(135deg, rgba(255,209,102,0.15), rgba(255,140,66,0.15));
     border: 1.5px solid rgba(255,209,102,0.5);
     border-radius: 10px; line-height: 1.3;
   }
+  .demo-menu-header .ttl-row { margin-bottom: 6px; }
   .demo-menu-header .id { font-size: 18px; color: rgba(255,255,255,0.5); }
 
   /* ===== C: profile-info-card（自己）===== */
@@ -224,11 +291,12 @@
     color: rgba(255,255,255,0.62); font-size: 18px; font-weight: 700;
   }
   .demo-profile-card .ttl {
-    display: inline-block; margin-top: 8px;
+    display: inline-block;
     padding: 4px 12px; font-size: 18px; font-weight: 800; color: #ffd166;
     background: rgba(255,209,102,0.15); border: 1.5px solid rgba(255,209,102,0.45);
     border-radius: 10px;
   }
+  .demo-profile-card .ttl-row { margin-top: 8px; }
   .demo-profile-card .vip-lbl {
     font-size: 20px; font-weight: 700; color: rgba(255,255,255,0.58);
   }
@@ -271,11 +339,12 @@
   }
   .demo-profile-card-other .name { font-size: 30px; font-weight: 900; color: #fff; line-height: 1; }
   .demo-profile-card-other .ttl {
-    display: inline-block; margin-top: 8px;
+    display: inline-block;
     padding: 4px 12px; font-size: 18px; font-weight: 800; color: #ffd166;
     background: rgba(255,209,102,0.15); border: 1.5px solid rgba(255,209,102,0.45);
     border-radius: 10px;
   }
+  .demo-profile-card-other .ttl-row { margin-top: 8px; }
   .demo-profile-card-other .vip-lbl {
     font-size: 20px; font-weight: 700; color: rgba(255,255,255,0.58);
   }
@@ -432,6 +501,7 @@
     background: var(--player-bg);
     background-size: cover;
     box-shadow: 0 8px 18px rgba(0,0,0,0.28), inset 0 0 18px var(--theme-glow);
+    position: relative;  /* anchor for .ach-stars */
   }
   .demo-mq-user .av {
     width: 50px; height: 50px; border-radius: 50%;
@@ -478,6 +548,7 @@
       0 0 44px rgba(255,209,102,0.28),
       inset 0 1px 0 rgba(255,255,255,0.18);
     display: flex; align-items: center; justify-content: center; gap: 14px;
+    position: relative;  /* anchor for .ach-stars */
   }
   .demo-mq-effect3 .av {
     width: 50px; height: 50px; border-radius: 50%;
@@ -745,6 +816,151 @@
   </table>
 </div>
 
+<div class="spec-callout">
+  <h2>✓ 成就星 ✮ 規格（unified 規則，A 已示範 max 11 顆）</h2>
+  <p>於 <code>.player-card</code> 上緣 border 中線壓上一列 ✮，作為玩家整體成就量的視覺指標。素材 = unicode ✮（U+272E）。</p>
+
+  <h3 style="color:#ffd166; font-size:15px; margin-top:14px;">數量規則</h3>
+  <table>
+    <thead>
+      <tr><th>項目</th><th>規則</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>觸發條件</td><td>每完成一個 <b>白金 1 以上 tier</b> 的成就 → +1 ✮</td></tr>
+      <tr><td>排除</td><td><b>遊戲成就</b>（單一遊戲攻略型）不計，只算跨遊戲 meta 成就</td></tr>
+      <tr><td>上限</td><td>11 ✮（目前設計 max）</td></tr>
+      <tr><td>0 ✮ 顯示</td><td>無任何達標 → 不渲染 <code>.ach-stars</code>（不顯示空列）</td></tr>
+    </tbody>
+  </table>
+
+  <h3 style="color:#ffd166; font-size:15px; margin-top:14px;">幾何規則</h3>
+  <table>
+    <thead>
+      <tr><th>項目</th><th>規則</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>位置</td><td>card 上緣 border 中線，水平置中（<code>top: 0; left: 50%; transform: translate(-50%, -50%)</code>）</td></tr>
+      <tr><td>視覺呈現</td><td>每個 ✮ 上半截在 border 外、下半截在 border 內，形成「壓在 border 上」的效果</td></tr>
+      <tr><td>顏色</td><td><code>#ffd166</code>（金色 brand accent）+ 金色 glow text-shadow</td></tr>
+      <tr><td>字級</td><td><code>14px</code>（A demo 實測）</td></tr>
+      <tr><td>間距</td><td><code>gap: 2px</code></td></tr>
+      <tr><td>pointer-events</td><td><code>none</code>（裝飾性，不擋下方點擊）</td></tr>
+      <tr><td>z-index</td><td>6（高於 card 內容，但低於 modal）</td></tr>
+    </tbody>
+  </table>
+
+  <h3 style="color:#ffd166; font-size:15px; margin-top:14px;">CSS 結構（unified spec）</h3>
+  <p>規則寫在頂層 <code>.player-card</code> scope，所有變體繼承。<code>.player-card</code> 須額外提供 <code>position: relative</code> 作為 absolute positioning 的 anchor。</p>
+  <pre style="background:rgba(0,0,0,0.35); padding:12px 16px; border-radius:8px; font-size:12px; color:#ffd166; overflow-x:auto;">.player-card { position: relative; ... }
+.ach-stars {
+  position: absolute; top: 0; left: 50%;
+  transform: translate(-50%, -50%);
+  display: inline-flex; gap: 2px;
+  pointer-events: none; z-index: 6;
+}
+.ach-stars &gt; span { color: #ffd166; font-size: 14px; ... }</pre>
+
+  <h3 style="color:#ffd166; font-size:15px; margin-top:14px;">HTML 結構</h3>
+  <pre style="background:rgba(0,0,0,0.35); padding:12px 16px; border-radius:8px; font-size:12px; color:#ffd166; overflow-x:auto;">&lt;div class="player-card ..."&gt;
+  &lt;div class="ach-stars" aria-label="成就：N 個白金以上成就"&gt;
+    &lt;span&gt;✮&lt;/span&gt; × N  (1 ≤ N ≤ 11)
+  &lt;/div&gt;
+  ... 其他內容 ...
+&lt;/div&gt;</pre>
+
+  <h3 style="color:#ffd166; font-size:15px; margin-top:14px;">目前套用範圍</h3>
+  <table>
+    <thead>
+      <tr><th>變體</th><th>exsample.html demo</th><th>index.html</th><th>說明</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>A · status-profile</td><td class="y">✓（max 11 ✮）</td><td class="y">✓（動態 N，從 <code>profiles[name].achStars</code> 讀）</td><td>常駐狀態列，主要展示位</td></tr>
+      <tr><td>B · menu-header</td><td class="y">✓（max 11 ✮）</td><td class="y">✓</td><td>主選單頂部，自身展示</td></tr>
+      <tr><td>C · profile-self</td><td class="y">✓（max 11 ✮）</td><td class="y">✓</td><td>個人資料頁，自身完整資訊</td></tr>
+      <tr><td>D · profile-other</td><td class="y">✓（max 11 ✮）</td><td class="y">✓</td><td>玩家資料頁，他人完整資訊</td></tr>
+      <tr><td>E · lb-item</td><td class="y">✓（max 11 ✮）</td><td class="y">✓</td><td>排行榜列（動態 render）</td></tr>
+      <tr><td>F · lb-menu-row</td><td class="y">✓（max 11 ✮）</td><td class="y">✓</td><td>選單預覽列（動態 render）</td></tr>
+      <tr><td>G · list-chip</td><td class="y">✓（max 11 ✮）</td><td class="y">✓</td><td>活躍玩家面板（動態 render）</td></tr>
+      <tr><td>H · mq-user</td><td class="y">✓（max 11 ✮）</td><td class="y">✓</td><td>跑馬燈 eff1/2 玩家 chip（動態 render）</td></tr>
+      <tr><td>I · mq-effect3-card</td><td class="y">✓（max 11 ✮）</td><td class="y">✓</td><td>跑馬燈 eff3 大卡（動態 render）</td></tr>
+    </tbody>
+  </table>
+
+  <h3 style="color:#ffd166; font-size:15px; margin-top:14px;">實作要點</h3>
+  <ul style="margin: 8px 0; padding-left: 20px; font-size:13px; color:rgba(255,255,255,0.78); line-height:1.7;">
+    <li><b>父層不可 <code>overflow: hidden</code></b>：否則上半截會被裁掉。index.html 的 <code>.status-profile</code> 目前有 <code>overflow: hidden</code>，套用前需評估改成 <code>overflow: visible</code> 或將 <code>.ach-stars</code> 改放在外層 wrapper。</li>
+    <li><b>必須是 <code>.player-card</code> 的直接 child</b>：因為 absolute 定位錨點來自 <code>.player-card { position: relative }</code>。放在更深層會錨錯。</li>
+    <li><b>動態渲染建議</b>：根據後端回傳的成就計數 N，render <code>N</code> 個 <code>&lt;span&gt;✮&lt;/span&gt;</code>。N=0 時整個 <code>.ach-stars</code> 不渲染。</li>
+    <li><b>不同變體可覆寫 font-size</b>：A 用 14px；如套到 F（小 chip）可降到 10px、A11y 仍保留 <code>aria-label</code>。</li>
+    <li><b>未來若需動畫</b>（成就解鎖時新增 ✮）：建議在新 span 上加 <code>animation: starPop</code>，並讓既有 ✮ 平移讓位（CSS transition on flex gap 即可）。</li>
+  </ul>
+</div>
+
+<div class="spec-callout">
+  <h2>✓ 稱號徽章規格（已實作 A–I 全套）</h2>
+  <p>所有玩家資訊版面的稱號（<code>.ttl</code>）左方一律加一個「徽章」icon，作為玩家成就 / 階級的視覺標記。素材 = <code>award_1060795.png</code>（單一共用 icon）。</p>
+
+  <h3 style="color:#ffd166; font-size:15px; margin-top:14px;">幾何規則</h3>
+  <table>
+    <thead>
+      <tr><th>項目</th><th>規則</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>位置</td><td>稱號左方，inline-flex 排列，<b>不在稱號 chip 內</b>（外掛同列 sibling）</td></tr>
+      <tr><td>形狀</td><td>正方形（<code>aspect-ratio: 1 / 1</code>）</td></tr>
+      <tr><td>高度</td><td>= 該變體稱號 chip 的 box-height（含 padding + border）</td></tr>
+      <tr><td>寬度</td><td>= 高度（square）</td></tr>
+      <tr><td>與稱號間距</td><td><code>gap: 6px</code>（全變體一致）</td></tr>
+      <tr><td>圖片填充</td><td><code>object-fit: contain</code>（保持原始比例不裁切）</td></tr>
+    </tbody>
+  </table>
+
+  <h3 style="color:#ffd166; font-size:15px; margin-top:14px;">CSS 結構（unified spec）</h3>
+  <p>頂層通用規則 + 變體用 <code>--ttl-h</code> CSS 變數傳遞高度。新增變體只需設一個變數值。</p>
+  <table>
+    <thead>
+      <tr><th>scope</th><th>規則</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>頂層 unified</td><td><code>.ttl-row { display: inline-flex; gap: 6px; height: var(--ttl-h, auto); ... }</code><br><code>.ttl-badge { height: 100%; aspect-ratio: 1/1; object-fit: contain; ... }</code></td></tr>
+      <tr><td>各變體</td><td><code>.demo-XXX { --ttl-h: calc(font × line-height + padding y×2 + 2px); }</code><br>※ <code>border: 1.5px</code> 在瀏覽器 computed 會 round 成 1px，故 border 算 2px 不是 3px</td></tr>
+    </tbody>
+  </table>
+
+  <h3 style="color:#ffd166; font-size:15px; margin-top:14px;">HTML 結構（unified pattern）</h3>
+  <pre style="background:rgba(0,0,0,0.35); padding:12px 16px; border-radius:8px; font-size:12px; color:#ffd166; overflow-x:auto;">&lt;div class="ttl-row"&gt;
+  &lt;img class="ttl-badge" src="award_1060795.png" alt="徽章"&gt;
+  &lt;div class="ttl"&gt;✦ Title&lt;/div&gt;
+&lt;/div&gt;</pre>
+
+  <h3 style="color:#ffd166; font-size:15px; margin-top:14px;">各變體實測 box-height</h3>
+  <table>
+    <thead>
+      <tr><th>變體</th><th>font-size</th><th>line-height</th><th>padding</th><th>border</th><th>--ttl-h calc</th><th>實測徽章</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>A · status-profile</td><td>18</td><td>1.3</td><td>3+3</td><td>1.5→2</td><td><code>18×1.3+8</code></td><td>31.39px</td></tr>
+      <tr><td>B · menu-header</td><td>17</td><td>1.3</td><td>3+3</td><td>1.5→2</td><td><code>17×1.3+8</code></td><td>30.09px</td></tr>
+      <tr><td>C · profile-self</td><td>18</td><td>normal(~1.2)</td><td>4+4</td><td>1.5→2</td><td><code>18×1.2+10</code></td><td>31.59px</td></tr>
+      <tr><td>D · profile-other</td><td>18</td><td>normal(~1.2)</td><td>4+4</td><td>1.5→2</td><td><code>18×1.2+10</code></td><td>31.59px</td></tr>
+      <tr><td>E · lb-item</td><td>13</td><td>1.3</td><td>2+2</td><td>1.5→2</td><td><code>13×1.3+6</code></td><td>22.89px</td></tr>
+      <tr><td>F · lb-menu-row</td><td>13</td><td>1.3</td><td>1+1</td><td>1.5→2</td><td><code>13×1.3+4</code></td><td>20.89px</td></tr>
+      <tr><td>G · list-chip</td><td>17</td><td>1.3</td><td>1+1</td><td>1.5→2</td><td><code>17×1.3+4</code></td><td>26.09px</td></tr>
+      <tr><td>H · mq-user</td><td>16</td><td>1.3</td><td>2+2</td><td>1.5→2</td><td><code>16×1.3+6</code></td><td>26.80px</td></tr>
+      <tr><td>I · mq-effect3</td><td>20</td><td>1.1</td><td>—</td><td>—</td><td><code>20×1.1</code></td><td>22.00px</td></tr>
+    </tbody>
+  </table>
+
+  <h3 style="color:#ffd166; font-size:15px; margin-top:14px;">實作要點</h3>
+  <ul style="margin: 8px 0; padding-left: 20px; font-size:13px; color:rgba(255,255,255,0.78); line-height:1.7;">
+    <li><b>row 高度必須鎖死</b>：若 row 不顯式設 height，<code>&lt;img&gt;</code> 會以 intrinsic size（512×512）撐爆容器。<code>align-self: stretch + aspect-ratio</code> 無法強制 shrink 圖片，故必須由 <code>--ttl-h</code> 顯式喂進 row height。</li>
+    <li><b>border 1.5px round 成 1px</b>：所有稱號 chip 用 <code>1.5px solid</code>，瀏覽器 computed border-width 實際是 1px 而非 1.5px，calc 時要算 1+1=2px。</li>
+    <li><b>icon 統一</b>：所有變體用同一張 <code>award_1060795.png</code>，視覺意義交給未來成就 / 階級系統決定（目前是 placeholder）。</li>
+    <li><b>稱號為「無」時須同步隱藏 .ttl-row</b>：避免徽章單獨懸空。在 index.html 的稱號切換 JS（titleOption、openPlayerProfile、rename）裡，hide title 時必須一併 hide .ttl-row。</li>
+    <li><b>稱號改用 inline-block 即可，不要保留原本的 align-self / margin</b>：margin 須移到 .ttl-row（B 的 margin-bottom、C/D 的 margin-top），否則會在 inline-flex 內錯位。</li>
+  </ul>
+</div>
+
 <div class="grid">
 
   <!-- A: status-profile -->
@@ -756,13 +972,19 @@
     </div>
     <div class="case-stage">
       <div class="demo-status-profile player-card player-card--status">
+        <div class="ach-stars" aria-label="成就：11 個白金以上成就">
+          <span>✮</span><span>✮</span><span>✮</span><span>✮</span><span>✮</span><span>✮</span><span>✮</span><span>✮</span><span>✮</span><span>✮</span><span>✮</span>
+        </div>
         <div class="av">🦊</div>
         <div class="info">
           <div class="name-line">
             <span class="lv">Lv.12</span>
             <span class="name">Joan5428abcdefghijklmnop</span>
           </div>
-          <div class="ttl">✦ Luckyman abcdefghijklmnop</div>
+          <div class="ttl-row">
+            <img class="ttl-badge" src="award_1060795.png" alt="徽章">
+            <div class="ttl">✦ Luckyman abcdefghijklmnop</div>
+          </div>
           <div class="exp"></div>
         </div>
       </div>
@@ -790,13 +1012,19 @@
     </div>
     <div class="case-stage">
       <div class="demo-menu-header player-card player-card--menu">
+        <div class="ach-stars" aria-label="成就：11 個白金以上成就">
+          <span>✮</span><span>✮</span><span>✮</span><span>✮</span><span>✮</span><span>✮</span><span>✮</span><span>✮</span><span>✮</span><span>✮</span><span>✮</span>
+        </div>
         <div class="av">🦊</div>
         <div class="info">
           <div class="name-line">
             <span class="lv">Lv.12</span>
             <span class="name">Joan5428</span>
           </div>
-          <div class="ttl">✦ 幸運兒</div>
+          <div class="ttl-row">
+            <img class="ttl-badge" src="award_1060795.png" alt="徽章">
+            <div class="ttl">✦ 幸運兒</div>
+          </div>
           <div class="id">ID: 88472103</div>
         </div>
       </div>
@@ -824,6 +1052,9 @@
     </div>
     <div class="case-stage">
       <div class="demo-profile-card player-card player-card--profile player-card--profile-self">
+        <div class="ach-stars" aria-label="成就：11 個白金以上成就">
+          <span>✮</span><span>✮</span><span>✮</span><span>✮</span><span>✮</span><span>✮</span><span>✮</span><span>✮</span><span>✮</span><span>✮</span><span>✮</span>
+        </div>
         <div class="top">
           <div class="av">🦊</div>
           <div>
@@ -832,7 +1063,10 @@
               <div class="rename-btn">✎</div>
             </div>
             <div class="id">ID: 88472103</div>
-            <div class="ttl">✦ 幸運兒</div>
+            <div class="ttl-row">
+              <img class="ttl-badge" src="award_1060795.png" alt="徽章">
+              <div class="ttl">✦ 幸運兒</div>
+            </div>
           </div>
         </div>
         <div class="vip-lbl">VIP</div>
@@ -864,11 +1098,17 @@
     </div>
     <div class="case-stage">
       <div class="demo-profile-card-other player-card player-card--profile player-card--profile-other">
+        <div class="ach-stars" aria-label="成就：11 個白金以上成就">
+          <span>✮</span><span>✮</span><span>✮</span><span>✮</span><span>✮</span><span>✮</span><span>✮</span><span>✮</span><span>✮</span><span>✮</span><span>✮</span>
+        </div>
         <div class="top">
           <div class="av">👑</div>
           <div>
             <div class="name">KingOfSpin</div>
-            <div class="ttl">✦ 王者</div>
+            <div class="ttl-row">
+              <img class="ttl-badge" src="award_1060795.png" alt="徽章">
+              <div class="ttl">✦ 王者</div>
+            </div>
           </div>
         </div>
         <div class="vip-lbl">VIP</div>
@@ -903,13 +1143,19 @@
           <div class="rank">🥇</div>
         </div>
         <div class="player-card player-card--list player-card--list-demo">
+          <div class="ach-stars" aria-label="成就：11 個白金以上成就">
+            <span>✮</span><span>✮</span><span>✮</span><span>✮</span><span>✮</span><span>✮</span><span>✮</span><span>✮</span><span>✮</span><span>✮</span><span>✮</span>
+          </div>
           <div class="av">👑</div>
           <div class="info">
             <div class="name-line">
               <span class="lv">Lv.38</span>
               <span class="name">KingOfSpin</span>
             </div>
-            <div class="ttl">✦ 王者</div>
+            <div class="ttl-row">
+              <img class="ttl-badge" src="award_1060795.png" alt="徽章">
+              <div class="ttl">✦ 王者</div>
+            </div>
           </div>
         </div>
         <div class="val-wrap">
@@ -950,13 +1196,19 @@
           <div class="rank">1</div>
         </div>
         <div class="player-card player-card--list-mini player-card--list-mini-demo">
+          <div class="ach-stars" aria-label="成就：11 個白金以上成就">
+            <span>✮</span><span>✮</span><span>✮</span><span>✮</span><span>✮</span><span>✮</span><span>✮</span><span>✮</span><span>✮</span><span>✮</span><span>✮</span>
+          </div>
           <div class="av">👑</div>
           <div class="info">
             <div class="name-line">
               <span class="lv">Lv.38</span>
               <span class="name">KingOfSpin</span>
             </div>
-            <div class="ttl">✦ 王者</div>
+            <div class="ttl-row">
+              <img class="ttl-badge" src="award_1060795.png" alt="徽章">
+              <div class="ttl">✦ 王者</div>
+            </div>
           </div>
         </div>
         <div class="val">125,000,000</div>
@@ -989,13 +1241,19 @@
     </div>
     <div class="case-stage">
       <div class="demo-active-row player-card player-card--list-chip">
+        <div class="ach-stars" aria-label="成就：11 個白金以上成就">
+          <span>✮</span><span>✮</span><span>✮</span><span>✮</span><span>✮</span><span>✮</span><span>✮</span><span>✮</span><span>✮</span><span>✮</span><span>✮</span>
+        </div>
         <div class="av">🎮</div>
         <div class="info">
           <div class="name-line">
             <span class="lv">Lv.12</span>
             <span class="name">Joan5428</span>
           </div>
-          <div class="ttl">✦ 幸運兒</div>
+          <div class="ttl-row">
+            <img class="ttl-badge" src="award_1060795.png" alt="徽章">
+            <div class="ttl">✦ 幸運兒</div>
+          </div>
         </div>
       </div>
     </div>
@@ -1022,13 +1280,19 @@
     </div>
     <div class="case-stage">
       <div class="demo-mq-user">
+        <div class="ach-stars" aria-label="成就：11 個白金以上成就">
+          <span>✮</span><span>✮</span><span>✮</span><span>✮</span><span>✮</span><span>✮</span><span>✮</span><span>✮</span><span>✮</span><span>✮</span><span>✮</span>
+        </div>
         <div class="av">🦊</div>
         <div class="info">
           <div class="name-line">
             <span class="lv">Lv.12</span>
             <span class="name">Joan5428</span>
           </div>
-          <div class="ttl">✦ 幸運兒</div>
+          <div class="ttl-row">
+            <img class="ttl-badge" src="award_1060795.png" alt="徽章">
+            <div class="ttl">✦ 幸運兒</div>
+          </div>
         </div>
       </div>
     </div>
@@ -1057,13 +1321,19 @@
       <div class="demo-mq-effect3-wrap">
         <div class="congrats">Congratulations</div>
         <div class="demo-mq-effect3">
+          <div class="ach-stars" aria-label="成就：11 個白金以上成就">
+            <span>✮</span><span>✮</span><span>✮</span><span>✮</span><span>✮</span><span>✮</span><span>✮</span><span>✮</span><span>✮</span><span>✮</span><span>✮</span>
+          </div>
           <div class="av">🦊</div>
           <div class="meta">
             <div class="name-row">
               <span class="lv">Lv.12</span>
               <span class="name">Joan5428</span>
             </div>
-            <div class="ttl">幸運兒</div>
+            <div class="ttl-row">
+              <img class="ttl-badge" src="award_1060795.png" alt="徽章">
+              <div class="ttl">幸運兒</div>
+            </div>
           </div>
         </div>
         <div class="bottom">Turnover 上榜第一名</div>
@@ -1097,20 +1367,21 @@
         <th>等級</th>
         <th>名稱</th>
         <th>稱號</th>
+        <th>徽章</th>
         <th>額外欄位</th>
         <th>容器形狀</th>
       </tr>
     </thead>
     <tbody>
-      <tr><td>A</td><td>status-profile</td><td class="y">✓</td><td class="y">60px</td><td class="y">22px</td><td class="y">20px</td><td class="y">✓</td><td>EXP 條</td><td>圓角 32px chip</td></tr>
-      <tr><td>B</td><td>menu-header</td><td class="y">✓</td><td class="y">64px</td><td class="y">14px</td><td class="y">22px</td><td class="y">✓</td><td>ID</td><td>圓角 20px 大區塊</td></tr>
-      <tr><td>C</td><td>profile-info-card（自）</td><td class="y">✓</td><td class="y">80px</td><td class="n">✗</td><td class="y">24px</td><td class="y">✓</td><td>ID + VIP + EXP + Next</td><td>圓角 24px 卡片</td></tr>
-      <tr><td>D</td><td>profile-info-card（他）</td><td class="y">✓</td><td class="y">80px</td><td class="n">✗</td><td class="y">24px</td><td class="y">✓</td><td>VIP</td><td>圓角 24px 卡片</td></tr>
-      <tr><td>E</td><td>lb-item</td><td class="y">✓</td><td class="y">44px</td><td class="y">12px</td><td class="y">16px</td><td class="y">✓</td><td>排名 + 趨勢 + 數值</td><td>圓角 18px 列</td></tr>
-      <tr><td>F</td><td>lb-menu-row</td><td class="y">✓</td><td class="y">40px</td><td class="y">14px</td><td class="y">16px</td><td class="y">✓</td><td>排名 + 數值</td><td>圓角 28px chip</td></tr>
-      <tr><td>G</td><td>active-player-meta</td><td class="y">✓</td><td class="y">39px</td><td class="y">15px</td><td class="y">17px</td><td class="y">✓</td><td class="n">—</td><td>圓角 32px chip</td></tr>
-      <tr><td>H</td><td>mq-user</td><td class="y">✓</td><td class="y">32px</td><td class="y">13px</td><td class="y">17px</td><td class="y">✓</td><td class="n">—</td><td>圓角 32px chip</td></tr>
-      <tr><td>I</td><td>mq-effect3-card</td><td class="y">✓</td><td class="y">36px</td><td class="y">13px</td><td class="y">19px</td><td class="y">✓</td><td>Congrats 標題 + 訊息</td><td>圓角 34px 大卡</td></tr>
+      <tr><td>A</td><td>status-profile</td><td class="y">✓</td><td class="y">60px</td><td class="y">22px</td><td class="y">20px</td><td class="y">✓</td><td class="y">31.4px</td><td>EXP 條</td><td>圓角 32px chip</td></tr>
+      <tr><td>B</td><td>menu-header</td><td class="y">✓</td><td class="y">64px</td><td class="y">14px</td><td class="y">22px</td><td class="y">✓</td><td class="y">30.1px</td><td>ID</td><td>圓角 20px 大區塊</td></tr>
+      <tr><td>C</td><td>profile-info-card（自）</td><td class="y">✓</td><td class="y">80px</td><td class="n">✗</td><td class="y">24px</td><td class="y">✓</td><td class="y">31.6px</td><td>ID + VIP + EXP + Next</td><td>圓角 24px 卡片</td></tr>
+      <tr><td>D</td><td>profile-info-card（他）</td><td class="y">✓</td><td class="y">80px</td><td class="n">✗</td><td class="y">24px</td><td class="y">✓</td><td class="y">31.6px</td><td>VIP</td><td>圓角 24px 卡片</td></tr>
+      <tr><td>E</td><td>lb-item</td><td class="y">✓</td><td class="y">44px</td><td class="y">12px</td><td class="y">16px</td><td class="y">✓</td><td class="y">22.9px</td><td>排名 + 趨勢 + 數值</td><td>圓角 18px 列</td></tr>
+      <tr><td>F</td><td>lb-menu-row</td><td class="y">✓</td><td class="y">40px</td><td class="y">14px</td><td class="y">16px</td><td class="y">✓</td><td class="y">20.9px</td><td>排名 + 數值</td><td>圓角 28px chip</td></tr>
+      <tr><td>G</td><td>active-player-meta</td><td class="y">✓</td><td class="y">39px</td><td class="y">15px</td><td class="y">17px</td><td class="y">✓</td><td class="y">26.1px</td><td class="n">—</td><td>圓角 32px chip</td></tr>
+      <tr><td>H</td><td>mq-user</td><td class="y">✓</td><td class="y">32px</td><td class="y">13px</td><td class="y">17px</td><td class="y">✓</td><td class="y">26.8px</td><td class="n">—</td><td>圓角 32px chip</td></tr>
+      <tr><td>I</td><td>mq-effect3-card</td><td class="y">✓</td><td class="y">36px</td><td class="y">13px</td><td class="y">19px</td><td class="y">✓</td><td class="y">22.0px</td><td>Congrats 標題 + 訊息</td><td>圓角 34px 大卡</td></tr>
     </tbody>
   </table>
 </div>

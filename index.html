@@ -155,7 +155,76 @@
   /* ===== .player-card 規格家族基礎（所有玩家資訊欄變體共用） ===== */
   .player-card {
     border: 1px solid rgba(255, 255, 255, 0.18);
+    position: relative;  /* anchor 給 .ach-stars 絕對定位 */
   }
+
+  /* ===== 成就標記 ✮：壓在 .player-card（或變體）上緣 border 中線 =====
+     觸發條件：每完成一個白金 1 以上成就（不含遊戲成就）+1 ✮，上限 11 個。0 顆時不渲染 .ach-stars */
+  .ach-stars {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    display: inline-flex;
+    gap: 2px;
+    line-height: 1;
+    white-space: nowrap;
+    pointer-events: none;
+    z-index: 6;
+  }
+  .ach-stars > span {
+    color: #ffd166;
+    font-size: 14px;
+    line-height: 1;
+    text-shadow:
+      0 0 4px rgba(255, 209, 102, 0.65),
+      0 1px 2px rgba(0, 0, 0, 0.55);
+  }
+  /* B / C / D 變體：✮ 不壓 border，改放框內（上 padding 區）、字級從 14 → 18 稍微放大 */
+  .menu-header .ach-stars,
+  .profile-info-card .ach-stars {
+    top: 10px;
+    transform: translateX(-50%);
+    gap: 3px;
+  }
+  .menu-header .ach-stars > span,
+  .profile-info-card .ach-stars > span {
+    font-size: 18px;
+  }
+  /* H、I 非 .player-card 家族，但要 anchor → 也提供 position relative */
+  .mq-user, .mq-effect3-card { position: relative; }
+
+  /* ===== 稱號徽章 award_1060795.png：稱號左方正方形 chip =====
+     高度 = 該變體稱號 box-height（由 --ttl-h 變數提供），寬度 = 高度（aspect-ratio 1:1） */
+  .ttl-row {
+    display: inline-flex;
+    align-items: stretch;
+    gap: 6px;
+    align-self: flex-start;
+    height: var(--ttl-h, auto);
+    max-width: 100%;
+    min-width: 0;
+  }
+  .ttl-badge {
+    flex-shrink: 0;
+    height: 100%;
+    width: auto;
+    aspect-ratio: 1 / 1;
+    object-fit: contain;
+    display: block;
+  }
+  /* 各變體 .ttl 的 box-height（font-size × line-height + padding y×2 + border 1.5→實算 1+1）*/
+  .status-profile          { --ttl-h: calc(18px * 1.3 + 8px); }   /* A · 31.4px */
+  .menu-header             { --ttl-h: calc(17px * 1.3 + 8px); }   /* B · 30.1px */
+  .profile-info-card       { --ttl-h: calc(18px * 1.2 + 10px); }  /* C/D · ~31.6px（normal line-height ≈1.2）*/
+  .lb-item                 { --ttl-h: calc(16px * 1.3 + 6px); }   /* E · 26.8px */
+  .lb-menu-row             { --ttl-h: calc(13px * 1.3 + 4px); }   /* F · 20.9px */
+  .player-card--list-chip  { --ttl-h: calc(17px * 1.3 + 4px); }   /* G · 26.1px（覆蓋 F 預設）*/
+  .mq-user                 { --ttl-h: calc(16px * 1.3 + 6px); }   /* H eff1 · 26.8px */
+  .marquee.marquee-effect-2 .mq-user { --ttl-h: calc(18px * 1.3 + 8px); }  /* H eff2 · 31.4px */
+  /* H 是 inline-flex row（align-items: center），override .ttl-row 的 flex-start → center */
+  .mq-user .ttl-row { align-self: center; }
+  .mq-effect3-card         { --ttl-h: calc(20px * 1.1); }         /* I · 22px（純文字，無 padding/border）*/
 
   /* 玩家個人資料 chip（avatar + status-info）— 對齊 .mq-user 跑馬燈 chip 風格 */
   .status-profile {
@@ -166,7 +235,7 @@
     padding: 8px 18px 8px 10px;
     border-radius: 20px;
     position: relative;
-    overflow: hidden;
+    overflow: visible;  /* 改 visible 讓 .ach-stars 可越過上 border 顯示 */
     background: var(--user-bg, linear-gradient(135deg, #3a2570, #1a0f3e));
     background-size: cover;
     box-shadow:
@@ -249,7 +318,6 @@
   /* 稱號 (Title) - 名稱下方 / 經驗值上方 */
   .status-title {
     align-self: flex-start;
-    margin-top: 4px;
     padding: 3px 12px;
     font-size: 18px;
     font-weight: 700;
@@ -263,6 +331,7 @@
     text-overflow: ellipsis;
     white-space: nowrap;
   }
+  .status-profile .ttl-row { margin-top: 4px; }
   .status-title::before {
     content: '✦ ';
     opacity: 0.8;
@@ -463,7 +532,7 @@
     cursor: pointer;
     border-radius: 20px;
     position: relative;
-    overflow: hidden;
+    overflow: visible;  /* H：.mq-user 改 visible 讓 .ach-stars 越過上 border */
     background: var(--player-bg, rgba(255,255,255,0.05));
     background-size: cover;
     border: none;
@@ -814,7 +883,7 @@
     padding: 18px 18px 24px 18px;
     margin: -8px -8px 8px -8px;
     border-radius: 20px;
-    overflow: hidden;
+    overflow: visible;  /* B：.menu-header 改 visible 讓 .ach-stars 越過上 border */
     /* 同步顯示玩家背板 */
     background:
       linear-gradient(135deg, rgba(20, 10, 40, 0.48), rgba(15, 8, 35, 0.66)),
@@ -856,7 +925,6 @@
   }
   .menu-user-title {
     display: inline-block;
-    margin-bottom: 6px;
     padding: 3px 12px;
     font-size: 17px;
     font-weight: 700;
@@ -866,6 +934,7 @@
     border-radius: 10px;
     line-height: 1.3;
   }
+  .menu-header .ttl-row { margin-bottom: 6px; }
   .menu-user-title::before {
     content: '✦ ';
     opacity: 0.8;
@@ -1345,7 +1414,7 @@
     border-radius: 20px;
     padding: 22px 24px;
     position: relative;
-    overflow: hidden;
+    overflow: visible;  /* C/D：.profile-info-card 改 visible 讓 .ach-stars 越過上 border */
   }
   #profilePage .profile-info-card {
     background: var(--user-bg, linear-gradient(135deg, #3a2570, #1a0f3e));
@@ -1374,7 +1443,6 @@
   }
   .profile-info-title {
     display: inline-block;
-    margin-top: 8px;
     padding: 4px 12px;
     color: #ffd166;
     background: rgba(255, 209, 102, 0.15);
@@ -1383,6 +1451,7 @@
     font-size: 18px;
     font-weight: 800;
   }
+  .profile-info-card .ttl-row { margin-top: 8px; }
   .profile-name-line {
     display: flex;
     align-items: center;
@@ -2969,7 +3038,7 @@
       0 8px 18px rgba(0,0,0,0.28),
       inset 0 0 18px var(--theme-glow, rgba(255,255,255,0.12));
     cursor: pointer;
-    overflow: hidden;
+    overflow: visible;  /* G：.player-card--list-chip 改 visible 讓 .ach-stars 越過上 border */
   }
   .player-card--list-chip .lb-menu-avatar {
     width: 39px;
@@ -3852,6 +3921,7 @@
       <!-- Account Status Bar -->
       <div class="status-bar" id="statusBar" onclick="onStatusBarClick(event)">
         <div class="status-profile player-card player-card--status">
+          <div class="ach-stars" id="statusAchStars" aria-label="成就星數"></div>
           <div class="avatar-wrap">
             <div class="avatar" id="statusAvatar">🦊</div>
           </div>
@@ -3860,7 +3930,10 @@
               <span class="status-level" id="statusLevel">Lv.12</span>
               <span class="name-text" id="statusName">Joan5428abcdefg</span>
             </div>
-            <div class="status-title" id="statusTitle">Luckyman abcdefghijklmnop</div>
+            <div class="ttl-row">
+              <img class="ttl-badge" src="award_1060795.png" alt="徽章">
+              <div class="status-title" id="statusTitle">Luckyman abcdefghijklmnop</div>
+            </div>
             <div class="status-exp"><div class="status-exp-fill" id="expFill"></div></div>
           </div>
         </div>
@@ -3882,13 +3955,17 @@
       <!-- Main Menu -->
       <div class="menu" id="mainMenu">
         <div class="menu-header player-card player-card--menu" onclick="openPage('profilePage')">
+          <div class="ach-stars" id="menuAchStars" aria-label="成就星數"></div>
           <div class="menu-avatar" id="menuAvatar">🦊</div>
           <div class="menu-user-info">
             <div class="menu-user-name-line">
               <span class="menu-user-level-inline" id="menuUserLevel">Lv.12</span>
               <div class="menu-user-name" id="menuUserName">Joan5428</div>
             </div>
-            <div class="menu-user-title" id="menuUserTitle">幸運兒</div>
+            <div class="ttl-row">
+              <img class="ttl-badge" src="award_1060795.png" alt="徽章">
+              <div class="menu-user-title" id="menuUserTitle">幸運兒</div>
+            </div>
             <div class="menu-user-account">ID: 88472103</div>
           </div>
         </div>
@@ -3994,6 +4071,7 @@
           <div class="profile-section">
             <div class="profile-section-title">基本資訊</div>
             <div class="profile-info-card player-card player-card--profile player-card--profile-self">
+              <div class="ach-stars" id="profileAchStars" aria-label="成就星數"></div>
               <div class="profile-info-top">
                 <div class="profile-info-avatar" id="profileInfoAvatar">🦊</div>
                 <div>
@@ -4002,7 +4080,10 @@
                     <button type="button" class="profile-rename-btn" onclick="openRenameModal()" aria-label="修改暱稱">✎</button>
                   </div>
                   <div class="profile-id-line">ID: 88472103</div>
-                  <div class="profile-info-title" id="profileInfoTitle">✦ 幸運兒</div>
+                  <div class="ttl-row">
+                    <img class="ttl-badge" src="award_1060795.png" alt="徽章">
+                    <div class="profile-info-title" id="profileInfoTitle">✦ 幸運兒</div>
+                  </div>
                 </div>
               </div>
               <div class="profile-info-row">
@@ -4125,6 +4206,7 @@
           <div class="profile-section">
             <div class="profile-section-title">基本資訊</div>
             <div class="profile-info-card player-card player-card--profile player-card--profile-other">
+              <div class="ach-stars" id="playerProfileAchStars" aria-label="成就星數"></div>
               <div class="profile-info-top">
                 <div class="profile-info-avatar" id="playerProfileAvatar">🎮</div>
                 <div>
@@ -4132,7 +4214,10 @@
                     <div class="profile-info-value" id="playerProfileName">玩家名稱</div>
                   </div>
                   <div class="profile-id-line" id="playerProfileId">ID: --</div>
-                  <div class="profile-info-title" id="playerProfileTitle"></div>
+                  <div class="ttl-row">
+                    <img class="ttl-badge" src="award_1060795.png" alt="徽章">
+                    <div class="profile-info-title" id="playerProfileTitle"></div>
+                  </div>
                 </div>
               </div>
               <div class="profile-info-row">
@@ -4674,17 +4759,40 @@
     });
   }
 
-  // 玩家檔案：每個玩家附等級 / 頭像 / 稱號 / 背板主題（共用於排行榜、跑馬燈）
+  // 玩家檔案：每個玩家附等級 / 頭像 / 稱號 / 背板主題 / 成就星數（共用於排行榜、跑馬燈）
+  // achStars: 白金 1+ 跨遊戲成就數量，0~11，render 成 .player-card 上緣的 ✮ 列
   const profiles = {
-    KingOfSpin: { lv: 38, avatar: '👑', title: '王者',   bgKey: 'lava' },
-    Hades:      { lv: 32, avatar: '🐲', title: '賭神',   bgKey: 'galaxy' },
-    Sunny:      { lv: 28, avatar: '🦁', title: '幸運兒', bgKey: 'sunset' },
-    Misella:    { lv: 25, avatar: '🐍', title: '不敗',   bgKey: 'ocean' },
-    Dede:       { lv: 24, avatar: '🐯', title: '至尊',   bgKey: 'gold' },
-    Jesse:      { lv: 22, avatar: '🐼', title: '傳奇',   bgKey: 'jade' },
-    Ratu:       { lv: 20, avatar: '🐶', title: '新手',   bgKey: 'night' },
-    Joan5428:   { lv: 12, avatar: '🦊', title: '幸運兒', bgKey: DEFAULT_BG_THEME },
+    KingOfSpin: { lv: 38, avatar: '👑', title: '王者',   bgKey: 'lava',    achStars: 11 },
+    Hades:      { lv: 32, avatar: '🐲', title: '賭神',   bgKey: 'galaxy',  achStars: 10 },
+    Sunny:      { lv: 28, avatar: '🦁', title: '幸運兒', bgKey: 'sunset',  achStars: 8 },
+    Misella:    { lv: 25, avatar: '🐍', title: '不敗',   bgKey: 'ocean',   achStars: 7 },
+    Dede:       { lv: 24, avatar: '🐯', title: '至尊',   bgKey: 'gold',    achStars: 6 },
+    Jesse:      { lv: 22, avatar: '🐼', title: '傳奇',   bgKey: 'jade',    achStars: 5 },
+    Ratu:       { lv: 20, avatar: '🐶', title: '新手',   bgKey: 'night',   achStars: 3 },
+    Joan5428:   { lv: 12, avatar: '🦊', title: '幸運兒', bgKey: DEFAULT_BG_THEME, achStars: 4 },
   };
+
+  // 把成就星數 render 成 .ach-stars HTML；0 顆時回傳空字串（不渲染容器）
+  function renderAchStars(count) {
+    const n = Math.max(0, Math.min(11, Number(count) || 0));
+    if (n === 0) return '';
+    return `<div class="ach-stars" aria-label="成就：${n} 個白金以上成就">${'<span>✮</span>'.repeat(n)}</div>`;
+  }
+  // 填入既有 .ach-stars 容器（A/B/C/D 用，因為這些是靜態 HTML 預先建好的）
+  function setAchStarsInto(el, count) {
+    if (!el) return;
+    const n = Math.max(0, Math.min(11, Number(count) || 0));
+    el.innerHTML = '<span>✮</span>'.repeat(n);
+    el.setAttribute('aria-label', n ? `成就：${n} 個白金以上成就` : '無成就');
+    el.style.display = n === 0 ? 'none' : '';
+  }
+  // 同步「玩家自己」相關的 ✮（A/B/C）
+  function syncSelfAchStars() {
+    const n = profiles.Joan5428?.achStars ?? 0;
+    setAchStarsInto(document.getElementById('statusAchStars'), n);
+    setAchStarsInto(document.getElementById('menuAchStars'), n);
+    setAchStarsInto(document.getElementById('profileAchStars'), n);
+  }
 
   // 跑馬燈訊息：每筆指定玩家 + 訊息（個人資訊從 profiles 取）
   const marqueeItems = [
@@ -5151,13 +5259,14 @@
             <div class="lb-menu-rank">${player.rank}</div>
           </div>
           <div class="player-card player-card--list-mini" style="${playerTheme}">
+            ${renderAchStars(profile.achStars)}
             <div class="lb-menu-avatar">${profile.avatar || '🎮'}</div>
             <div class="lb-menu-meta">
               <div class="lb-menu-name">
                 <span class="lb-menu-lv">Lv.${profile.lv ?? player.lv ?? '?'}</span>
                 <span class="lb-menu-player" onclick="event.stopPropagation(); openPlayerProfile('${player.name}')" style="cursor:pointer;">${player.name}</span>
               </div>
-              ${profile.title ? `<div class="lb-menu-title">✦ ${profile.title}</div>` : ''}
+              ${profile.title ? `<div class="ttl-row"><img class="ttl-badge" src="award_1060795.png" alt="徽章"><div class="lb-menu-title">✦ ${profile.title}</div></div>` : ''}
             </div>
           </div>
           <div class="lb-menu-value">${player.value}</div>
@@ -5224,13 +5333,14 @@
     const profile = profiles[playerName] || {};
     return `
       <div class="player-card player-card--list-chip" style="${getBackgroundInlineVars(profile.bgKey)}" onclick="event.stopPropagation(); openPlayerProfile('${playerName}')">
+        ${renderAchStars(profile.achStars)}
         <div class="lb-menu-avatar">${profile.avatar || '🎮'}</div>
         <div class="lb-menu-meta">
           <div class="lb-menu-name">
             <span class="lb-menu-lv">Lv.${profile.lv ?? '?'}</span>
             <span class="lb-menu-player">${playerName}</span>
           </div>
-          ${profile.title ? `<div class="lb-menu-title">✦ ${profile.title}</div>` : ''}
+          ${profile.title ? `<div class="ttl-row"><img class="ttl-badge" src="award_1060795.png" alt="徽章"><div class="lb-menu-title">✦ ${profile.title}</div></div>` : ''}
         </div>
       </div>
     `;
@@ -5245,14 +5355,18 @@
     const mockId = String((hash * 1234567) % 99999999).padStart(8, '0');
     document.getElementById('playerProfileId').textContent = 'ID: ' + mockId;
     const titleEl = document.getElementById('playerProfileTitle');
+    const titleRow = titleEl?.closest('.ttl-row');
     if (p.title) {
       titleEl.textContent = '✦ ' + p.title;
       titleEl.style.display = '';
+      if (titleRow) titleRow.style.display = '';
     } else {
       titleEl.textContent = '';
       titleEl.style.display = 'none';
+      if (titleRow) titleRow.style.display = 'none';
     }
     document.getElementById('playerProfileLv').textContent = 'LV. ' + (p.lv ?? '?');
+    setAchStarsInto(document.getElementById('playerProfileAchStars'), p.achStars ?? 0);
     currentPlayerAchTab = 'total';
     document.querySelectorAll('#playerProfilePage .ach-tab').forEach(el => {
       el.classList.toggle('active', el.dataset.ach === 'total');
@@ -5643,6 +5757,14 @@
   syncBackgroundThemeOptions();
   applyCommittedTheme(DEFAULT_BG_THEME);
 
+  // 稱號連同左方徽章一起顯隱（.ttl-row 是 title 的外層包裝，必須同步 toggle）
+  function setTitleVisibility(titleEl, visible) {
+    if (!titleEl) return;
+    const row = titleEl.closest('.ttl-row');
+    if (row) row.style.display = visible ? '' : 'none';
+    else titleEl.style.display = visible ? '' : 'none';
+  }
+
   // 稱號選擇
   document.querySelectorAll('.title-option').forEach(el => {
     el.addEventListener('click', () => {
@@ -5659,20 +5781,20 @@
       const profileInfoTitle = document.getElementById('profileInfoTitle');
       if (title) {
         statusTitle.textContent = title;
-        statusTitle.style.display = 'inline-block';
+        setTitleVisibility(statusTitle, true);
         menuUserTitle.textContent = title;
-        menuUserTitle.style.display = 'inline-block';
+        setTitleVisibility(menuUserTitle, true);
         currentTitle.textContent = '✦ ' + title;
         profileInfoTitle.textContent = '✦ ' + title;
-        profileInfoTitle.style.display = 'inline-block';
+        setTitleVisibility(profileInfoTitle, true);
         playMemberSound('tap');
         showToast('稱號已更換：' + title);
       } else {
-        statusTitle.style.display = 'none';
-        menuUserTitle.style.display = 'none';
+        setTitleVisibility(statusTitle, false);
+        setTitleVisibility(menuUserTitle, false);
         currentTitle.textContent = '無稱號';
         profileInfoTitle.textContent = '無稱號';
-        profileInfoTitle.style.display = 'inline-block';
+        setTitleVisibility(profileInfoTitle, true);
         playMemberSound('tap');
         showToast('已取消稱號');
       }
@@ -5727,13 +5849,14 @@
             <div class="lb-rank ${rankCls}">${medal}</div>
           </div>
           <div class="player-card player-card--list" style="${playerTheme}">
+            ${renderAchStars(p.achStars)}
             <div class="lb-avatar" style="background: ${getBackgroundStyle(p.bgKey)}">${p.avatar || '👤'}</div>
             <div class="lb-info" style="flex:1; min-width:0;">
               <div class="lb-name">
                 <span class="lb-level">Lv.${x.lv}</span>
                 <span class="lb-player-name"${x.self ? '' : ` onclick="event.stopPropagation(); openPlayerProfile('${x.name}')" style="cursor:pointer;"`}>${x.name}${x.self ? ' (你)' : ''}</span>
               </div>
-              ${p.title ? `<div class="lb-title">✦ ${p.title}</div>` : ''}
+              ${p.title ? `<div class="ttl-row"><img class="ttl-badge" src="award_1060795.png" alt="徽章"><div class="lb-title">✦ ${p.title}</div></div>` : ''}
             </div>
           </div>
           <div class="lb-value-wrap">
@@ -6269,6 +6392,7 @@
         <div class="mq-row mq-effect3-pop">
           <div class="mq-effect3-congrats">Congratulations</div>
           <div class="mq-effect3-card" style="${getBackgroundInlineVars(p.bgKey)}" onclick="event.stopPropagation(); openPlayerProfile('${it.player}')">
+            ${renderAchStars(p.achStars)}
             <div class="mq-effect3-top">
               <span class="mq-avatar">${p.avatar || '👤'}</span>
               <div class="mq-effect3-meta">
@@ -6276,7 +6400,7 @@
                   <span class="mq-lv">Lv.${p.lv ?? '?'}</span>
                   <span class="mq-effect3-name">${it.player}</span>
                 </div>
-                ${p.title ? `<div class="mq-effect3-title">${p.title}</div>` : ''}
+                ${p.title ? `<div class="ttl-row"><img class="ttl-badge" src="award_1060795.png" alt="徽章"><div class="mq-effect3-title">${p.title}</div></div>` : ''}
               </div>
             </div>
           </div>
@@ -6287,9 +6411,10 @@
     return `
       <div class="mq-row">
         <div class="mq-user" style="${getBackgroundInlineVars(p.bgKey)}" onclick="event.stopPropagation(); openPlayerProfile('${it.player}')">
+          ${renderAchStars(p.achStars)}
           <span class="mq-avatar">${p.avatar || '👤'}</span>
           <span class="mq-lv">Lv.${p.lv ?? '?'}</span>
-          ${p.title ? `<span class="mq-title">✦ ${p.title}</span>` : ''}
+          ${p.title ? `<span class="ttl-row"><img class="ttl-badge" src="award_1060795.png" alt="徽章"><span class="mq-title">✦ ${p.title}</span></span>` : ''}
           <span class="mq-name">${it.player}</span>
         </div>
         <div class="mq-message">
@@ -6564,6 +6689,7 @@
   startPromotionCarousel();
   startLeaderboardMenuCarousel();
   startActivePlayerFeed();
+  syncSelfAchStars();
   renderOptions();
   if (userOptions.showMarquee) setTimeout(playMarquee, 600);
   renderMails();
