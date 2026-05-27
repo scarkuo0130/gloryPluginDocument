@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<title>E/F/G name 位置選項</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "PingFang TC", "Microsoft JhengHei", sans-serif;
+    background: linear-gradient(180deg, #090b13 0%, #142133 30%, #24192e 70%, #0b101c 100%);
+    color: #fff;
+    min-height: 100vh;
+    padding: 40px;
+  }
+  h1 { color: #ffd166; margin-bottom: 8px; font-size: 28px; }
+  .intro { color: rgba(255,255,255,0.7); margin-bottom: 32px; font-size: 14px; line-height: 1.6; }
+  .intro code { background: rgba(0,0,0,0.35); padding: 1px 6px; border-radius: 4px; color: #ffd166; font-size: 12px; }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 32px;
+  }
+  .case {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 16px;
+    padding: 22px;
+  }
+  .case h2 { font-size: 17px; margin-bottom: 6px; color: #fff; }
+  .case-no {
+    display: inline-block;
+    background: linear-gradient(135deg, #ffd166, #ff8c42);
+    color: #2a1810;
+    padding: 3px 10px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 800;
+    margin-right: 8px;
+  }
+  .desc {
+    color: rgba(255,255,255,0.65);
+    font-size: 12px;
+    line-height: 1.65;
+    margin-bottom: 16px;
+  }
+  .desc code {
+    background: rgba(0,0,0,0.35);
+    padding: 1px 5px;
+    border-radius: 3px;
+    color: #ffd166;
+    font-size: 11px;
+  }
+
+  /* === E 變體 chip 視覺基礎（模擬 .player-card--list）=== */
+  .chip {
+    width: 100%;
+    display: flex;
+    align-items: center;            /* 既有規則：垂直置中 */
+    gap: 18px;
+    padding: 12px 16px;
+    border-radius: 20px;
+    border: 1px solid rgba(255,255,255,0.18);
+    background:
+      linear-gradient(to right, rgba(15,10,30,0.55), rgba(15,10,30,0.85)),
+      linear-gradient(135deg, #1a0606 0%, #6d0e0e 35%, #c0392b 65%, #ff4500 100%);
+    background-size: cover;
+    position: relative;
+  }
+  .ach-stars {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    display: inline-flex;
+    gap: 2px;
+    line-height: 1;
+    pointer-events: none;
+    z-index: 6;
+  }
+  .ach-stars > span {
+    color: #ffd166;
+    font-size: 14px;
+    line-height: 1;
+    text-shadow: 0 0 4px rgba(255,209,102,0.65), 0 1px 2px rgba(0,0,0,0.55);
+  }
+  .av {
+    width: 78px; height: 78px;
+    border-radius: 50%;
+    border: 3px solid rgba(255,209,102,0.6);
+    background: linear-gradient(135deg, #ff6b9d, #ffc042);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 38px;
+    flex-shrink: 0;
+  }
+  .info {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .name-line {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-width: 0;
+    justify-content: center;        /* 水平置中（你要的）*/
+  }
+  .lv {
+    color: #ffd166;
+    font-size: 20px;
+    font-weight: 800;
+    line-height: 1;
+    flex-shrink: 0;
+  }
+  .name {
+    color: #fff;
+    font-size: 24px;
+    font-weight: 700;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .ttl-row {
+    display: inline-flex;
+    align-items: stretch;
+    gap: 6px;
+    align-self: flex-start;
+    height: 26.8px;
+  }
+  .ttl-row.hide-display { display: none; }
+  .ttl-row.hide-visibility { visibility: hidden; }
+  .ttl-badge {
+    flex-shrink: 0; height: 100%; aspect-ratio: 1/1;
+    background:
+      radial-gradient(circle at 50% 40%, #ffd166 0%, #ff8c42 60%, #c87018 100%);
+    border-radius: 4px;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.3);
+  }
+  .ttl {
+    padding: 2px 10px;
+    font-size: 16px;
+    font-weight: 700;
+    color: #ffd166;
+    background: linear-gradient(135deg, rgba(255,209,102,0.15), rgba(255,140,66,0.15));
+    border: 1.5px solid rgba(255,209,102,0.5);
+    border-radius: 10px;
+    line-height: 1.3;
+  }
+
+  /* === Option-specific overrides === */
+  .opt-2 .info { align-self: flex-start; }
+  .opt-3 .chip { align-items: flex-start; }
+  /* opt-4 uses visibility:hidden via .hide-visibility class */
+
+  .pros-cons {
+    margin-top: 16px;
+    padding: 12px 14px;
+    background: rgba(0,0,0,0.28);
+    border-radius: 10px;
+    font-size: 12px;
+    color: rgba(255,255,255,0.78);
+    line-height: 1.7;
+  }
+  .pros-cons b { color: #ffd166; }
+  .label-row {
+    display: flex; gap: 8px; margin-top: 6px; flex-wrap: wrap;
+  }
+  .tag {
+    padding: 2px 8px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 700;
+    background: rgba(255,255,255,0.08);
+    color: rgba(255,255,255,0.85);
+  }
+  .tag.warn { background: rgba(255,140,66,0.15); color: #ffb066; }
+  .tag.good { background: rgba(85,228,134,0.15); color: #55e486; }
+</style>
+</head>
+<body>
+  <h1>E/F/G name 位置 4 個選項</h1>
+  <p class="intro">
+    隱藏稱號 + 徽章後，name 的垂直位置因為 info 欄塌縮，從「上半」變成「正中」。<br>
+    4 個方案讓你選想要的視覺。所有方案的 <code>name 水平置中</code> 都保留（你要的）。背板用熔岩色示範。
+  </p>
+
+  <div class="grid">
+    <!-- Option 1: 不動 -->
+    <div class="case opt-1">
+      <h2><span class="case-no">1</span>不動（現狀）</h2>
+      <p class="desc">
+        隱藏 <code>.ttl-row</code> 後 info 欄塌成 1 行，被既有 <code>align-items: center</code> 拉到 chip 垂直中心。
+      </p>
+      <div class="chip">
+        <div class="ach-stars">
+          <span>✮</span><span>✮</span><span>✮</span><span>✮</span><span>✮</span><span>✮</span><span>✮</span><span>✮</span><span>✮</span><span>✮</span><span>✮</span>
+        </div>
+        <div class="av">👑</div>
+        <div class="info">
+          <div class="name-line">
+            <span class="lv">Lv.38</span>
+            <span class="name">KingOfSpin</span>
+          </div>
+          <div class="ttl-row hide-display">
+            <div class="ttl-badge"></div>
+            <div class="ttl">✦ 王者</div>
+          </div>
+        </div>
+      </div>
+      <div class="pros-cons">
+        <b>視覺結果：</b>name 在 chip 正中心、和 avatar 中軸對齊。<br>
+        <b>chip 高度：</b>緊湊（avatar 高 + padding）。<br>
+        <div class="label-row"><span class="tag good">avatar 與 name 對齊</span><span class="tag">chip 較矮</span></div>
+      </div>
+    </div>
+
+    <!-- Option 2: info 欄靠上 -->
+    <div class="case opt-2">
+      <h2><span class="case-no">2</span>info 欄靠上、avatar 仍置中</h2>
+      <p class="desc">
+        <code>.info { align-self: flex-start; }</code>。info 欄貼 chip 上緣，avatar 維持垂直中心。
+      </p>
+      <div class="chip">
+        <div class="ach-stars">
+          <span>✮</span><span>✮</span><span>✮</span><span>✮</span><span>✮</span><span>✮</span><span>✮</span><span>✮</span><span>✮</span><span>✮</span><span>✮</span>
+        </div>
+        <div class="av">👑</div>
+        <div class="info">
+          <div class="name-line">
+            <span class="lv">Lv.38</span>
+            <span class="name">KingOfSpin</span>
+          </div>
+          <div class="ttl-row hide-display">
+            <div class="ttl-badge"></div>
+            <div class="ttl">✦ 王者</div>
+          </div>
+        </div>
+      </div>
+      <div class="pros-cons">
+        <b>視覺結果：</b>name 在 chip 上方、avatar 在中心。<br>
+        <b>chip 高度：</b>跟 Option 1 一樣（仍是 avatar 主導）。<br>
+        <div class="label-row"><span class="tag warn">name 與 avatar 不齊</span><span class="tag">chip 同 Option 1 高</span></div>
+      </div>
+    </div>
+
+    <!-- Option 3: 整體靠上 -->
+    <div class="case opt-3">
+      <h2><span class="case-no">3</span>avatar + name 都靠上</h2>
+      <p class="desc">
+        <code>.chip { align-items: flex-start; }</code>。chip 內所有 children（avatar、info）都貼 chip 上緣。
+      </p>
+      <div class="chip">
+        <div class="ach-stars">
+          <span>✮</span><span>✮</span><span>✮</span><span>✮</span><span>✮</span><span>✮</span><span>✮</span><span>✮</span><span>✮</span><span>✮</span><span>✮</span>
+        </div>
+        <div class="av">👑</div>
+        <div class="info">
+          <div class="name-line">
+            <span class="lv">Lv.38</span>
+            <span class="name">KingOfSpin</span>
+          </div>
+          <div class="ttl-row hide-display">
+            <div class="ttl-badge"></div>
+            <div class="ttl">✦ 王者</div>
+          </div>
+        </div>
+      </div>
+      <div class="pros-cons">
+        <b>視覺結果：</b>avatar 跟 name 都靠 chip 頂部、有大量下方空白。<br>
+        <b>chip 高度：</b>跟 Option 1 一樣（avatar 高度沒變）。<br>
+        <div class="label-row"><span class="tag warn">chip 下方留空感重</span><span class="tag">整體偏「頂頭」風格</span></div>
+      </div>
+    </div>
+
+    <!-- Option 4: visibility hidden -->
+    <div class="case opt-4">
+      <h2><span class="case-no">4</span>稱號保留空間（隱形）</h2>
+      <p class="desc">
+        <code>.ttl-row { visibility: hidden; }</code> 代替 <code>display: none</code>。<br>稱號 + 徽章看不見但<b>佔位</b>，info 欄維持 2 行高度，name 在原本「上半」位置。
+      </p>
+      <div class="chip">
+        <div class="ach-stars">
+          <span>✮</span><span>✮</span><span>✮</span><span>✮</span><span>✮</span><span>✮</span><span>✮</span><span>✮</span><span>✮</span><span>✮</span><span>✮</span>
+        </div>
+        <div class="av">👑</div>
+        <div class="info">
+          <div class="name-line">
+            <span class="lv">Lv.38</span>
+            <span class="name">KingOfSpin</span>
+          </div>
+          <div class="ttl-row hide-visibility">
+            <div class="ttl-badge"></div>
+            <div class="ttl">✦ 王者</div>
+          </div>
+        </div>
+      </div>
+      <div class="pros-cons">
+        <b>視覺結果：</b>name 在 chip 上半、稱號位置空但仍佔高度。<br>
+        <b>chip 高度：</b>比 Option 1/3 高（保留稱號空間）。<br>
+        <div class="label-row"><span class="tag warn">chip 較高</span><span class="tag">name 不下滑</span></div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
