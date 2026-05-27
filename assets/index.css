@@ -4129,3 +4129,67 @@
     body { flex-direction: column; align-items: center; }
     .desc-panel { margin: 20px 0 0; }
   }
+
+/* ===== 個人資訊卡 · 新框卡（IDCARD_素材_v1，依 id_diamond 版面）===== */
+.idc-host {
+  background: none !important;
+  border: none !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+  overflow: visible;
+}
+.idc-host::after { display: none !important; }   /* 關掉舊背板 overlay，只露框 */
+.idc {
+  position: relative; width: 100%; aspect-ratio: 655 / 326;
+  container-type: inline-size;
+  text-size-adjust: 100%; -webkit-text-size-adjust: 100%;
+  filter: drop-shadow(0 10px 26px rgba(0,0,0,0.42));
+}
+.idc .idc-frame { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+/* 文字共用（font 下階段再處理，先普通白字+描邊） */
+.idc-name, .idc-id, .idc-exp, .idc-next, .idc-level, .idc-star-n {
+  color: #fff; text-shadow: 0 4px 5px rgba(0,0,0,0.7); white-space: nowrap; line-height: 1;
+}
+/* 頭像 + 等級盾 */
+.idc-av { position: absolute; left: 0%; top: 0%; height: 62%; aspect-ratio: 181/196; }
+.idc-av > img { height: 100%; width: auto; display: block; }
+.idc-level { position: absolute; left: 50%; top: 87%; transform: translate(-50%,-50%); font-size: 4cqw; font-weight: 800; }
+/* 徽章 */
+.idc-badge { position: absolute; right: 1.5%; top: 5%; width: 12.5%; height: auto; display: block; }
+/* 名字 */
+.idc-name { position: absolute; left: 29%; top: 35%; font-size: 6.8cqw; font-weight: 800; }
+/* 成就星 + 數字 */
+.idc-star { position: absolute; left: 65%; top: 34%; width: 8%; }
+.idc-star > img { width: 100%; height: auto; display: block; }
+.idc-star-n { position: absolute; left: 50%; top: 46%; transform: translate(-50%,-50%); font-size: 3.4cqw; font-weight: 800; }
+/* 編輯鈕 */
+.idc-edit { position: absolute; left: 80%; top: 38%; width: 5%; padding: 0; border: none; background: none; cursor: pointer; }
+.idc-edit > img { width: 100%; height: auto; display: block; }
+/* ID */
+.idc-id { position: absolute; left: 30.5%; top: 54%; font-size: 3.2cqw; opacity: 0.95; }
+/* VIP */
+.idc-vip { position: absolute; left: 5%; top: 64%; width: 8.5%; height: auto; display: block; }
+/* 經驗值文字（無 bar） */
+.idc-exp { position: absolute; right: 4%; top: 63%; font-size: 4cqw; font-weight: 700; }
+/* Next 底條 */
+.idc-next { position: absolute; left: 6%; top: 82%; font-size: 3.2cqw; font-weight: 500; opacity: 0.92; text-shadow: 3px 3px 3px rgba(0, 0, 0, 0.9); }
+/* 壓掉 legacy 成就星徽章（JS 會取消 hidden，框卡不用它，改用 idc-star） */
+.idc-host .ach-star-badge { display: none !important; }
+/* idc-name / idc-next 加黑邊（描邊在字後，不吃字形） */
+.idc-name, .idc-next {
+  -webkit-text-stroke: 0.08em #000;
+  paint-order: stroke fill;
+}
+/* 經驗值條（CSS 自畫，不用美術；填充 width = 經驗 %） */
+.idc-bar {
+  position: absolute; left: 5%; top: 74%; width: 90%;
+  height: 2.4cqw; min-height: 5px; border-radius: 99px;
+  background: rgba(0,0,0,0.42);
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,0.28);
+  overflow: hidden;
+}
+.idc-bar-fill {
+  display: block; height: 100%; border-radius: 99px;
+  background: linear-gradient(90deg, #57b0ff, #9fe0ff);
+  box-shadow: 0 0 6px rgba(120,200,255,0.6);
+}
