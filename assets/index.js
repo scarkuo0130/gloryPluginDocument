@@ -2350,3 +2350,48 @@
       syncCurrentMachineCard(m);
     }
   })();
+
+/* ===== ID 卡 hover 材質效果（移植自 slot_card_portable）===== */
+(function () {
+  function initIdcHover() {
+    var card = document.querySelector('.idc');
+    if (!card || card.__hoverInit) return;
+    card.__hoverInit = true;
+    var sweep = card.querySelector('.idc-sweep');
+    function queue(d) {
+      window.setTimeout(function () {
+        if (!sweep) return;
+        sweep.classList.remove('is-active');
+        void sweep.offsetWidth;       // 重啟動畫
+        sweep.classList.add('is-active');
+      }, d);
+    }
+    if (sweep) {
+      queue(700);
+      sweep.addEventListener('animationend', function () { queue(3200 + Math.random() * 3200); });
+    }
+    card.addEventListener('pointermove', function (e) {
+      var r = card.getBoundingClientRect();
+      var px = (e.clientX - r.left) / r.width;
+      var py = (e.clientY - r.top) / r.height;
+      card.style.setProperty('--tilt-y', ((px - 0.5) * 10.6).toFixed(2) + 'deg');
+      card.style.setProperty('--tilt-x', ((0.5 - py) * 8.1).toFixed(2) + 'deg');
+      card.style.setProperty('--gloss-x', (px * 100).toFixed(1) + '%');
+      card.style.setProperty('--gloss-y', (py * 100).toFixed(1) + '%');
+      card.style.setProperty('--gloss-opacity', '0.42');
+      card.style.setProperty('--prism-x', (px * 100).toFixed(1) + '%');
+      card.style.setProperty('--prism-y', (py * 100).toFixed(1) + '%');
+      card.style.setProperty('--prism-angle', (-24 + px * 48).toFixed(2) + 'deg');
+      card.style.setProperty('--prism-opacity', '0.94');
+    });
+    card.addEventListener('pointerleave', function () {
+      card.style.setProperty('--tilt-x', '0deg');
+      card.style.setProperty('--tilt-y', '0deg');
+      card.style.setProperty('--gloss-opacity', '0');
+      card.style.setProperty('--prism-opacity', '0');
+      card.style.setProperty('--prism-angle', '-14deg');
+    });
+  }
+  if (document.readyState !== 'loading') initIdcHover();
+  else document.addEventListener('DOMContentLoaded', initIdcHover);
+})();

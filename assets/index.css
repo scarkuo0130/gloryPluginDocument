@@ -4203,3 +4203,43 @@
   color: #fff; font-size: 3.2cqw; font-weight: 800; line-height: 1; white-space: nowrap;
   -webkit-text-stroke: 0.06em #4a5160; paint-order: stroke fill;
 }
+/* ===== hover 材質效果（移植自 slot_card_portable）===== */
+.idc-host { perspective: 1600px; }
+.idc {
+  --tilt-x: 0deg; --tilt-y: 0deg;
+  --gloss-x: 50%; --gloss-y: 50%; --gloss-opacity: 0;
+  --prism-x: 50%; --prism-y: 50%; --prism-opacity: 0; --prism-angle: -14deg;
+  transform: rotateX(var(--tilt-x)) rotateY(var(--tilt-y));
+  transform-style: preserve-3d;
+  transition: transform 200ms ease;
+}
+.idc-gloss, .idc-prism, .idc-sweep {
+  position: absolute; inset: 0; pointer-events: none; border-radius: 4cqw; z-index: 40;
+}
+.idc-gloss {
+  background: radial-gradient(circle at var(--gloss-x) var(--gloss-y), rgba(255,255,255,0.18), rgba(205,238,255,0.08) 12%, rgba(255,255,255,0.03) 18%, transparent 34%);
+  mix-blend-mode: screen; opacity: var(--gloss-opacity); transition: opacity 180ms ease;
+}
+.idc-prism {
+  background:
+    radial-gradient(circle at var(--prism-x) var(--prism-y), rgba(255,214,236,0.16) 0%, rgba(188,230,255,0.12) 12%, rgba(220,185,255,0.1) 24%, transparent 44%),
+    linear-gradient(calc(var(--prism-angle) + 10deg), transparent 22%, rgba(255,115,148,0) 30%, rgba(255,115,148,0.18) 34%, rgba(255,215,124,0.2) 39%, rgba(163,255,188,0.18) 44%, rgba(115,233,255,0.22) 49%, rgba(158,164,255,0.18) 54%, rgba(223,154,255,0.2) 58%, rgba(255,255,255,0.06) 61%, transparent 68%);
+  mix-blend-mode: screen; opacity: var(--prism-opacity);
+  filter: blur(0.4px) saturate(180%) contrast(114%); transition: opacity 180ms ease;
+}
+.idc-sweep {
+  padding: 6px;
+  background: linear-gradient(108deg, transparent 12%, transparent 36%, rgba(255,255,255,0.06) 40%, rgba(255,255,255,0.94) 48%, rgba(189,220,255,0.76) 52%, rgba(200,145,255,0.42) 56%, transparent 62%, transparent 100%);
+  background-size: 240% 100%; background-position: 165% 50%;
+  mix-blend-mode: screen; opacity: 0;
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite: xor;
+  mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); mask-composite: exclude;
+}
+.idc-sweep.is-active { animation: idcEdgeSweep 5.4s cubic-bezier(0.3,0.08,0.18,1) 1 both; }
+@keyframes idcEdgeSweep {
+  0%,72%,100% { background-position: 165% 50%; opacity: 0; }
+  14% { background-position: 98% 50%; opacity: 0.84; }
+  28% { background-position: 44% 50%; opacity: 0.98; }
+  40% { background-position: 0% 50%; opacity: 1; }
+  50% { background-position: -36% 50%; opacity: 0.3; }
+}
