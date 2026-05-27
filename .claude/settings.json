@@ -5,5 +5,17 @@
       "Bash(claude mcp get*)",
       "Bash(sed *)"
     ]
+  },
+  "hooks": {
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "/Users/scarkuo/Desktop/GameProject/sns/gloryPluginDocument/.claude/hooks/visual-verify-stop.sh"
+          }
+        ]
+      }
+    ]
   }
 }
