@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>index2 · 相對路徑素材實驗</title>
+<style>
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "PingFang TC", "Microsoft JhengHei", sans-serif;
+    background: linear-gradient(180deg, #090b13 0%, #142133 30%, #24192e 70%, #0b101c 100%);
+    color: #fff;
+    min-height: 100vh;
+    padding: 32px 22px 60px;
+  }
+  h1 { color: #ffd166; font-size: 24px; margin: 0 0 6px; }
+  .intro { color: rgba(255,255,255,0.72); font-size: 14px; line-height: 1.6; max-width: 720px; margin-bottom: 24px; }
+  .intro code { background: rgba(0,0,0,0.4); padding: 1px 6px; border-radius: 4px; color: #ffd166; font-size: 12px; }
+  .status {
+    display: inline-block; margin-bottom: 24px; padding: 10px 16px; border-radius: 10px;
+    font-weight: 700; font-size: 14px; border: 1px solid rgba(255,255,255,0.15);
+  }
+  .status.ok { background: rgba(46,213,115,0.16); color: #6bf0a0; }
+  .status.fail { background: rgba(255,56,96,0.16); color: #ff7a93; }
+  .card-row { display: grid; gap: 20px; max-width: 720px; }
+  figure { margin: 0; }
+  figcaption { color: rgba(255,255,255,0.6); font-size: 12px; margin-bottom: 8px; }
+  figcaption b { color: #9fd1ff; }
+  img.asset { display: block; width: 100%; height: auto; border-radius: 16px; box-shadow: 0 16px 40px rgba(0,0,0,0.4); }
+</style>
+</head>
+<body>
+  <h1>index2 · 相對路徑素材實驗</h1>
+  <p class="intro">
+    此頁刻意<strong>不用 base64</strong>,改用正常網頁架構:圖片放
+    <code>assets/</code> 資料夾,HTML 以相對路徑 <code>&lt;img src="assets/..."&gt;</code> 引用。
+    若下方狀態顯示綠色「全部載入成功」,代表透過 GitHub Pages(https)可正常以網頁架構處理素材,
+    美術的真 PNG 直接丟資料夾即可,不必塞肥 base64。
+  </p>
+
+  <div id="status" class="status">檢測中…</div>
+
+  <div class="card-row">
+    <figure>
+      <figcaption>大卡 · <b>assets/idcard_gold.png</b>(649×323)</figcaption>
+      <img class="asset" src="assets/idcard_gold.png" alt="大卡金階" data-asset />
+    </figure>
+    <figure>
+      <figcaption>中板 · <b>assets/hud_medium.png</b>(675×190)</figcaption>
+      <img class="asset" src="assets/hud_medium.png" alt="中板" data-asset />
+    </figure>
+  </div>
+
+  <script>
+    const imgs = Array.from(document.querySelectorAll('img[data-asset]'));
+    const statusEl = document.getElementById('status');
+    function report() {
+      const done = imgs.filter(i => i.complete);
+      if (done.length < imgs.length) return;
+      const ok = imgs.filter(i => i.naturalWidth > 0);
+      if (ok.length === imgs.length) {
+        statusEl.className = 'status ok';
+        statusEl.textContent = `✓ 全部載入成功(${ok.length}/${imgs.length})— 相對路徑素材可用`;
+      } else {
+        statusEl.className = 'status fail';
+        statusEl.textContent = `✗ 有素材載入失敗(${ok.length}/${imgs.length})— 路徑或部署有問題`;
+      }
+    }
+    imgs.forEach(i => { i.addEventListener('load', report); i.addEventListener('error', report); });
+    report();
+  </script>
+</body>
+</html>
