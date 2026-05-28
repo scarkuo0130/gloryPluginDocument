@@ -995,17 +995,16 @@
     const mockId = String((hash * 1234567) % 99999999).padStart(8, '0');
     document.getElementById('playerProfileId').textContent = 'ID: ' + mockId;
     const titleEl = document.getElementById('playerProfileTitle');
-    const titleRow = titleEl?.closest('.ttl-row');
     if (p.title) {
-      titleEl.textContent = '✦ ' + p.title;
+      titleEl.textContent = p.title;  // .idc-title 是 CSS 緞帶，文字本身不加 ✦
       titleEl.style.display = '';
-      if (titleRow) titleRow.style.display = '';
     } else {
       titleEl.textContent = '';
       titleEl.style.display = 'none';
-      if (titleRow) titleRow.style.display = 'none';
     }
-    document.getElementById('playerProfileLv').textContent = 'LV. ' + (p.lv ?? '?');
+    document.getElementById('playerProfileLv').textContent = p.lv ?? '?';  // .idc-level 盾牌只放數字
+    const starN = document.getElementById('playerProfileStarN');
+    if (starN) starN.textContent = String(p.achStars ?? 0);  // .idc-star-n 同步星數
     setAchStarBadge(document.getElementById('playerProfileAchStarBadge'), p.achStars ?? 0);
     currentPlayerAchTab = 'total';
     document.querySelectorAll('#playerProfilePage .ach-tab').forEach(el => {
