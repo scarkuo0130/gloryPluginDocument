@@ -2395,3 +2395,36 @@
   if (document.readyState !== 'loading') initIdcHover();
   else document.addEventListener('DOMContentLoaded', initIdcHover);
 })();
+
+/* ===== 中板 ID 卡 hover（輕微傾斜 + 珠光；同步自 exsample.html）===== */
+(function () {
+  function initMid(card) {
+    if (card.__hoverInit) return;
+    card.__hoverInit = true;
+    card.addEventListener('pointermove', function (e) {
+      var r = card.getBoundingClientRect();
+      var px = (e.clientX - r.left) / r.width;
+      var py = (e.clientY - r.top) / r.height;
+      card.style.setProperty('--tilt-y', ((px - 0.5) * 7.6).toFixed(2) + 'deg');
+      card.style.setProperty('--tilt-x', ((0.5 - py) * 5.8).toFixed(2) + 'deg');
+      card.style.setProperty('--gloss-x', (px * 100).toFixed(1) + '%');
+      card.style.setProperty('--gloss-y', (py * 100).toFixed(1) + '%');
+      card.style.setProperty('--gloss-opacity', '0.34');
+    });
+    card.addEventListener('pointerleave', function () {
+      card.style.setProperty('--tilt-x', '0deg');
+      card.style.setProperty('--tilt-y', '0deg');
+      card.style.setProperty('--gloss-opacity', '0');
+    });
+  }
+  function initAll() { document.querySelectorAll('.idcm').forEach(initMid); }
+  if (document.readyState !== 'loading') initAll();
+  else document.addEventListener('DOMContentLoaded', initAll);
+})();
+
+/* ===== 圖片防護：禁右鍵選單 / 禁拖曳（補 CSS 不足）===== */
+(function () {
+  function onlyImg(e) { return e.target && e.target.tagName === 'IMG'; }
+  document.addEventListener('contextmenu', function (e) { if (onlyImg(e)) e.preventDefault(); }, { capture: true });
+  document.addEventListener('dragstart',  function (e) { if (onlyImg(e)) e.preventDefault(); }, { capture: true });
+})();

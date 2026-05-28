@@ -985,6 +985,161 @@
     display: inline-block;
     white-space: nowrap;
   }
+
+  /* ===== C 美術 ID 卡（同步自 index.css，來源 slot_card_portable + IDCARD_素材_v1）===== */
+  .idc-host {
+    background: none !important; border: none !important; box-shadow: none !important;
+    padding: 0 !important; overflow: visible;
+  }
+  .idc-host::after { display: none !important; }
+  .idc {
+    position: relative; width: 100%; aspect-ratio: 655 / 326;
+    container-type: inline-size;
+    text-size-adjust: 100%; -webkit-text-size-adjust: 100%;
+    filter: drop-shadow(0 10px 26px rgba(0,0,0,0.42));
+  }
+  .idc .idc-frame { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+  .idc-name, .idc-id, .idc-exp, .idc-next, .idc-level, .idc-star-n {
+    color: #fff; text-shadow: 0 4px 5px rgba(0,0,0,0.7); white-space: nowrap; line-height: 1;
+  }
+  .idc-av { position: absolute; left: 0%; top: 0%; height: 62%; aspect-ratio: 181/196; }
+  .idc-av > img { height: 100%; width: auto; display: block; }
+  .idc-level { position: absolute; left: 50%; top: 87%; transform: translate(-50%,-50%); font-size: 4cqw; font-weight: 800; }
+  .idc-badge { position: absolute; right: 1.5%; top: 5%; width: 12.5%; height: auto; display: block; }
+  .idc-name { position: absolute; left: 29%; top: 35%; font-size: 6.8cqw; font-weight: 800; }
+  .idc-star { position: absolute; left: 65%; top: 34%; width: 8%; }
+  .idc-star > img { width: 100%; height: auto; display: block; }
+  .idc-star-n { position: absolute; left: 50%; top: 46%; transform: translate(-50%,-50%); font-size: 3.4cqw; font-weight: 800; }
+  .idc-edit { position: absolute; left: 80%; top: 38%; width: 5%; padding: 0; border: none; background: none; cursor: pointer; }
+  .idc-edit > img { width: 100%; height: auto; display: block; }
+  .idc-id { position: absolute; left: 30.5%; top: 54%; font-size: 3.2cqw; opacity: 0.95; }
+  .idc-vip { position: absolute; left: 5%; top: 64%; width: 8.5%; height: auto; display: block; }
+  .idc-exp { position: absolute; right: 4%; top: 63%; font-size: 4cqw; font-weight: 700; }
+  .idc-next { position: absolute; left: 6%; top: 82%; font-size: 3.2cqw; font-weight: 500; opacity: 0.92; text-shadow: 3px 3px 3px rgba(0, 0, 0, 0.9); }
+  .idc-host .ach-star-badge { display: none !important; }
+  .idc-name, .idc-next { -webkit-text-stroke: 0.08em #000; paint-order: stroke fill; }
+  .idc-bar {
+    position: absolute; left: 5%; top: 74%; width: 90%;
+    height: 2.4cqw; min-height: 5px; border-radius: 99px;
+    background: rgba(0,0,0,0.42);
+    box-shadow: inset 0 0 0 1px rgba(255,255,255,0.28);
+    overflow: hidden;
+  }
+  .idc-bar-fill {
+    display: block; height: 100%; border-radius: 99px;
+    background: linear-gradient(90deg, #57b0ff, #9fe0ff);
+    box-shadow: 0 0 6px rgba(120,200,255,0.6);
+  }
+  .idc-title {
+    position: absolute; left: 30%; top: 20%;
+    padding: 0.9cqw 2.8cqw; border-radius: 7px;
+    background: linear-gradient(180deg, #aeb6c2 0%, #818b99 100%);
+    border: 1.5px solid rgba(255,255,255,0.55);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.5), 0 2px 4px rgba(0,0,0,0.35);
+    color: #fff; font-size: 3.2cqw; font-weight: 800; line-height: 1; white-space: nowrap;
+    -webkit-text-stroke: 0.06em #4a5160; paint-order: stroke fill;
+  }
+  /* hover 材質效果 */
+  .idc-host { perspective: 1600px; }
+  .idc {
+    --tilt-x: 0deg; --tilt-y: 0deg;
+    --gloss-x: 50%; --gloss-y: 50%; --gloss-opacity: 0;
+    --prism-x: 50%; --prism-y: 50%; --prism-opacity: 0; --prism-angle: -14deg;
+    transform: rotateX(var(--tilt-x)) rotateY(var(--tilt-y));
+    transform-style: preserve-3d;
+    transition: transform 200ms ease;
+  }
+  .idc-gloss, .idc-prism, .idc-sweep {
+    position: absolute; inset: 0; pointer-events: none; border-radius: 4cqw; z-index: 40;
+  }
+  .idc-gloss {
+    background: radial-gradient(circle at var(--gloss-x) var(--gloss-y), rgba(255,255,255,0.18), rgba(205,238,255,0.08) 12%, rgba(255,255,255,0.03) 18%, transparent 34%);
+    mix-blend-mode: screen; opacity: var(--gloss-opacity); transition: opacity 180ms ease;
+  }
+  .idc-prism {
+    background:
+      radial-gradient(circle at var(--prism-x) var(--prism-y), rgba(255,214,236,0.16) 0%, rgba(188,230,255,0.12) 12%, rgba(220,185,255,0.1) 24%, transparent 44%),
+      linear-gradient(calc(var(--prism-angle) + 10deg), transparent 22%, rgba(255,115,148,0) 30%, rgba(255,115,148,0.18) 34%, rgba(255,215,124,0.2) 39%, rgba(163,255,188,0.18) 44%, rgba(115,233,255,0.22) 49%, rgba(158,164,255,0.18) 54%, rgba(223,154,255,0.2) 58%, rgba(255,255,255,0.06) 61%, transparent 68%);
+    mix-blend-mode: screen; opacity: var(--prism-opacity);
+    filter: blur(0.4px) saturate(180%) contrast(114%); transition: opacity 180ms ease;
+  }
+  .idc-sweep {
+    padding: 6px;
+    background: linear-gradient(108deg, transparent 12%, transparent 36%, rgba(255,255,255,0.06) 40%, rgba(255,255,255,0.94) 48%, rgba(189,220,255,0.76) 52%, rgba(200,145,255,0.42) 56%, transparent 62%, transparent 100%);
+    background-size: 240% 100%; background-position: 165% 50%;
+    mix-blend-mode: screen; opacity: 0;
+    -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite: xor;
+    mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); mask-composite: exclude;
+  }
+  .idc-sweep.is-active { animation: idcEdgeSweep 5.4s cubic-bezier(0.3,0.08,0.18,1) 1 both; }
+  @keyframes idcEdgeSweep {
+    0%,72%,100% { background-position: 165% 50%; opacity: 0; }
+    14% { background-position: 98% 50%; opacity: 0.84; }
+    28% { background-position: 44% 50%; opacity: 0.98; }
+    40% { background-position: 0% 50%; opacity: 1; }
+    50% { background-position: -36% 50%; opacity: 0.3; }
+  }
+
+  /* ===== A/B 中板 ID 卡（IDCARD_素材_v1/資訊背板_中：乾淨框 + 元件疊加 + HTML 疊字）===== */
+  .idcm-host {
+    background: none !important; border: none !important; box-shadow: none !important;
+    padding: 0 !important; overflow: visible; perspective: 1400px;
+  }
+  .idcm-host::after { display: none !important; }
+  .idcm {
+    /* aspect 對到「卡片本體」(mid_frame 實際圓角區 = 畫布上方 0–72%)，避開底部陰影空白 */
+    position: relative; width: 100%; aspect-ratio: 677 / 181;
+    container-type: inline-size;
+    text-size-adjust: 100%; -webkit-text-size-adjust: 100%;
+    filter: drop-shadow(0 8px 18px rgba(0,0,0,0.4));
+    --tilt-x: 0deg; --tilt-y: 0deg; --gloss-x: 50%; --gloss-y: 50%; --gloss-opacity: 0;
+    transform: rotateX(var(--tilt-x)) rotateY(var(--tilt-y));
+    transform-style: preserve-3d; transition: transform 200ms ease;
+  }
+  /* frame 以原比例 top 對齊、cover 只露卡片本體，切掉底部烘焙陰影（改用 CSS drop-shadow）*/
+  .idcm-frame { position: absolute; inset: 0; width: 100%; height: 100%; display: block; object-fit: cover; object-position: top center; }
+  .idcm-name, .idcm-level-n, .idcm-star-n {
+    color: #fff; text-shadow: 0 3px 4px rgba(0,0,0,0.7); white-space: nowrap; line-height: 1;
+    -webkit-text-stroke: 0.06em #000; paint-order: stroke fill;
+  }
+  /* 頭像（左側，近滿高）*/
+  .idcm-av { position: absolute; left: 1.5%; top: 0%; height: 88%; aspect-ratio: 136/137; }
+  .idcm-av > img { height: 100%; width: auto; display: block; border-radius: 50%; }
+  /* 等級盾 + 數字（壓在頭像底部中央）*/
+  .idcm-level { position: absolute; left: 8.5%; top: 70%; width: 8.5%; aspect-ratio: 54/46; }
+  .idcm-level > img { width: 100%; height: 100%; display: block; }
+  .idcm-level-n { position: absolute; left: 50%; top: 44%; transform: translate(-50%,-50%); font-size: 4.4cqw; font-weight: 800; }
+  /* 稱號（CSS 緞帶，仿 稱號_中，動態文字）*/
+  .idcm-title {
+    position: absolute; left: 26%; top: 17%;
+    padding: 0.9cqw 2.6cqw; border-radius: 6px;
+    background: linear-gradient(180deg, #ff9ed8 0%, #e75bb0 100%);
+    border: 1.5px solid rgba(255,255,255,0.7);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.6), 0 4px 4px rgba(0,0,0,0.35);
+    color: #fff; font-size: 4cqw; font-weight: 800; line-height: 1; white-space: nowrap;
+    -webkit-text-stroke: 0.06em #c23b85; paint-order: stroke fill;
+  }
+  /* 徽章 */
+  .idcm-badge { position: absolute; left: 45%; top: 9%; width: 7.5%; height: auto; display: block; }
+  /* 名字（下半，大字，貼底）*/
+  .idcm-name { position: absolute; left: 26%; top: 45%; font-size: 7cqw; font-weight: 800; }
+  /* 成就星 + 數字（右側大星）*/
+  .idcm-star { position: absolute; right: 0.5%; top: 16%; width: 19%; aspect-ratio: 125/121; }
+  .idcm-star > img { width: 100%; height: 100%; display: block; }
+  .idcm-star-n { position: absolute; left: 50%; top: 46%; transform: translate(-50%,-50%); font-size: 6.2cqw; font-weight: 800; }
+  /* EXP 細條（CSS，名字正下方）*/
+  .idcm-bar {
+    position: absolute; left: 26%; top: 80%; width: 48%;
+    height: 2cqw; min-height: 4px; border-radius: 99px;
+    background: rgba(0,0,0,0.4); box-shadow: inset 0 0 0 1px rgba(255,255,255,0.25); overflow: hidden;
+  }
+  .idcm-bar-fill { display: block; height: 100%; border-radius: 99px; background: linear-gradient(90deg,#57b0ff,#9fe0ff); }
+  /* hover 輕微珠光 */
+  .idcm-gloss {
+    position: absolute; inset: 0; pointer-events: none; border-radius: 6cqw; z-index: 40;
+    background: radial-gradient(circle at var(--gloss-x) var(--gloss-y), rgba(255,255,255,0.16), rgba(205,238,255,0.07) 14%, transparent 30%);
+    mix-blend-mode: screen; opacity: var(--gloss-opacity); transition: opacity 180ms ease;
+  }
 </style>
 </head>
 <body>
@@ -1426,35 +1581,32 @@
       <div class="case-where">出現位置：頂部狀態列（永遠可見） · 用途：玩家自身永久顯示</div>
     </div>
     <div class="case-stage">
-      <div class="demo-status-profile player-card player-card--status">
-        <div class="av">🦊</div>
-        <div class="info">
-          <div class="name-line">
-            <span class="lv">Lv.12</span>
-            <span class="name">Joan5428abcdefghijklmnop</span>
-          </div>
-          <div class="ttl-row">
-            <span class="ttl-badge" role="img" aria-label="徽章"></span>
-            <div class="ttl">✦ Luckyman abcdefghijklmnop</div>
-          </div>
-          <span class="ach-star-badge" aria-label="成就：4 個白金以上成就">
-            <span class="star">✮</span><span class="count">4</span>
-          </span>
-          <div class="exp"></div>
+      <div class="player-card player-card--status idcm-host" style="width:480px;">
+        <!-- ===== 中板 ID 卡（IDCARD_素材_v1/資訊背板_中）===== -->
+        <div class="idcm">
+          <img class="idcm-frame" src="assets/idcard/mid_frame.png" alt="" aria-hidden="true">
+          <div class="idcm-av"><img src="assets/idcard/mid_avatar.png" alt="頭像"></div>
+          <div class="idcm-level"><img src="assets/idcard/mid_level.png" alt=""><span class="idcm-level-n">12</span></div>
+          <div class="idcm-title">幸運兒</div>
+          <img class="idcm-badge" src="assets/idcard/mid_badge.png" alt="徽章">
+          <div class="idcm-name">Louis5566</div>
+          <div class="idcm-star"><img src="assets/idcard/mid_star.png" alt="成就星"><span class="idcm-star-n">5</span></div>
+          <div class="idcm-bar"><span class="idcm-bar-fill" style="width:62%"></span></div>
+          <div class="idcm-gloss"></div>
         </div>
       </div>
     </div>
     <div class="case-meta">
-      <b>套用：</b> <code>--user-bg</code> + <code>data-bv</code>（背板＋邊框變體）<br>
-      <b>主體：</b> <code>.player-card.player-card--status</code>（原 <code>.status-profile</code>，圓角 20px）
+      <b>改版：</b> 改用<b>中板美術 ID 卡</b>（<code>IDCARD_素材_v1/資訊背板_中</code>）→ 乾淨框 + 元件疊加 + HTML 疊字，取代舊 CSS 卡片<br>
+      <b>主體：</b> <code>.player-card.player-card--status.idcm-host</code> &gt; <code>.idcm</code>（aspect 677/251，文字 <code>cqw</code> 隨框縮放）
       <div class="tags">
-        <span class="tag tag-bg">背板</span>
-        <span class="tag tag-av">頭像 60px</span>
-        <span class="tag tag-lv">等級</span>
+        <span class="tag tag-bg">乾淨框 mid_frame（單一藍階）</span>
+        <span class="tag tag-av">頭像 + 等級盾</span>
+        <span class="tag tag-title">稱號（CSS 仿 稱號_中）</span>
         <span class="tag tag-name">名稱</span>
-        <span class="tag tag-title">稱號</span>
-        <span class="tag tag-extra">+ EXP 進度條</span>
+        <span class="tag tag-extra">+ 徽章 + 成就星 + EXP 細條</span>
       </div>
+      <p style="color:#ff8c42; margin-top:6px;">hover 套輕微傾斜 + 珠光（中板規格）。<b>B menu-header 共用同一套</b>（做成與 A 一樣，差別僅資料：B 顯示 ID）。</p>
     </div>
   </div>
 
@@ -1466,35 +1618,32 @@
       <div class="case-where">出現位置：主選單頂部 · 用途：玩家自身（含 ID）</div>
     </div>
     <div class="case-stage">
-      <div class="demo-menu-header player-card player-card--menu">
-        <div class="av">🦊</div>
-        <div class="info">
-          <div class="name-line">
-            <span class="lv">Lv.12</span>
-            <span class="name">Joan5428</span>
-          </div>
-          <div class="ttl-row">
-            <span class="ttl-badge" role="img" aria-label="徽章"></span>
-            <div class="ttl">✦ 幸運兒</div>
-          </div>
-          <span class="ach-star-badge" aria-label="成就：4 個白金以上成就">
-            <span class="star">✮</span><span class="count">4</span>
-          </span>
-          <div class="id">ID: 88472103</div>
+      <div class="player-card player-card--menu idcm-host" style="width:480px;">
+        <!-- ===== 中板 ID 卡（與 A 共用同一套 idcm，做成一樣）===== -->
+        <div class="idcm">
+          <img class="idcm-frame" src="assets/idcard/mid_frame.png" alt="" aria-hidden="true">
+          <div class="idcm-av"><img src="assets/idcard/mid_avatar.png" alt="頭像"></div>
+          <div class="idcm-level"><img src="assets/idcard/mid_level.png" alt=""><span class="idcm-level-n">12</span></div>
+          <div class="idcm-title">幸運兒</div>
+          <img class="idcm-badge" src="assets/idcard/mid_badge.png" alt="徽章">
+          <div class="idcm-name">Louis5566</div>
+          <div class="idcm-star"><img src="assets/idcard/mid_star.png" alt="成就星"><span class="idcm-star-n">5</span></div>
+          <div class="idcm-bar"><span class="idcm-bar-fill" style="width:62%"></span></div>
+          <div class="idcm-gloss"></div>
         </div>
       </div>
     </div>
     <div class="case-meta">
-      <b>套用：</b> <code>--user-bg</code>（背板整個鋪滿 header）<br>
-      <b>主體：</b> <code>.player-card.player-card--menu</code>（原 <code>.menu-header</code>，圓角 20px）
+      <b>改版：</b> 與 <b>A status-profile 共用同一套中板 ID 卡</b>（<code>.idcm</code>，做成一樣）<br>
+      <b>主體：</b> <code>.player-card.player-card--menu.idcm-host</code> &gt; <code>.idcm</code>（同 A）
       <div class="tags">
-        <span class="tag tag-bg">背板</span>
-        <span class="tag tag-av">頭像 64px</span>
-        <span class="tag tag-lv">等級</span>
+        <span class="tag tag-bg">乾淨框 mid_frame</span>
+        <span class="tag tag-av">頭像 + 等級盾</span>
+        <span class="tag tag-title">稱號（CSS）</span>
         <span class="tag tag-name">名稱</span>
-        <span class="tag tag-title">稱號</span>
-        <span class="tag tag-extra">+ ID</span>
+        <span class="tag tag-extra">+ 徽章 + 成就星 + EXP 細條</span>
       </div>
+      <p style="color:#ff8c42; margin-top:6px;">與 A 完全相同版面（<b>做成一樣</b>）；資料接線階段再依需求決定是否額外顯示 ID。</p>
     </div>
   </div>
 
@@ -1506,41 +1655,46 @@
       <div class="case-where">出現位置：個人資料頁 · 用途：自己的完整資訊</div>
     </div>
     <div class="case-stage">
-      <div class="demo-profile-card player-card player-card--profile player-card--profile-self">
-        <div class="top">
-          <div class="av">🦊</div>
-          <div class="head-text">
-            <div class="name-line">
-              <div class="name">Joan5428</div>
-              <div class="rename-btn">✎</div>
-            </div>
-            <div class="id">ID: 88472103</div>
-            <div class="ttl-row">
-              <span class="ttl-badge" role="img" aria-label="徽章"></span>
-              <div class="ttl">✦ 幸運兒</div>
-            </div>
-            <span class="ach-star-badge" aria-label="成就：4 個白金以上成就">
-              <span class="star">✮</span><span class="count">4</span>
-            </span>
+      <div class="profile-info-card player-card player-card--profile player-card--profile-self idc-host" style="width:440px;">
+        <!-- ===== 美術 ID 卡（IDCARD_素材_v1，依 id_diamond 版面）：乾淨框 + 元件疊加 + HTML 動態文字 ===== -->
+        <div class="idc">
+          <img class="idc-frame" src="assets/idcard/frame_diamond.png" alt="" aria-hidden="true">
+          <div class="idc-av">
+            <img src="assets/idcard/avatar_custom.png" alt="頭像">
+            <span class="idc-level">1</span>
           </div>
+          <img class="idc-badge" src="assets/idcard/badge.png" alt="徽章">
+          <div class="idc-title">新手</div>
+          <div class="idc-name">Louis5566</div>
+          <div class="idc-star">
+            <img src="assets/idcard/ach_star.png" alt="成就星">
+            <span class="idc-star-n">5</span>
+          </div>
+          <button type="button" class="idc-edit" aria-label="修改暱稱">
+            <img src="assets/idcard/edit_btn.png" alt="編輯">
+          </button>
+          <div class="idc-id">ID : 13145200</div>
+          <img class="idc-vip" src="assets/idcard/vip.png" alt="VIP">
+          <div class="idc-exp">1688 / 2000</div>
+          <div class="idc-bar"><span class="idc-bar-fill" style="width:84%"></span></div>
+          <div class="idc-next">Next 解鎖 5 個機台、新頭像、新背板</div>
+          <div class="idc-gloss"></div>
+          <div class="idc-prism"></div>
+          <div class="idc-sweep"></div>
         </div>
-        <div class="vip-lbl">VIP</div>
-        <div class="vip-val">LV. 21</div>
-        <div class="exp-track"></div>
-        <div class="next">Next 解鎖 5 個機台、新頭像、新背板</div>
       </div>
     </div>
     <div class="case-meta">
-      <b>套用：</b> <code>data-bv</code> + <code>--user-bg</code><br>
-      <b>主體：</b> <code>.player-card.player-card--profile.player-card--profile-self</code>（圓角 20px）
+      <b>改版：</b> 改用<b>美術 ID 卡</b>（<code>IDCARD_素材_v1</code>，依 id_diamond 版面）→ 乾淨框 + 元件疊加 + HTML 動態文字，取代舊 CSS 卡片<br>
+      <b>主體：</b> <code>.player-card.player-card--profile.player-card--profile-self.idc-host</code> &gt; <code>.idc</code>（aspect 655/326，文字用 <code>cqw</code> 隨框縮放）
       <div class="tags">
-        <span class="tag tag-bg">背板 (35% opacity)</span>
-        <span class="tag tag-av">頭像 80px</span>
-        <span class="tag tag-name">名稱 24px</span>
-        <span class="tag tag-title">稱號</span>
-        <span class="tag tag-extra">+ ID + VIP + EXP + Next 解鎖</span>
+        <span class="tag tag-bg">乾淨框 frame_diamond</span>
+        <span class="tag tag-av">頭像 + 等級盾</span>
+        <span class="tag tag-name">名稱 6.8cqw</span>
+        <span class="tag tag-title">新手稱號（CSS 仿 稱號_低等）</span>
+        <span class="tag tag-extra">+ 徽章 + 成就星 + VIP + ID + EXP條 + Next + 編輯鈕</span>
       </div>
-      <p style="color:#ff8c42; margin-top:6px;">⚠ 此處 <b>沒有 Lv.</b>，VIP 與 Lv 概念混合</p>
+      <p style="color:#ff8c42; margin-top:6px;">⚠ 仍<b>沒有 Lv.</b>（用等級盾數字 + VIP）；hover 套 4 效果（傾斜/珠光/稜鏡/流光）。階級框 5 階切換、字體、資料接線下階段。</p>
     </div>
   </div>
 
@@ -1900,6 +2054,79 @@
   }
   window.addEventListener('resize', refreshExampleMarquees);
   setTimeout(refreshExampleMarquees, 0);
+
+  /* ===== ID 卡 hover 材質效果（同步自 index.js；支援多張 .idc）===== */
+  (function () {
+    function initIdc(card, idx) {
+      if (card.__hoverInit) return;
+      card.__hoverInit = true;
+      var sweep = card.querySelector('.idc-sweep');
+      function queue(d) {
+        window.setTimeout(function () {
+          if (!sweep) return;
+          sweep.classList.remove('is-active');
+          void sweep.offsetWidth;
+          sweep.classList.add('is-active');
+        }, d);
+      }
+      if (sweep) {
+        queue(700 + idx * 320);
+        sweep.addEventListener('animationend', function () { queue(3200 + Math.random() * 3200); });
+      }
+      card.addEventListener('pointermove', function (e) {
+        var r = card.getBoundingClientRect();
+        var px = (e.clientX - r.left) / r.width;
+        var py = (e.clientY - r.top) / r.height;
+        card.style.setProperty('--tilt-y', ((px - 0.5) * 10.6).toFixed(2) + 'deg');
+        card.style.setProperty('--tilt-x', ((0.5 - py) * 8.1).toFixed(2) + 'deg');
+        card.style.setProperty('--gloss-x', (px * 100).toFixed(1) + '%');
+        card.style.setProperty('--gloss-y', (py * 100).toFixed(1) + '%');
+        card.style.setProperty('--gloss-opacity', '0.42');
+        card.style.setProperty('--prism-x', (px * 100).toFixed(1) + '%');
+        card.style.setProperty('--prism-y', (py * 100).toFixed(1) + '%');
+        card.style.setProperty('--prism-angle', (-24 + px * 48).toFixed(2) + 'deg');
+        card.style.setProperty('--prism-opacity', '0.94');
+      });
+      card.addEventListener('pointerleave', function () {
+        card.style.setProperty('--tilt-x', '0deg');
+        card.style.setProperty('--tilt-y', '0deg');
+        card.style.setProperty('--gloss-opacity', '0');
+        card.style.setProperty('--prism-opacity', '0');
+        card.style.setProperty('--prism-angle', '-14deg');
+      });
+    }
+    function initAll() {
+      document.querySelectorAll('.idc').forEach(initIdc);
+    }
+    if (document.readyState !== 'loading') initAll();
+    else document.addEventListener('DOMContentLoaded', initAll);
+  })();
+
+  /* ===== 中板 ID 卡 hover（輕微傾斜 + 珠光，對應 portable 中板規格）===== */
+  (function () {
+    function initMid(card) {
+      if (card.__hoverInit) return;
+      card.__hoverInit = true;
+      card.addEventListener('pointermove', function (e) {
+        var r = card.getBoundingClientRect();
+        var px = (e.clientX - r.left) / r.width;
+        var py = (e.clientY - r.top) / r.height;
+        card.style.setProperty('--tilt-y', ((px - 0.5) * 7.6).toFixed(2) + 'deg');
+        card.style.setProperty('--tilt-x', ((0.5 - py) * 5.8).toFixed(2) + 'deg');
+        card.style.setProperty('--gloss-x', (px * 100).toFixed(1) + '%');
+        card.style.setProperty('--gloss-y', (py * 100).toFixed(1) + '%');
+        card.style.setProperty('--gloss-opacity', '0.34');
+      });
+      card.addEventListener('pointerleave', function () {
+        card.style.setProperty('--tilt-x', '0deg');
+        card.style.setProperty('--tilt-y', '0deg');
+        card.style.setProperty('--gloss-opacity', '0');
+      });
+    }
+    function initAll() { document.querySelectorAll('.idcm').forEach(initMid); }
+    if (document.readyState !== 'loading') initAll();
+    else document.addEventListener('DOMContentLoaded', initAll);
+  })();
 </script>
 
 </body>

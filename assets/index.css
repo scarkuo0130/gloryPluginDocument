@@ -598,7 +598,7 @@
   .mail-dot-badge {
     position: absolute;
     bottom: 8px;
-    left: 80px;
+    left: 40px;
     z-index: 2;
     width: 16px;
     height: 16px;
@@ -616,7 +616,7 @@
   .status-bar.collapsed .mail-dot-badge {
     bottom: auto;
     left: auto;
-    top: 6px;
+    top: 100px;
     right: 6px;
   }
   @keyframes mailDotPulse {
@@ -4243,3 +4243,110 @@
   40% { background-position: 0% 50%; opacity: 1; }
   50% { background-position: -36% 50%; opacity: 0.3; }
 }
+
+/* ===== A/B 中板 ID 卡（IDCARD_素材_v1/資訊背板_中：乾淨框 + 元件疊加 + HTML 疊字；同步自 exsample.html）===== */
+.idcm-host {
+  background: none !important; border: none !important; box-shadow: none !important;
+  padding: 0 !important; overflow: visible; perspective: 1400px;
+}
+.idcm-host::after { display: none !important; }
+.idcm {
+  /* aspect 對到「卡片本體」(mid_frame 實際圓角區 = 畫布上方 0–72%)，避開底部陰影空白 */
+  position: relative; width: 100%; aspect-ratio: 677 / 181;
+  container-type: inline-size;
+  text-size-adjust: 100%; -webkit-text-size-adjust: 100%;
+  filter: drop-shadow(0 8px 18px rgba(0,0,0,0.4));
+  --tilt-x: 0deg; --tilt-y: 0deg; --gloss-x: 50%; --gloss-y: 50%; --gloss-opacity: 0;
+  transform: rotateX(var(--tilt-x)) rotateY(var(--tilt-y));
+  transform-style: preserve-3d; transition: transform 200ms ease;
+}
+/* frame 以原比例 top 對齊、cover 只露卡片本體，切掉底部烘焙陰影（改用 CSS drop-shadow）*/
+.idcm-frame { position: absolute; inset: 0; width: 100%; height: 100%; display: block; object-fit: cover; object-position: top center; }
+.idcm-name, .idcm-level-n, .idcm-star-n {
+  color: #fff; text-shadow: 0 3px 4px rgba(0,0,0,0.7); white-space: nowrap; line-height: 1;
+  -webkit-text-stroke: 0.06em #000; paint-order: stroke fill;
+}
+/* 頭像（左側，近滿高）*/
+.idcm-av { position: absolute; left: 1.5%; top: 0%; height: 88%; aspect-ratio: 136/137; }
+.idcm-av > img { height: 100%; width: auto; display: block; border-radius: 50%; }
+/* 等級盾 + 數字（壓在頭像底部中央）*/
+.idcm-level { position: absolute; left: 8.5%; top: 70%; width: 8.5%; aspect-ratio: 54/46; }
+.idcm-level > img { width: 100%; height: 100%; display: block; }
+.idcm-level-n { position: absolute; left: 50%; top: 44%; transform: translate(-50%,-50%); font-size: 4.4cqw; font-weight: 800; }
+/* 稱號（CSS 緞帶，仿 稱號_中，動態文字）*/
+.idcm-title {
+  position: absolute; left: 26%; top: 17%;
+  padding: 0.9cqw 2.6cqw; border-radius: 6px;
+  background: linear-gradient(180deg, #ff9ed8 0%, #e75bb0 100%);
+  border: 1.5px solid rgba(255,255,255,0.7);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.6), 0 4px 4px rgba(0,0,0,0.35);
+  color: #fff; font-size: 4cqw; font-weight: 800; line-height: 1; white-space: nowrap;
+  -webkit-text-stroke: 0.06em #c23b85; paint-order: stroke fill;
+}
+/* 徽章 */
+.idcm-badge { position: absolute; left: 45%; top: 9%; width: 7.5%; height: auto; display: block; }
+/* 名字（下半，大字，貼底）*/
+.idcm-name { position: absolute; left: 26%; top: 45%; font-size: 7cqw; font-weight: 800; }
+/* 成就星 + 數字（右側大星）*/
+.idcm-star { position: absolute; right: 0.5%; top: 16%; width: 19%; aspect-ratio: 125/121; }
+.idcm-star > img { width: 100%; height: 100%; display: block; }
+.idcm-star-n { position: absolute; left: 50%; top: 46%; transform: translate(-50%,-50%); font-size: 6.2cqw; font-weight: 800; }
+/* EXP 細條（CSS，名字正下方）*/
+.idcm-bar {
+  position: absolute; left: 26%; top: 80%; width: 48%;
+  height: 2cqw; min-height: 4px; border-radius: 99px;
+  background: rgba(0,0,0,0.4); box-shadow: inset 0 0 0 1px rgba(255,255,255,0.25); overflow: hidden;
+}
+.idcm-bar-fill { display: block; height: 100%; border-radius: 99px; background: linear-gradient(90deg,#57b0ff,#9fe0ff); }
+/* hover 輕微珠光 */
+.idcm-gloss {
+  position: absolute; inset: 0; pointer-events: none; border-radius: 6cqw; z-index: 40;
+  background: radial-gradient(circle at var(--gloss-x) var(--gloss-y), rgba(255,255,255,0.16), rgba(205,238,255,0.07) 14%, transparent 30%);
+  mix-blend-mode: screen; opacity: var(--gloss-opacity); transition: opacity 180ms ease;
+}
+/* idcm 內部的 legacy 隱藏節點（給既有 JS 設值，避免 getElementById null）*/
+.idcm-host .ach-star-badge { display: none !important; }
+
+/* idcm-host 在 index 實際版位的容器修正：原本 .status-profile / .menu-header 是 flex 容器、由內部 child 撐寬，
+   換成 idcm 後內部只有 .idcm（width:100% + aspect-ratio）必須由父容器先給寬度，否則塌成 0 */
+.status-profile.idcm-host {
+  display: block !important;
+  /* A 卡 vs panel 寬度分配：
+     - sp layout = 400px（panel 多取 46px → active-player-body 比較不會擠）
+     - .idcm width:440 + margin-left:-40 維持自然 aspect 並向左挪
+     - 卡片高度 ≈ 440 × 181/677 ≈ 118px（bar 130 內留約 6px 上下、不再硬吃全高） */
+  flex: 0 0 400px !important;
+  max-width: 100% !important;
+  min-width: 0;
+}
+/* fluid 寫法：idcm 寬度永遠跟著 sp 走 + 30px（向左 bleed 30px），
+   避免 bar 收合/展開過渡時 fixed 寬卡死、layout 跑掉 */
+.status-profile.idcm-host .idcm {
+  width: calc(100% + 30px) !important;
+  margin-left: -30px !important;
+}
+/* half-collapsed（panel 隱藏）時 A 取所有剩餘寬度（fluid 自動跟） */
+.status-bar.half-collapsed .status-profile.idcm-host {
+  flex: 1 1 0 !important;
+}
+/* collapsed（bar 縮到 39px）時 sp 必須真的隱藏，避免 idcm 元件露出來變第二個小點 */
+.status-bar.collapsed .status-profile.idcm-host { display: none !important; }
+/* 移除 status-bar 上下 padding，讓 A 卡頂到 bar 內邊（完全消除上下毛玻璃條） */
+.status-bar { padding-top: 0 !important; padding-bottom: 0 !important; }
+/* 把 sp ↔ panel 間的 18px gap 吃掉，讓 panel 緊貼 A 卡、寬度多 +18 */
+.status-bar > .active-player-panel { margin-left: -18px !important; }
+.menu-header.idcm-host {
+  display: block !important;
+  /* 向左右 bleed 出 menu 的 28px padding，讓 B 卡片填到 menu 外圈、視覺更大 */
+  margin: 0 -10px 12px -28px !important;
+}
+
+/* ===== 所有 <img> 禁選取 / 禁拖曳 / 禁長按選單（右鍵交由 JS 攔截）===== */
+img {
+  user-select: none;
+  -webkit-user-select: none;
+  -ms-user-select: none;
+  -webkit-user-drag: none;
+  -webkit-touch-callout: none;
+}
+

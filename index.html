@@ -22,24 +22,25 @@
 
       <!-- Account Status Bar -->
       <div class="status-bar" id="statusBar" onclick="onStatusBarClick(event)">
-        <div class="status-profile player-card player-card--status">
-          <div class="avatar-wrap">
-            <div class="avatar" id="statusAvatar">🦊</div>
+        <div class="status-profile player-card player-card--status idcm-host">
+          <!-- ===== A 狀態列：中板 ID 卡（IDCARD_素材_v1/資訊背板_中）===== -->
+          <div class="idcm">
+            <img class="idcm-frame" src="assets/idcard/mid_frame.png" alt="" aria-hidden="true">
+            <div class="idcm-av"><img src="assets/idcard/mid_avatar.png" alt="頭像"></div>
+            <div class="idcm-level"><img src="assets/idcard/mid_level.png" alt=""><span class="idcm-level-n">12</span></div>
+            <div class="idcm-title" id="statusTitle">幸運兒</div>
+            <img class="idcm-badge" src="assets/idcard/mid_badge.png" alt="徽章">
+            <div class="idcm-name" id="statusName">Joan5428</div>
+            <div class="idcm-star"><img src="assets/idcard/mid_star.png" alt="成就星"><span class="idcm-star-n">5</span></div>
+            <div class="idcm-bar"><span class="idcm-bar-fill" id="expFill" style="width:65%"></span></div>
+            <div class="idcm-gloss"></div>
           </div>
-          <div class="status-info">
-            <div class="status-name">
-              <span class="status-level" id="statusLevel">Lv.12</span>
-              <span class="name-text" id="statusName">Joan5428abcdefg</span>
-            </div>
-            <div class="ttl-row">
-              <span class="ttl-badge" role="img" aria-label="徽章"></span>
-              <div class="status-title" id="statusTitle">Luckyman abcdefghijklmnop</div>
-            </div>
-            <span class="ach-star-badge" id="statusAchStarBadge" aria-label="成就星數" hidden>
-              <span class="star">✮</span><span class="count"></span>
-            </span>
-            <div class="status-exp"><div class="status-exp-fill" id="expFill"></div></div>
-          </div>
+          <!-- legacy 隱藏節點：保留給既有 JS 設值（emoji 頭像 / Lv 字串 / 成就星徽章），避免 getElementById null -->
+          <div id="statusAvatar" hidden></div>
+          <div id="statusLevel" hidden></div>
+          <span class="ach-star-badge" id="statusAchStarBadge" aria-label="成就星數" hidden>
+            <span class="star">✮</span><span class="count"></span>
+          </span>
         </div>
         <!-- 活躍玩家面板（整合於 status-bar 右側） -->
         <div class="active-player-panel" id="activePlayerPanel">
@@ -58,22 +59,25 @@
 
       <!-- Main Menu -->
       <div class="menu" id="mainMenu">
-        <div class="menu-header player-card player-card--menu" onclick="openPage('profilePage')">
-          <div class="menu-avatar" id="menuAvatar">🦊</div>
-          <div class="menu-user-info">
-            <div class="menu-user-name-line">
-              <span class="menu-user-level-inline" id="menuUserLevel">Lv.12</span>
-              <div class="menu-user-name" id="menuUserName">Joan5428</div>
-            </div>
-            <div class="ttl-row">
-              <span class="ttl-badge" role="img" aria-label="徽章"></span>
-              <div class="menu-user-title" id="menuUserTitle">幸運兒</div>
-            </div>
-            <span class="ach-star-badge" id="menuAchStarBadge" aria-label="成就星數" hidden>
-              <span class="star">✮</span><span class="count"></span>
-            </span>
-            <div class="menu-user-account">ID: 88472103</div>
+        <div class="menu-header player-card player-card--menu idcm-host" onclick="openPage('profilePage')">
+          <!-- ===== B 主選單頭：中板 ID 卡（與 A 共用同一套 .idcm，做成一樣）===== -->
+          <div class="idcm">
+            <img class="idcm-frame" src="assets/idcard/mid_frame.png" alt="" aria-hidden="true">
+            <div class="idcm-av"><img src="assets/idcard/mid_avatar.png" alt="頭像"></div>
+            <div class="idcm-level"><img src="assets/idcard/mid_level.png" alt=""><span class="idcm-level-n">12</span></div>
+            <div class="idcm-title" id="menuUserTitle">幸運兒</div>
+            <img class="idcm-badge" src="assets/idcard/mid_badge.png" alt="徽章">
+            <div class="idcm-name" id="menuUserName">Joan5428</div>
+            <div class="idcm-star"><img src="assets/idcard/mid_star.png" alt="成就星"><span class="idcm-star-n">5</span></div>
+            <div class="idcm-bar"><span class="idcm-bar-fill" style="width:65%"></span></div>
+            <div class="idcm-gloss"></div>
           </div>
+          <!-- legacy 隱藏節點 -->
+          <div id="menuAvatar" hidden></div>
+          <div id="menuUserLevel" hidden></div>
+          <span class="ach-star-badge" id="menuAchStarBadge" aria-label="成就星數" hidden>
+            <span class="star">✮</span><span class="count"></span>
+          </span>
         </div>
         <button type="button" class="promotion-btn" onclick="openPromotionModal()" aria-label="Promotion">
           <img class="promotion-thumb" id="promotionThumb" src="" alt="">
