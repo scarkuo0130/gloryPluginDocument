@@ -2429,8 +2429,8 @@
     display: flex;
     align-items: center;
     gap: 12px;
-    padding: 6px 8px;
-    margin-bottom: 12px;
+    padding: 4px 8px;
+    margin-bottom: 0;
     background: transparent;
   }
   /* 玩家資訊欄（lb-item 內，含 avatar + 名稱/稱號），自帶背板 */
@@ -2548,7 +2548,7 @@
   .lb-value-wrap {
     text-align: right;
     flex-shrink: 0;
-    min-width: 110px;
+    width: 130px;  /* 固定寬避免 value 字數差異造成 card 寬→高不一致 */
   }
   .lb-value {
     font-size: 24px;
@@ -2557,13 +2557,14 @@
     line-height: 1.15;
   }
   .lb-value-label {
+    display: none;  /* 不顯示「本週累積」等子標籤 */
     margin-top: 4px;
     font-size: 13px;
     color: rgba(255,255,255,0.48);
   }
 
   .lb-self {
-    margin-top: 20px;
+    margin-top: 0;
     background: transparent;
   }
   /* 底部固定自身列：玩家資訊欄改用無暗膜（更突出） */
@@ -4370,6 +4371,7 @@ img {
 .idcs-host {
   background: none !important; border: none !important; box-shadow: none !important;
   padding: 0 !important; overflow: visible;
+  backdrop-filter: none !important; -webkit-backdrop-filter: none !important;
 }
 .idcs-host::after { display: none !important; }
 .idcs {
