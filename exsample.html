@@ -624,21 +624,11 @@
   /* ===== F: lb-menu-row（含 rank/value）— rank / value 在資訊欄外 ===== */
   .demo-lb-menu-row {
     width: 100%;
-    /* 2 行版面：rank 獨佔上方小行，card+value 主行飽滿 */
-    display: grid;
-    grid-template-columns: 1fr auto;
-    grid-template-areas:
-      "rank rank"
-      "card value";
-    align-items: center;
-    gap: 2px 8px;
+    display: flex; align-items: center; gap: 6px;
     background: transparent;
     border: none;
     padding: 0;
   }
-  .demo-lb-menu-row > .rank-wrap { grid-area: rank; justify-self: start; }
-  .demo-lb-menu-row > .player-card { grid-area: card; }
-  .demo-lb-menu-row > .val { grid-area: value; }
   .demo-lb-menu-row .rank-wrap {
     width: 44px; flex-shrink: 0;
     display: flex; align-items: center; gap: 4px;

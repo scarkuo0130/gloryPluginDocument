@@ -1258,9 +1258,25 @@
   }
   .menu-item.leaderboard-preview-card {
     grid-column: 1 / -1;
-    height: 420px;  /* 配合 F 改 grid 2 行版面（rank 上方獨佔），3 列高度增加 */
-    align-items: flex-start;
+    height: 450px;  /* 上下堆疊 + idcs aspect-locked 卡片變寬變高，3 列+header 需 ~450px */
+    /* 上下兩塊堆疊：上=icon+kicker+title 一列、下=lb-menu-preview 整條橫寬 */
+    display: grid;
+    grid-template-columns: auto 1fr;
+    grid-template-rows: auto auto 1fr;
+    grid-template-areas:
+      "icon kicker"
+      "icon title"
+      "list list";
+    align-items: center;
+    column-gap: 14px;
+    row-gap: 2px;
   }
+  /* 讓 menu-item-copy 的三個子元素變成 grid items，分到各自區域 */
+  .leaderboard-preview-card > .menu-item-icon { grid-area: icon; align-self: start; }
+  .leaderboard-preview-card > .menu-item-copy { display: contents; }
+  .leaderboard-preview-card > .menu-item-copy > .menu-item-kicker { grid-area: kicker; align-self: end; }
+  .leaderboard-preview-card > .menu-item-copy > .menu-item-label { grid-area: title; align-self: start; }
+  .leaderboard-preview-card > .menu-item-copy > .lb-menu-preview { grid-area: list; align-self: stretch; }
   .menu-item.compact {
     height: 152px;
     padding: 18px 12px;
@@ -1429,26 +1445,16 @@
     box-shadow: inset 0 1px 0 rgba(255,255,255,0.08);
     overflow: hidden;
   }
-  /* F 場景的 row container：含 rank + value，本身透明
-     Grid 2 行：rank 獨佔上方小行；card+value 主行飽滿利用整條橫寬 */
+  /* F 場景的 row container：含 rank + value，本身透明 */
   .lb-menu-row--with-rank {
-    display: grid;
-    grid-template-columns: 1fr auto;
-    grid-template-areas:
-      "rank rank"
-      "card value";
-    align-items: center;
-    gap: 2px 8px;
     background: transparent;
     border: none;
     box-shadow: none;
     padding: 0;
     min-height: 0;
     overflow: visible;
+    gap: 6px;
   }
-  .lb-menu-row--with-rank > .lb-menu-rank-wrap { grid-area: rank; justify-self: start; }
-  .lb-menu-row--with-rank > .player-card--list-mini { grid-area: card; }
-  .lb-menu-row--with-rank > .lb-menu-value { grid-area: value; }
   .lb-menu-rank-wrap {
     width: 44px;
     flex-shrink: 0;
