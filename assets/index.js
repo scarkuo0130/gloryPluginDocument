@@ -902,15 +902,14 @@
             <div class="lb-menu-trend ${trend}">${trendArrow}</div>
             <div class="lb-menu-rank">${player.rank}</div>
           </div>
-          <div class="player-card player-card--list-mini" style="${playerTheme}">
-            <div class="lb-menu-avatar">${profile.avatar || '🎮'}</div>
-            <div class="lb-menu-meta">
-              <div class="lb-menu-name">
-                <span class="lb-menu-lv">Lv.${profile.lv ?? player.lv ?? '?'}</span>
-                <span class="lb-menu-player" onclick="event.stopPropagation(); openPlayerProfile('${player.name}')" style="cursor:pointer;">${player.name}</span>
-              </div>
-              ${profile.title ? `<div class="ttl-row"><span class="ttl-badge" role="img" aria-label="徽章"></span><div class="lb-menu-title">✦ ${profile.title}</div></div>` : ''}
-              ${renderAchStars(profile.achStars)}
+          <div class="player-card player-card--list-mini idcs-host" onclick="event.stopPropagation(); openPlayerProfile('${player.name}')" style="cursor:pointer; ${playerTheme}">
+            <!-- F: 小板 ID 卡 -->
+            <div class="idcs">
+              <img class="idcs-frame" src="assets/idcard/sml_frame.png" alt="" aria-hidden="true">
+              <div class="idcs-av"><img src="assets/idcard/sml_avatar.png" alt="頭像"></div>
+              <div class="idcs-level"><img src="assets/idcard/sml_level.png" alt=""><span class="idcs-level-n">${profile.lv ?? player.lv ?? '?'}</span></div>
+              <div class="idcs-name">${player.name}</div>
+              <div class="idcs-star"><img src="assets/idcard/sml_star.png" alt="成就星"><span class="idcs-star-n">${profile.achStars ?? 0}</span></div>
             </div>
           </div>
           <div class="lb-menu-value">${player.value}</div>
@@ -974,15 +973,14 @@
   function renderActivePlayerMeta(playerName) {
     const profile = profiles[playerName] || {};
     return `
-      <div class="player-card player-card--list-chip" style="${getBackgroundInlineVars(profile.bgKey)}" onclick="event.stopPropagation(); openPlayerProfile('${playerName}')">
-        <div class="lb-menu-avatar">${profile.avatar || '🎮'}</div>
-        <div class="lb-menu-meta">
-          <div class="lb-menu-name">
-            <span class="lb-menu-lv">Lv.${profile.lv ?? '?'}</span>
-            <span class="lb-menu-player">${playerName}</span>
-          </div>
-          ${profile.title ? `<div class="ttl-row"><span class="ttl-badge" role="img" aria-label="徽章"></span><div class="lb-menu-title">✦ ${profile.title}</div></div>` : ''}
-          ${renderAchStars(profile.achStars)}
+      <div class="player-card player-card--list-chip idcs-host" style="${getBackgroundInlineVars(profile.bgKey)}" onclick="event.stopPropagation(); openPlayerProfile('${playerName}')">
+        <!-- G: 小板 ID 卡 -->
+        <div class="idcs">
+          <img class="idcs-frame" src="assets/idcard/sml_frame.png" alt="" aria-hidden="true">
+          <div class="idcs-av"><img src="assets/idcard/sml_avatar.png" alt="頭像"></div>
+          <div class="idcs-level"><img src="assets/idcard/sml_level.png" alt=""><span class="idcs-level-n">${profile.lv ?? '?'}</span></div>
+          <div class="idcs-name">${playerName}</div>
+          <div class="idcs-star"><img src="assets/idcard/sml_star.png" alt="成就星"><span class="idcs-star-n">${profile.achStars ?? 0}</span></div>
         </div>
       </div>
     `;
@@ -2052,12 +2050,15 @@
     }
     return `
       <div class="mq-row">
-        <div class="mq-user" style="${getBackgroundInlineVars(p.bgKey)}" onclick="event.stopPropagation(); openPlayerProfile('${it.player}')">
-          <span class="mq-avatar">${p.avatar || '👤'}</span>
-          <span class="mq-lv">Lv.${p.lv ?? '?'}</span>
-          ${p.title ? `<span class="ttl-row"><span class="ttl-badge" role="img" aria-label="徽章"></span><span class="mq-title">✦ ${p.title}</span></span>` : ''}
-          <span class="mq-name">${it.player}</span>
-          ${renderAchStars(p.achStars)}
+        <div class="mq-user idcs-host" style="${getBackgroundInlineVars(p.bgKey)}" onclick="event.stopPropagation(); openPlayerProfile('${it.player}')">
+          <!-- H: 小板 ID 卡 -->
+          <div class="idcs">
+            <img class="idcs-frame" src="assets/idcard/sml_frame.png" alt="" aria-hidden="true">
+            <div class="idcs-av"><img src="assets/idcard/sml_avatar.png" alt="頭像"></div>
+            <div class="idcs-level"><img src="assets/idcard/sml_level.png" alt=""><span class="idcs-level-n">${p.lv ?? '?'}</span></div>
+            <div class="idcs-name">${it.player}</div>
+            <div class="idcs-star"><img src="assets/idcard/sml_star.png" alt="成就星"><span class="idcs-star-n">${p.achStars ?? 0}</span></div>
+          </div>
         </div>
         <div class="mq-message">
           <span class="mq-icon">${it.icon || '🎉'}</span>

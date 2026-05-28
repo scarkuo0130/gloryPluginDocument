@@ -4350,3 +4350,46 @@ img {
   -webkit-touch-callout: none;
 }
 
+/* ===== F/G/H 小板 ID 卡（IDCARD_素材_v1/資訊背板_小：頭像 + 等級盾 + 名字 + 星，無稱號/徽章/exp/hover；同步自 exsample.html）===== */
+.idcs-host {
+  background: none !important; border: none !important; box-shadow: none !important;
+  padding: 0 !important; overflow: visible;
+}
+.idcs-host::after { display: none !important; }
+.idcs {
+  position: relative; width: 100%; aspect-ratio: 678 / 153;
+  container-type: inline-size;
+  text-size-adjust: 100%; -webkit-text-size-adjust: 100%;
+  filter: drop-shadow(0 4px 8px rgba(0,0,0,0.35));
+}
+.idcs-frame { position: absolute; inset: 0; width: 100%; height: 100%; display: block; object-fit: cover; object-position: top center; }
+.idcs-name, .idcs-level-n, .idcs-star-n {
+  color: #fff; text-shadow: 0 2px 3px rgba(0,0,0,0.7); white-space: nowrap; line-height: 1;
+  -webkit-text-stroke: 0.05em #000; paint-order: stroke fill;
+}
+.idcs-av { position: absolute; left: 1%; top: -10%; height: 90%; aspect-ratio: 132/133; }
+.idcs-av > img { height: 100%; width: auto; display: block; border-radius: 50%; }
+.idcs-level {
+  position: absolute; left: 21%; top: 21%; width: 13%; aspect-ratio: 88/75;
+  filter: drop-shadow(0 2px 3px rgba(0,0,0,0.6));
+}
+.idcs-level > img { width: 100%; height: 100%; display: block; }
+.idcs-level-n { position: absolute; left: 50%; top: 44%; transform: translate(-50%,-50%); font-size: 5cqw; font-weight: 800; }
+.idcs-name { position: absolute; left: 35%; top: 25%; font-size: 8cqw; font-weight: 800; }
+.idcs-star { position: absolute; right: 2%; top: 6%; width: 16%; aspect-ratio: 102/99; }
+.idcs-star > img { width: 100%; height: 100%; display: block; }
+.idcs-star-n { position: absolute; left: 50%; top: 48%; transform: translate(-50%,-50%); font-size: 5cqw; font-weight: 800; }
+
+/* F/G/H 的 idcs-host 容器修正：讓 .idcs 能撐開（block 化、padding 歸 0），保留外部 layout 的 flex 行為 */
+.player-card--list-mini.idcs-host,
+.player-card--list-chip.idcs-host,
+.mq-user.idcs-host {
+  display: block !important;
+  min-width: 0;
+}
+/* H 在 marquee 內，mq-row 是 flex 容器，mq-user 必須有明確寬度才能讓 .idcs 撐開 */
+.mq-user.idcs-host {
+  width: 260px !important;
+  flex: 0 0 260px !important;
+}
+
