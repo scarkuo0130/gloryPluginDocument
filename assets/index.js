@@ -1487,15 +1487,15 @@
             <div class="lb-trend ${trend}">${trendArrow}</div>
             <div class="lb-rank ${rankCls}">${medal}</div>
           </div>
-          <div class="player-card player-card--list" style="${playerTheme}">
-            <div class="lb-avatar" style="background: ${getBackgroundStyle(p.bgKey)}">${p.avatar || '👤'}</div>
-            <div class="lb-info" style="flex:1; min-width:0;">
-              <div class="lb-name">
-                <span class="lb-level">Lv.${x.lv}</span>
-                <span class="lb-player-name"${x.self ? '' : ` onclick="event.stopPropagation(); openPlayerProfile('${x.name}')" style="cursor:pointer;"`}>${x.name}${x.self ? ' (你)' : ''}</span>
-              </div>
-              ${p.title ? `<div class="ttl-row"><span class="ttl-badge" role="img" aria-label="徽章"></span><div class="lb-title">✦ ${p.title}</div></div>` : ''}
-              ${renderAchStars(p.achStars)}
+          <div class="player-card player-card--list idcs-host" style="${playerTheme}">
+            <!-- E: 小板 ID 卡 + 稱號 + 徽章 -->
+            <div class="idcs">
+              <img class="idcs-frame" src="assets/idcard/sml_frame.png" alt="" aria-hidden="true">
+              <div class="idcs-av"><img src="assets/idcard/sml_avatar.png" alt="頭像"></div>
+              <div class="idcs-level"><img src="assets/idcard/sml_level.png" alt=""><span class="idcs-level-n">${x.lv}</span></div>
+              ${p.title ? `<div class="idcs-title">${p.title}</div><img class="idcs-badge" src="assets/idcard/mid_badge.png" alt="徽章">` : ''}
+              <div class="idcs-name"${x.self ? '' : ` onclick="event.stopPropagation(); openPlayerProfile('${x.name}')" style="cursor:pointer;"`}>${x.name}${x.self ? ' (你)' : ''}</div>
+              <div class="idcs-star"><img src="assets/idcard/sml_star.png" alt="成就星"><span class="idcs-star-n">${p.achStars ?? 0}</span></div>
             </div>
           </div>
           <div class="lb-value-wrap">

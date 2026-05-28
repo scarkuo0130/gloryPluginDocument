@@ -4409,3 +4409,21 @@ img {
   flex: 0 0 260px !important;
 }
 
+/* ===== E only（.player-card--list）：上方稱號 + 徽章；level/name 下移避開 ===== */
+.player-card--list.idcs-host .idcs-level { top: 32%; }
+.player-card--list.idcs-host .idcs-name { top: 40%; font-size: 7cqw; }
+.idcs-title {
+  position: absolute; left: 22%; top: 5%; z-index: 5;
+  padding: 0.7cqw 2.4cqw; border-radius: 5px;
+  background: linear-gradient(180deg, #ff9ed8 0%, #e75bb0 100%);
+  border: 1.5px solid rgba(255,255,255,0.7);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.6), 0 2px 3px rgba(0,0,0,0.4);
+  color: #fff; font-size: 3cqw; font-weight: 800; line-height: 1; white-space: nowrap;
+  -webkit-text-stroke: 0.05em #c23b85; paint-order: stroke fill;
+}
+.idcs-badge {
+  position: absolute; left: 35%; top: 3%; z-index: 5;
+  width: 5%; height: auto; display: block;
+  filter: drop-shadow(0 2px 3px rgba(0,0,0,0.5));
+}
+
