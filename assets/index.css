@@ -1258,7 +1258,7 @@
   }
   .menu-item.leaderboard-preview-card {
     grid-column: 1 / -1;
-    height: 308px;
+    height: 420px;  /* 配合 F 改 grid 2 行版面（rank 上方獨佔），3 列高度增加 */
     align-items: flex-start;
   }
   .menu-item.compact {
