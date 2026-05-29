@@ -2612,6 +2612,40 @@
     margin-bottom: 18px;
     box-shadow: 0 12px 28px rgba(0,0,0,0.25), inset 0 1px 0 rgba(255,255,255,0.14);
   }
+  .streak-month-tabs {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 16px;
+  }
+  .streak-month-tab {
+    position: relative;
+    flex: 1;
+    text-align: center;
+    padding: 9px 0;
+    border-radius: 12px;
+    font-size: 16px;
+    font-weight: 700;
+    color: rgba(255,255,255,0.6);
+    background: rgba(0,0,0,0.18);
+    border: 1.5px solid rgba(255,255,255,0.08);
+    cursor: pointer;
+    user-select: none;
+  }
+  .streak-month-tab.active {
+    color: #2a1810;
+    background: linear-gradient(135deg, #ffd166, #ff8c42);
+    border-color: transparent;
+  }
+  .streak-tab-dot {
+    position: absolute;
+    top: 6px;
+    right: 10px;
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background: #ff3860;
+    box-shadow: 0 0 0 2px rgba(0,0,0,0.25);
+  }
   .login-streak-head {
     display: flex;
     align-items: flex-end;
@@ -2680,6 +2714,12 @@
     background: transparent;
     border-color: transparent;
     pointer-events: none;
+  }
+  .login-streak-partial-note {
+    text-align: center;
+    font-size: 13px;
+    color: rgba(255,255,255,0.45);
+    padding: 4px 0 2px;
   }
   .login-streak-perfect {
     border: 1.5px solid rgba(255, 209, 102, 0.45);

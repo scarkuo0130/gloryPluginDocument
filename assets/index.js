@@ -1536,7 +1536,8 @@
   function renderDailyTasks() {
     const c = document.getElementById('dailyTaskList') || document.getElementById('dailyTab');
     if (!c) return;
-    c.innerHTML = renderLoginStreak() + dailyTasks.map(t => {
+    // 切到上個月時，下方「每日任務清單」隱藏（僅本月可做任務）
+    const tasksHtml = (streakViewOffset !== 0) ? '' : dailyTasks.map(t => {
       const pct = Math.min(100, (t.progress / t.target) * 100);
       const btn = t.status === 'claim'
         ? `<button class="task-claim" onclick="claimTask(${t.id})">領取 +${t.exp} EXP</button>`
@@ -1557,21 +1558,16 @@
         </div>
       `;
     }).join('');
+    c.innerHTML = renderLoginStreak() + tasksHtml;
     renderDailyTaskBadge();
     renderDailyTaskMenuProgress();
   }
 
-  // 連簽獎勵：4 週各 7 天，每週一個獎勵；第 5 個為 28 天全勤獎
-  const STREAK_REWARDS = [
-    { type: 'exp', value: 500 },
-    { type: 'exp', value: 1000 },
-    { type: 'exp', value: 1500 },
-    { type: 'exp', value: 2000 },
-  ];
-  const PERFECT_ATTENDANCE_REWARD = { type: 'avatar', value: '🏆' };
-  const PERFECT_ATTENDANCE_IDX = STREAK_REWARDS.length; // 4
-  const STREAK_DAYS_PER_GROUP = 7;
-  const STREAK_TOTAL_DAYS = STREAK_REWARDS.length * STREAK_DAYS_PER_GROUP; // 28
+  // 連簽：以「自然月」為週期（當月 1 日～最後一天）。
+  // 週全勤＝該週 7 天皆登入 → 給固定週獎勵（不累積）；月全勤＝整月每天皆登入 → 給月全勤額外獎。
+  // 「補打卡」機制為未來規劃（允許補回漏簽日，規則待企劃定義），本版尚未實作。
+  const WEEKLY_REWARD = { type: 'exp', value: 30000 };          // 週全勤固定獎（不累積，每週相同）
+  const MONTH_PERFECT_REWARD = { type: 'exp', value: 600000 };  // 月全勤額外獎（每月可重得）
 
   function streakRewardLabel(reward, prefix) {
     switch (reward.type) {
@@ -1592,132 +1588,140 @@
     return '領取成功！';
   }
 
-  const streakClaimedGroups = new Set();
-  function renderLoginStreak() {
+  const streakClaimedGroups = new Set(); // 已領取 key：`${year}-${month}-w{列}` 或 `${year}-${month}-month`
+  let streakViewOffset = 0;              // 0=本月，-1=上個月（最多回看上個月）
+
+  // 取得指定月（offset 相對本月）的月曆資料與達成判定
+  function streakMonthInfo(offset) {
     const now = new Date();
-    const year = now.getFullYear();
-    const month = now.getMonth();
-    const today = now.getDate();
-    const todayDow = now.getDay(); // 0=Sun
-
-    // 連簽起始日（週日）：示範用當週週日往前 3 週，讓「今天」落在第 4 週方便 demo
-    const streakStart = new Date(year, month, today - todayDow - 21);
-    // 斷簽 demo：streak 起始 +8 天（W2 週一）
-    const missedDate = new Date(streakStart);
-    missedDate.setDate(streakStart.getDate() + 8);
-    const todayDate = new Date(year, month, today);
-
-    const sameDate = (a, b) =>
-      a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth() && a.getDate() === b.getDate();
-    const allTasksClaimed = dailyTasks.every(t => t.status === 'done');
-    const isDateDone = (d) => {
-      if (sameDate(d, missedDate)) return false;
-      if (sameDate(d, todayDate)) return allTasksClaimed;
-      return d < todayDate;
-    };
-
-    const STREAK_GROUP_SIZE = 7;
-    const STREAK_GROUP_COUNT = STREAK_REWARDS.length; // 4
-
-    // 4 週日曆（每週週日 → 週六）
-    const weeks = [];
-    for (let wi = 0; wi < STREAK_GROUP_COUNT; wi++) {
-      const week = [];
-      for (let di = 0; di < STREAK_GROUP_SIZE; di++) {
-        const d = new Date(streakStart);
-        d.setDate(streakStart.getDate() + wi * 7 + di);
-        week.push(d);
+    const cy = now.getFullYear(), cm = now.getMonth(), today = now.getDate();
+    const base = new Date(cy, cm + offset, 1);
+    const year = base.getFullYear(), month = base.getMonth();
+    const isCurrent = offset === 0;
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
+    const firstDow = new Date(year, month, 1).getDay();
+    // 斷簽 demo：本月取一個過去日示範漏簽；過去月示範全到（製造可領紅點）
+    const missedDay = isCurrent ? Math.min(Math.max(today - 5, 2), daysInMonth) : 0;
+    // 當日完成＝「當天有登入」（與每日任務脫鉤）；開啟頁面即視為今日已登入
+    const dayDone = (d) => {
+      if (d === missedDay) return false;
+      if (isCurrent) {
+        if (d === today) return true;   // 今天有登入即算完成
+        return d < today;               // 過去日視為已登入
       }
-      weeks.push(week);
+      return true; // 過去月：除漏簽外皆視為已登入
+    };
+    const rows = [];
+    let day = 1 - firstDow;
+    while (day <= daysInMonth) {
+      const row = [];
+      for (let i = 0; i < 7; i++, day++) row.push((day >= 1 && day <= daysInMonth) ? day : null);
+      rows.push(row);
     }
+    return { year, month, today, isCurrent, daysInMonth, missedDay, dayDone, rows };
+  }
+  const streakKey = (info, suffix) => `${info.year}-${info.month}-${suffix}`;
+
+  // 指定月是否有「達成但未領」的獎勵（供紅點提示用）
+  function streakHasClaimable(offset) {
+    const info = streakMonthInfo(offset);
+    for (let ri = 0; ri < info.rows.length; ri++) {
+      const inMonth = info.rows[ri].filter(d => d !== null);
+      if (inMonth.length !== 7) continue;
+      const allDone = inMonth.every(info.dayDone);
+      const hasMissed = inMonth.some(d => d === info.missedDay);
+      if (allDone && !hasMissed && !streakClaimedGroups.has(streakKey(info, 'w' + ri))) return true;
+    }
+    const monthAllDone = Array.from({ length: info.daysInMonth }, (_, i) => i + 1).every(info.dayDone);
+    if (monthAllDone && !streakClaimedGroups.has(streakKey(info, 'month'))) return true;
+    return false;
+  }
+
+  function renderLoginStreak() {
+    const info = streakMonthInfo(streakViewOffset);
+    const { rows, today, isCurrent, daysInMonth } = info;
 
     const weekdayHeader = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat']
       .map(w => `<div class="login-weekday">${w}</div>`).join('');
 
-    const weeklyGroups = weeks.map((week, wi) => {
-      const days = week.map(d => {
-        const isMissed = sameDate(d, missedDate);
-        const isToday = sameDate(d, todayDate);
+    const rowsHtml = rows.map((row, ri) => {
+      const cells = row.map(d => {
+        if (d === null) return `<div class="login-day empty"></div>`;
         const classes = [
           'login-day',
-          isMissed ? 'missed' : '',
-          isDateDone(d) ? 'done' : '',
-          isToday ? 'current-progress' : ''
+          d === info.missedDay ? 'missed' : '',
+          info.dayDone(d) ? 'done' : '',
+          (isCurrent && d === today) ? 'current-progress' : ''
         ].filter(Boolean).join(' ');
-        return `<div class="${classes}"><div class="login-day-num">${d.getDate()}</div></div>`;
+        return `<div class="${classes}"><div class="login-day-num">${d}</div></div>`;
       }).join('');
 
-      const reward = STREAK_REWARDS[wi];
-      const groupAllDone = week.every(d => isDateDone(d));
-      const groupHasMissed = week.some(d => sameDate(d, missedDate));
-      const claimed = streakClaimedGroups.has(wi);
-      let btnLabel = streakRewardLabel(reward, '領取');
-      let btnClass = 'login-streak-claim';
-      let disabled = false;
-      if (claimed) {
-        btnLabel = streakRewardLabel(reward, '已領取');
-        btnClass += ' claimed';
-        disabled = true;
-      } else if (groupHasMissed) {
-        btnLabel = '未達成';
-        btnClass += ' disabled';
-        disabled = true;
-      } else if (!groupAllDone) {
-        btnLabel = '尚未達成';
-        btnClass += ' disabled';
-        disabled = true;
+      // 僅「整週 7 天皆當月」的列給週獎勵；月初/月末未滿 7 天的列不給（待補打卡機制補上）
+      const inMonth = row.filter(d => d !== null);
+      const isFullWeek = inMonth.length === 7;
+      let btnHtml;
+      if (isFullWeek) {
+        const allDone = inMonth.every(info.dayDone);
+        const hasMissed = inMonth.some(d => d === info.missedDay);
+        const claimed = streakClaimedGroups.has(streakKey(info, 'w' + ri));
+        let label = streakRewardLabel(WEEKLY_REWARD, '領取');
+        let cls = 'login-streak-claim';
+        let dis = false;
+        if (claimed) { label = streakRewardLabel(WEEKLY_REWARD, '已領取'); cls += ' claimed'; dis = true; }
+        else if (hasMissed) { label = '未達成'; cls += ' disabled'; dis = true; }
+        else if (!allDone) { label = '尚未達成'; cls += ' disabled'; dis = true; }
+        btnHtml = `<button type="button" class="${cls}"${dis ? ' disabled' : ''} onclick="claimStreakReward('${streakKey(info, 'w' + ri)}')">${label}</button>`;
+      } else {
+        btnHtml = `<div class="login-streak-partial-note">本週未滿 7 天，無週獎勵</div>`;
       }
-
-      return `
-        <div class="login-streak-group">
-          <div class="login-streak-row">${days}</div>
-          <button type="button" class="${btnClass}"${disabled ? ' disabled' : ''} onclick="claimStreakReward(${wi})">${btnLabel}</button>
-        </div>
-      `;
+      return `<div class="login-streak-group"><div class="login-streak-row">${cells}</div>${btnHtml}</div>`;
     }).join('');
 
-    // 四週額外獎勵：4 週 28 天皆完成才能領
-    const totalDays = STREAK_GROUP_COUNT * STREAK_GROUP_SIZE;
-    const allStreakDone = weeks.every(w => w.every(d => isDateDone(d)));
-    const perfectClaimed = streakClaimedGroups.has(PERFECT_ATTENDANCE_IDX);
-    let perfectBtnLabel = streakRewardLabel(PERFECT_ATTENDANCE_REWARD, '領取');
-    let perfectBtnClass = 'login-streak-claim';
-    let perfectDisabled = false;
-    if (perfectClaimed) {
-      perfectBtnLabel = streakRewardLabel(PERFECT_ATTENDANCE_REWARD, '已領取');
-      perfectBtnClass += ' claimed';
-      perfectDisabled = true;
-    } else if (!allStreakDone) {
-      perfectBtnLabel = '尚未達成';
-      perfectBtnClass += ' disabled';
-      perfectDisabled = true;
-    }
+    // 月全勤：當月每一天皆完成
+    const allMonthDone = Array.from({ length: daysInMonth }, (_, i) => i + 1).every(info.dayDone);
+    const monthClaimed = streakClaimedGroups.has(streakKey(info, 'month'));
+    let mLabel = streakRewardLabel(MONTH_PERFECT_REWARD, '領取');
+    let mCls = 'login-streak-claim';
+    let mDis = false;
+    if (monthClaimed) { mLabel = streakRewardLabel(MONTH_PERFECT_REWARD, '已領取'); mCls += ' claimed'; mDis = true; }
+    else if (!allMonthDone) { mLabel = '尚未達成'; mCls += ' disabled'; mDis = true; }
     const perfectGroup = `
       <div class="login-streak-group login-streak-perfect">
-        <div class="login-streak-perfect-label">四週額外獎勵 · 連續 ${totalDays} 天達成</div>
-        <button type="button" class="${perfectBtnClass}"${perfectDisabled ? ' disabled' : ''} onclick="claimStreakReward(${PERFECT_ATTENDANCE_IDX})">${perfectBtnLabel}</button>
+        <div class="login-streak-perfect-label">月全勤額外獎勵 · 當月每天登入</div>
+        <button type="button" class="${mCls}"${mDis ? ' disabled' : ''} onclick="claimStreakReward('${streakKey(info, 'month')}')">${mLabel}</button>
       </div>
     `;
 
-    const monthLabel = `${year} 年 ${month + 1} 月`;
+    // 頁籤：上個月 / 本月（最多回看上個月）；上個月有未領獎勵 → 紅點提示
+    const lastMonthDot = streakHasClaimable(-1) ? '<span class="streak-tab-dot"></span>' : '';
+    const tabs = `
+      <div class="streak-month-tabs">
+        <div class="streak-month-tab ${streakViewOffset === -1 ? 'active' : ''}" onclick="switchStreakMonth(-1)">上個月${lastMonthDot}</div>
+        <div class="streak-month-tab ${streakViewOffset === 0 ? 'active' : ''}" onclick="switchStreakMonth(0)">本月</div>
+      </div>
+    `;
 
+    const monthLabel = `${info.year} 年 ${info.month + 1} 月`;
     return `
       <div class="login-streak-card">
+        ${tabs}
         <div class="login-streak-head">
           <div class="login-streak-title">${monthLabel}</div>
         </div>
         <div class="login-weekday-row">${weekdayHeader}</div>
-        <div class="login-streak-groups">${weeklyGroups}${perfectGroup}</div>
+        <div class="login-streak-groups">${rowsHtml}${perfectGroup}</div>
       </div>
     `;
   }
-  function claimStreakReward(groupIdx) {
-    if (streakClaimedGroups.has(groupIdx)) return;
-    const reward = groupIdx === PERFECT_ATTENDANCE_IDX
-      ? PERFECT_ATTENDANCE_REWARD
-      : STREAK_REWARDS[groupIdx];
+  function switchStreakMonth(offset) {
+    streakViewOffset = (offset === -1) ? -1 : 0; // 最多回看上個月
+    renderDailyTasks();
+  }
+  function claimStreakReward(groupKey) {
+    if (streakClaimedGroups.has(groupKey)) return;
+    const reward = groupKey.endsWith('-month') ? MONTH_PERFECT_REWARD : WEEKLY_REWARD;
     if (!reward) return;
-    streakClaimedGroups.add(groupIdx);
+    streakClaimedGroups.add(groupKey);
     showToast(streakToastText(reward));
     renderDailyTasks();
   }
