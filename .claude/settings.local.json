@@ -41,6 +41,7 @@
       "Bash(command -v node npx playwright chromium)",
       "mcp__chrome-devtools",
       "mcp__googledrive",
+      "mcp__google-docs",
       "mcp__claw-bot",
       "mcp__ruflo",
       "Read(//var/folders/**)",

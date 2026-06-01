@@ -1000,7 +1000,7 @@
   }
   .idc .idc-frame { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
   .idc-name, .idc-id, .idc-exp, .idc-next, .idc-level, .idc-star-n {
-    color: #fff; text-shadow: 0 4px 5px rgba(0,0,0,0.7); white-space: nowrap; line-height: 1;
+    color: #fff; text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.8); white-space: nowrap; line-height: 1;
   }
   .idc-av { position: absolute; left: 0%; top: 0%; height: 62%; aspect-ratio: 181/196; }
   .idc-av > img { height: 100%; width: auto; display: block; }
@@ -1010,17 +1010,17 @@
   .idc-star { position: absolute; left: 65%; top: 34%; width: 8%; }
   .idc-star > img { width: 100%; height: auto; display: block; }
   .idc-star-n { position: absolute; left: 50%; top: 46%; transform: translate(-50%,-50%); font-size: 3.4cqw; font-weight: 800; }
-  .idc-edit { position: absolute; left: 80%; top: 38%; width: 5%; padding: 0; border: none; background: none; cursor: pointer; }
+  .idc-edit { display: none; }
   .idc-edit > img { width: 100%; height: auto; display: block; }
-  .idc-id { position: absolute; left: 30.5%; top: 54%; font-size: 3.2cqw; opacity: 0.95; }
-  .idc-vip { position: absolute; left: 5%; top: 64%; width: 8.5%; height: auto; display: block; }
-  .idc-exp { position: absolute; right: 4%; top: 63%; font-size: 4cqw; font-weight: 700; }
-  .idc-next { position: absolute; left: 6%; top: 82%; font-size: 3.2cqw; font-weight: 500; opacity: 0.92; text-shadow: 3px 3px 3px rgba(0, 0, 0, 0.9); }
+  .idc-id { position: absolute; left: 29%; top: 51%; font-size: 3.2cqw; opacity: 0.95; }
+  .idc-vip { display: none; }
+  .idc-exp { position: absolute; right: 8%; top: 63%; font-size: 4cqw; font-weight: 100; }
+  .idc-next { position: absolute; left: 7%; top: 79%; font-size: 3.2cqw; font-weight: 500; opacity: 0.92; text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.7); }
   .idc-host .ach-star-badge { display: none !important; }
   .idc-name, .idc-next { -webkit-text-stroke: 0.08em #000; paint-order: stroke fill; }
   .idc-bar {
-    position: absolute; left: 5%; top: 74%; width: 90%;
-    height: 2.4cqw; min-height: 5px; border-radius: 99px;
+    position: absolute; left: 7%; top: 74%; width: 85%;
+    height: 2px; min-height: 5px; border-radius: 99px;
     background: rgba(0,0,0,0.42);
     box-shadow: inset 0 0 0 1px rgba(255,255,255,0.28);
     overflow: hidden;
@@ -1742,9 +1742,9 @@
         <span class="tag tag-av">頭像 + 等級盾</span>
         <span class="tag tag-name">名稱 6.8cqw</span>
         <span class="tag tag-title">新手稱號（CSS 仿 稱號_低等）</span>
-        <span class="tag tag-extra">+ 徽章 + 成就星 + VIP + ID + EXP條 + Next + 編輯鈕</span>
+        <span class="tag tag-extra">+ 徽章 + 成就星 + ID + EXP條 + Next（VIP / 編輯鈕已隱藏，改名改走下方按鈕列）</span>
       </div>
-      <p style="color:#ff8c42; margin-top:6px;">⚠ 仍<b>沒有 Lv.</b>（用等級盾數字 + VIP）；hover 套 4 效果（傾斜/珠光/稜鏡/流光）。階級框 5 階切換、字體、資料接線下階段。</p>
+      <p style="color:#ff8c42; margin-top:6px;">⚠ 仍<b>沒有 Lv.</b>（用等級盾數字；VIP 已隱藏）；hover 套 4 效果（傾斜/珠光/稜鏡/流光）。階級框 5 階切換、字體、資料接線下階段。</p>
     </div>
   </div>
 

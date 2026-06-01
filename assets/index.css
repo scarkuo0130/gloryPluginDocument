@@ -1837,7 +1837,7 @@
   }
   .profile-action-row {
     display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 12px;
     margin-bottom: 30px;
   }
@@ -4205,7 +4205,7 @@
 .idc .idc-frame { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
 /* 文字共用（font 下階段再處理，先普通白字+描邊） */
 .idc-name, .idc-id, .idc-exp, .idc-next, .idc-level, .idc-star-n {
-  color: #fff; text-shadow: 0 4px 5px rgba(0,0,0,0.7); white-space: nowrap; line-height: 1;
+  color: #fff; text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.8); white-space: nowrap; line-height: 1;
 }
 /* 頭像 + 等級盾 */
 .idc-av { position: absolute; left: 0%; top: 0%; height: 62%; aspect-ratio: 181/196; }
@@ -4220,16 +4220,16 @@
 .idc-star > img { width: 100%; height: auto; display: block; }
 .idc-star-n { position: absolute; left: 50%; top: 46%; transform: translate(-50%,-50%); font-size: 3.4cqw; font-weight: 800; }
 /* 編輯鈕 */
-.idc-edit { position: absolute; left: 80%; top: 38%; width: 5%; padding: 0; border: none; background: none; cursor: pointer; }
+.idc-edit { display: none; }
 .idc-edit > img { width: 100%; height: auto; display: block; }
 /* ID */
-.idc-id { position: absolute; left: 30.5%; top: 54%; font-size: 3.2cqw; opacity: 0.95; }
+.idc-id { position: absolute; left: 29%; top: 51%; font-size: 3.2cqw; opacity: 0.95; }
 /* VIP */
-.idc-vip { position: absolute; left: 5%; top: 64%; width: 8.5%; height: auto; display: block; }
+.idc-vip { display: none; }
 /* 經驗值文字（無 bar） */
-.idc-exp { position: absolute; right: 4%; top: 63%; font-size: 4cqw; font-weight: 700; }
+.idc-exp { position: absolute; right: 8%; top: 63%; font-size: 4cqw; font-weight: 100; }
 /* Next 底條 */
-.idc-next { position: absolute; left: 6%; top: 82%; font-size: 3.2cqw; font-weight: 500; opacity: 0.92; text-shadow: 3px 3px 3px rgba(0, 0, 0, 0.9); }
+.idc-next { position: absolute; left: 7%; top: 79%; font-size: 3.2cqw; font-weight: 500; opacity: 0.92; text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.7); }
 /* 壓掉 legacy 成就星徽章（JS 會取消 hidden，框卡不用它，改用 idc-star） */
 .idc-host .ach-star-badge { display: none !important; }
 /* idc-name / idc-next 加黑邊（描邊在字後，不吃字形） */
@@ -4239,8 +4239,8 @@
 }
 /* 經驗值條（CSS 自畫，不用美術；填充 width = 經驗 %） */
 .idc-bar {
-  position: absolute; left: 5%; top: 74%; width: 90%;
-  height: 2.4cqw; min-height: 5px; border-radius: 99px;
+  position: absolute; left: 7%; top: 74%; width: 85%;
+  height: 2px; min-height: 5px; border-radius: 99px;
   background: rgba(0,0,0,0.42);
   box-shadow: inset 0 0 0 1px rgba(255,255,255,0.28);
   overflow: hidden;
