@@ -413,19 +413,25 @@
     Joan5428:   { lv: 12, avatar: '🦊', title: '幸運兒', bgKey: DEFAULT_BG_THEME, achStars: 4 },
   };
 
+  // 星數顯示用羅馬數字（1→Ⅰ … 12→Ⅻ；單一 Unicode 字元）
+  const ROMAN_NUMERALS = ['', 'Ⅰ', 'Ⅱ', 'Ⅲ', 'Ⅳ', 'Ⅴ', 'Ⅵ', 'Ⅶ', 'Ⅷ', 'Ⅸ', 'Ⅹ', 'Ⅺ', 'Ⅻ'];
+  function toRoman(n) {
+    const i = Math.max(0, Math.min(12, Number(n) || 0));
+    return ROMAN_NUMERALS[i] || String(i);
+  }
   // 把成就星數 render 成 .ach-star-badge HTML（A-I 統一規格：大星 + 數字疊星內 + 描邊+影子）
   // 0 顆時回傳空字串（不渲染容器）
   function renderAchStars(count) {
     const n = Math.max(0, Math.min(11, Number(count) || 0));
     if (n === 0) return '';
-    return `<span class="ach-star-badge" aria-label="成就：${n} 個白金以上成就"><span class="star">✮</span><span class="count">${n}</span></span>`;
+    return `<span class="ach-star-badge" aria-label="成就：${n} 個白金以上成就"><span class="star">✮</span><span class="count">${toRoman(n)}</span></span>`;
   }
   // 填入 A · status-profile 專用的 .ach-star-badge（單顆 ✮ + 上方數字）
   function setAchStarBadge(el, count) {
     if (!el) return;
     const n = Math.max(0, Math.min(11, Number(count) || 0));
     const countEl = el.querySelector('.count');
-    if (countEl) countEl.textContent = n;
+    if (countEl) countEl.textContent = toRoman(n);
     el.setAttribute('aria-label', n ? `成就：${n} 個白金以上成就` : '無成就');
     if (n === 0) el.setAttribute('hidden', '');
     else el.removeAttribute('hidden');
@@ -909,7 +915,7 @@
               <div class="idcs-av"><img src="assets/idcard/sml_avatar.png" alt="頭像"></div>
               <div class="idcs-level"><img src="assets/idcard/sml_level.png" alt=""><span class="idcs-level-n">${profile.lv ?? player.lv ?? '?'}</span></div>
               <div class="idcs-name">${player.name}</div>
-              <div class="idcs-star"><img src="assets/idcard/sml_star.png" alt="成就星"><span class="idcs-star-n">${profile.achStars ?? 0}</span></div>
+              <div class="idcs-star"><img src="assets/idcard/sml_star.png" alt="成就星"><span class="idcs-star-n">${toRoman(profile.achStars ?? 0)}</span></div>
             </div>
           </div>
           <div class="lb-menu-value">${player.value}</div>
@@ -980,7 +986,7 @@
           <div class="idcs-av"><img src="assets/idcard/sml_avatar.png" alt="頭像"></div>
           <div class="idcs-level"><img src="assets/idcard/sml_level.png" alt=""><span class="idcs-level-n">${profile.lv ?? '?'}</span></div>
           <div class="idcs-name">${playerName}</div>
-          <div class="idcs-star"><img src="assets/idcard/sml_star.png" alt="成就星"><span class="idcs-star-n">${profile.achStars ?? 0}</span></div>
+          <div class="idcs-star"><img src="assets/idcard/sml_star.png" alt="成就星"><span class="idcs-star-n">${toRoman(profile.achStars ?? 0)}</span></div>
         </div>
       </div>
     `;
@@ -1004,7 +1010,7 @@
     }
     document.getElementById('playerProfileLv').textContent = p.lv ?? '?';  // .idc-level 盾牌只放數字
     const starN = document.getElementById('playerProfileStarN');
-    if (starN) starN.textContent = String(p.achStars ?? 0);  // .idc-star-n 同步星數
+    if (starN) starN.textContent = toRoman(p.achStars ?? 0);  // .idc-star-n 同步星數（羅馬數字）
     setAchStarBadge(document.getElementById('playerProfileAchStarBadge'), p.achStars ?? 0);
     currentPlayerAchTab = 'total';
     document.querySelectorAll('#playerProfilePage .ach-tab').forEach(el => {
@@ -1495,7 +1501,7 @@
               <div class="idcs-level"><img src="assets/idcard/sml_level.png" alt=""><span class="idcs-level-n">${x.lv}</span></div>
               ${p.title ? `<div class="idcs-title">${p.title}</div><img class="idcs-badge" src="assets/idcard/mid_badge.png" alt="徽章">` : ''}
               <div class="idcs-name"${x.self ? '' : ` onclick="event.stopPropagation(); openPlayerProfile('${x.name}')" style="cursor:pointer;"`}>${x.name}${x.self ? ' (你)' : ''}</div>
-              <div class="idcs-star"><img src="assets/idcard/sml_star.png" alt="成就星"><span class="idcs-star-n">${p.achStars ?? 0}</span></div>
+              <div class="idcs-star"><img src="assets/idcard/sml_star.png" alt="成就星"><span class="idcs-star-n">${toRoman(p.achStars ?? 0)}</span></div>
             </div>
           </div>
           <div class="lb-value-wrap">
@@ -2060,7 +2066,7 @@
             <div class="idcs-av"><img src="assets/idcard/sml_avatar.png" alt="頭像"></div>
             <div class="idcs-level"><img src="assets/idcard/sml_level.png" alt=""><span class="idcs-level-n">${p.lv ?? '?'}</span></div>
             <div class="idcs-name">${it.player}</div>
-            <div class="idcs-star"><img src="assets/idcard/sml_star.png" alt="成就星"><span class="idcs-star-n">${p.achStars ?? 0}</span></div>
+            <div class="idcs-star"><img src="assets/idcard/sml_star.png" alt="成就星"><span class="idcs-star-n">${toRoman(p.achStars ?? 0)}</span></div>
           </div>
         </div>
         <div class="mq-message">

@@ -1398,7 +1398,7 @@
 
 <div class="spec-callout">
   <h2>✓ 成就星規格（A-I 全部統一用大星 <code>.ach-star-badge</code>）</h2>
-  <p>玩家整體成就量的視覺指標。<b>A-I 全變體統一用同一套規格</b>：「單顆大金色 ✮ + 數字（白字 + 深色描邊 + 黑色陰影）疊在星中央」，差別只在尺寸與跨列數（依該版面 name/ttl 字級與是否顯示稱號自動 scale）。</p>
+  <p>玩家整體成就量的視覺指標。<b>A-I 全變體統一用同一套規格</b>：「單顆大金色 ✮ + 數字（白字 + 深色描邊 + 黑色陰影）疊在星中央」，差別只在尺寸與跨列數（依該版面 name/ttl 字級與是否顯示稱號自動 scale）。<b>數字以羅馬數字呈現</b>（Ⅰ–Ⅻ，單一 Unicode 字元）。</p>
   <p style="color:#55e486; margin-top:6px;">✓ 取代過去 <code>.ach-stars</code>（11 顆 ✮ 壓 <code>.player-card</code> 上緣 border）的舊規格 — 識別度更高、橫向空間更省、數量讀數更快。</p>
 
   <h3 style="color:#ffd166; font-size:15px; margin-top:14px;">數量規則</h3>
@@ -1410,6 +1410,7 @@
       <tr><td>觸發條件</td><td>每完成一個 <b>白金 1 以上 tier</b> 的成就 → +1 ✮</td></tr>
       <tr><td>排除</td><td><b>遊戲成就</b>（單一遊戲攻略型）不計，只算跨遊戲 meta 成就</td></tr>
       <tr><td>上限</td><td>11 ✮（目前設計 max）</td></tr>
+      <tr><td>數字呈現</td><td>星內數字以<b>羅馬數字</b>顯示：1→<code>Ⅰ</code>、4→<code>Ⅳ</code>、5→<code>Ⅴ</code> … 11→<code>Ⅺ</code>（單一 Unicode 字元，非英文字母組合）；aria-label 仍用阿拉伯數字供無障礙朗讀</td></tr>
       <tr><td>0 ✮ 顯示</td><td>無任何達標 → 不渲染 <code>.ach-stars</code>（不顯示空列）</td></tr>
     </tbody>
   </table>
@@ -1506,7 +1507,7 @@
       <tr><td>位置</td><td><code>.info</code> 或 head-text 改 grid 兩欄：左欄放 name / ttl 等列，右欄第 1 列開始跨列放徽章</td></tr>
       <tr><td>寬度策略</td><td>顯式 <code>width: Npx</code>。<b>不用 <code>aspect-ratio</code></b>：grid stretch 跟 flex stretch 同坑，aspect-ratio 不會從跨軸回灌主軸</td></tr>
       <tr><td>主體 <code>.star</code></td><td>單顆 ✮，<code>font-size</code> 填滿盒身，金色 #ffd166 + 金色 glow + 黑色 drop shadow</td></tr>
-      <tr><td>數字 <code>.count</code></td><td><b>絕對置中於星內</b>（<code>top:50%; left:50%; translate(-50%, calc(-50% + 2-3px))</code> 補正 ✮ 視覺重心偏上）。白色 + 900 粗體</td></tr>
+      <tr><td>數字 <code>.count</code></td><td><b>絕對置中於星內</b>（<code>top:50%; left:50%; translate(-50%, calc(-50% + 2-3px))</code> 補正 ✮ 視覺重心偏上）。白色 + 900 粗體。<b>內容用羅馬數字</b>（Ⅰ–Ⅺ）</td></tr>
       <tr><td>數字描邊</td><td><code>-webkit-text-stroke</code> + <code>paint-order: stroke fill</code>（描邊在填色之下，邊緣不吃字寬）。色 #2a1810 深棕</td></tr>
       <tr><td>數字陰影</td><td><code>text-shadow: 0 1px 2px rgba(0,0,0,0.85), 0 0 4px rgba(0,0,0,0.6)</code> 兩層黑色 drop</td></tr>
       <tr><td>0 ✮ 顯示</td><td><code>hidden</code> 屬性 → 整個徽章不顯示</td></tr>
@@ -1640,7 +1641,7 @@
           <div class="idcm-title">幸運兒</div>
           <img class="idcm-badge" src="assets/idcard/mid_badge.png" alt="徽章">
           <div class="idcm-name">Louis5566</div>
-          <div class="idcm-star"><img src="assets/idcard/mid_star.png" alt="成就星"><span class="idcm-star-n">5</span></div>
+          <div class="idcm-star"><img src="assets/idcard/mid_star.png" alt="成就星"><span class="idcm-star-n">Ⅴ</span></div>
           <div class="idcm-bar"><span class="idcm-bar-fill" style="width:62%"></span></div>
           <div class="idcm-gloss"></div>
         </div>
@@ -1677,7 +1678,7 @@
           <div class="idcm-title">幸運兒</div>
           <img class="idcm-badge" src="assets/idcard/mid_badge.png" alt="徽章">
           <div class="idcm-name">Louis5566</div>
-          <div class="idcm-star"><img src="assets/idcard/mid_star.png" alt="成就星"><span class="idcm-star-n">5</span></div>
+          <div class="idcm-star"><img src="assets/idcard/mid_star.png" alt="成就星"><span class="idcm-star-n">Ⅴ</span></div>
           <div class="idcm-bar"><span class="idcm-bar-fill" style="width:62%"></span></div>
           <div class="idcm-gloss"></div>
         </div>
@@ -1718,7 +1719,7 @@
           <div class="idc-name">Louis5566</div>
           <div class="idc-star">
             <img src="assets/idcard/ach_star.png" alt="成就星">
-            <span class="idc-star-n">5</span>
+            <span class="idc-star-n">Ⅴ</span>
           </div>
           <button type="button" class="idc-edit" aria-label="修改暱稱">
             <img src="assets/idcard/edit_btn.png" alt="編輯">
@@ -1766,7 +1767,7 @@
               <div class="ttl">✦ 王者</div>
             </div>
             <span class="ach-star-badge" aria-label="成就：5 個白金以上成就">
-              <span class="star">✮</span><span class="count">5</span>
+              <span class="star">✮</span><span class="count">Ⅴ</span>
             </span>
           </div>
         </div>
@@ -1805,7 +1806,7 @@
           <div class="idcs-title">王者</div>
           <img class="idcs-badge" src="assets/idcard/mid_badge.png" alt="徽章">
           <div class="idcs-name">KingOfSpin</div>
-          <div class="idcs-star"><img src="assets/idcard/sml_star.png" alt="成就星"><span class="idcs-star-n">11</span></div>
+          <div class="idcs-star"><img src="assets/idcard/sml_star.png" alt="成就星"><span class="idcs-star-n">Ⅺ</span></div>
         </div>
       </div>
     </div>
@@ -1847,7 +1848,7 @@
             <div class="idcs-av"><img src="assets/idcard/sml_avatar.png" alt="頭像"></div>
             <div class="idcs-level"><img src="assets/idcard/sml_level.png" alt=""><span class="idcs-level-n">38</span></div>
             <div class="idcs-name">KingOfSpin</div>
-            <div class="idcs-star"><img src="assets/idcard/sml_star.png" alt="成就星"><span class="idcs-star-n">11</span></div>
+            <div class="idcs-star"><img src="assets/idcard/sml_star.png" alt="成就星"><span class="idcs-star-n">Ⅺ</span></div>
           </div>
         </div>
         <div class="val">125,000,000</div>
@@ -1881,7 +1882,7 @@
           <div class="idcs-av"><img src="assets/idcard/sml_avatar.png" alt="頭像"></div>
           <div class="idcs-level"><img src="assets/idcard/sml_level.png" alt=""><span class="idcs-level-n">12</span></div>
           <div class="idcs-name">Joan5428</div>
-          <div class="idcs-star"><img src="assets/idcard/sml_star.png" alt="成就星"><span class="idcs-star-n">4</span></div>
+          <div class="idcs-star"><img src="assets/idcard/sml_star.png" alt="成就星"><span class="idcs-star-n">Ⅳ</span></div>
         </div>
       </div>
     </div>
@@ -1913,7 +1914,7 @@
           <div class="idcs-av"><img src="assets/idcard/sml_avatar.png" alt="頭像"></div>
           <div class="idcs-level"><img src="assets/idcard/sml_level.png" alt=""><span class="idcs-level-n">12</span></div>
           <div class="idcs-name">Joan5428</div>
-          <div class="idcs-star"><img src="assets/idcard/sml_star.png" alt="成就星"><span class="idcs-star-n">4</span></div>
+          <div class="idcs-star"><img src="assets/idcard/sml_star.png" alt="成就星"><span class="idcs-star-n">Ⅳ</span></div>
         </div>
       </div>
     </div>
@@ -1952,7 +1953,7 @@
               <div class="ttl">幸運兒</div>
             </div>
             <span class="ach-star-badge" aria-label="成就：4 個白金以上成就">
-              <span class="star">✮</span><span class="count">4</span>
+              <span class="star">✮</span><span class="count">Ⅳ</span>
             </span>
           </div>
         </div>

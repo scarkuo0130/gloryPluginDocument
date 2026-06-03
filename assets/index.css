@@ -1839,15 +1839,15 @@
   }
   .profile-action-row {
     display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 12px;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 10px;
     margin-bottom: 30px;
   }
   .profile-action-row .profile-change-btn {
     width: 100%;
     min-width: 0;
-    padding: 16px 8px;
-    font-size: 20px;
+    padding: 16px 4px;
+    font-size: 17px;
   }
   .profile-hidden-state {
     display: none;
