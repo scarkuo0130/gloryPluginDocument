@@ -1190,6 +1190,75 @@
     width: 5%; height: auto; display: block;
     filter: drop-shadow(0 2px 3px rgba(0,0,0,0.5));
   }
+
+  /* ===== E·美術版：排行榜列（資訊背板_排行 素材包）=====
+     背板 747x209、整列膠囊；元件以絕對定位疊加 + HTML 疊字 */
+  .lbr-list { display: flex; flex-direction: column; gap: 10px; width: 660px; padding-left: 7%; box-sizing: border-box; }
+  .lbr {
+    position: relative; width: 100%; aspect-ratio: 4.8;
+    container-type: inline-size;   /* 子元素用 cqw 等比縮放，列寬改變不變形/不重疊 */
+    /* 比例對齊示意圖實測（exact 原圖膠囊 ≈ 534x111 = 4.8）；素材原圖 5.14 會偏扁，遊戲端有微拉高 */
+  }
+  .lbr-bg { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+  /* 名次 / 獎牌（疊在背板左緣外側）*/
+  /* 獎牌（前 3 名）：高 ≈ 背板 122%、跨在背板左緣（凸出上下＋左外）。絕對定位獨立於名次數字 */
+  .lbr-medal-wrap {
+    position: absolute; left: -7%; top: 50%; transform: translateY(-50%);
+    height: 83%; aspect-ratio: 67/83; z-index: 5; filter: drop-shadow(0 2px 3px rgba(0,0,0,0.45));
+  }
+  .lbr-medalbase { position: absolute; left: 60%; top: 50%; transform: translate(-50%,-50%); height: 116%; width: auto; z-index: 1; }
+  .lbr-medal { position: relative; width: auto; height: 75%; display: block; z-index: 2; }
+  /* 名次數字欄：4 名後在最左；前 3 名（.lbr-rankzone--medal）移到獎牌右側 */
+  .lbr-rankzone {
+    position: absolute; left: 2%; top: 50%; transform: translateY(-50%);
+    height: 100%; display: flex; align-items: center; z-index: 4;
+  }
+  .lbr-rankzone--medal { left: 7%; }
+  /* 名次數字欄（所有列皆有；前 3 名在獎牌右側，4 名後在最左）*/
+  .lbr-rank {
+    display: flex; align-items: baseline; gap: 1px; color: #fff; font-weight: 900; line-height: 1;
+    -webkit-text-stroke: 0.06em #1a1a1a; paint-order: stroke fill;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.55); flex-shrink: 0;
+  }
+  .lbr-rank .n { font-size: 5.7cqw; font-style: italic; }
+  .lbr-rank .sfx { font-size: 2.7cqw; font-weight: 800; align-self: flex-start; margin-top: 0.3cqw; }
+  .lbr-trend { width: 2.1cqw; height: auto; display: block; align-self: center; margin-left: 0.2cqw; position: absolute; right: 10%; bottom: 30%; }
+  /* 頭像 + 等級盾 */
+  .lbr-av { position: absolute; left: 14%; top: 50%; transform: translateY(-50%); width: 16%; aspect-ratio: 1; z-index: 4; }
+  .lbr-av > img { width: 100%; height: 100%; display: block; filter: drop-shadow(0 2px 3px rgba(0,0,0,0.45)); }
+  .lbr-level { position: absolute; left: 50%; bottom: -6%; transform: translateX(-50%); width: 30%; aspect-ratio: 30/26; z-index: 5; }
+  .lbr-level > img { width: 100%; height: 100%; display: block; }
+  .lbr-level-n {
+    position: absolute; left: 50%; top: 42%; transform: translate(-50%,-50%);
+    color: #fff; font-size: 2.3cqw; font-weight: 800; line-height: 1; white-space: nowrap;
+    text-shadow: 0 1px 1px rgba(0,0,0,0.6);
+  }
+  /* 中段：稱號緞帶 + 名稱 */
+  /* 稱號緞帶與名稱「各自獨立」絕對定位（.lbr-mid 設 display:contents 不影響佈局），
+     → 可分開調：.lbr-title 用 left/top/width；.lbr-name 用 left/top/font-size */
+  .lbr-mid { display: contents; }
+  /* 稱號緞帶：自己的位置(left/top)＋大小(width) */
+  .lbr-title { position: absolute; left: 33%; top: 8%; width: 30cqw; aspect-ratio: 217/45; z-index: 3; }
+  .lbr-title > img { width: 100%; height: 100%; display: block; }
+  .lbr-title-n {
+    position: absolute; left: 50%; top: 46%; transform: translate(-50%,-50%);
+    color: #ffffff; font-size: 2.4cqw; line-height: 1; white-space: nowrap;
+  }
+  /* 名稱：自己的位置(left/top)＋大小(font-size)，與緞帶完全獨立 */
+  .lbr-name {
+    position: absolute; left: 33%; top: 62%; transform: translateY(-50%); z-index: 3;
+    color: #fff; font-size: 5.5cqw; font-weight: 600; line-height: 1; white-space: nowrap;
+    -webkit-text-stroke: 0.15em #161616; paint-order: stroke fill;
+  }
+  /* 分數 */
+  .lbr-score {
+    position: absolute; right: 13.5%; top: 63%; transform: translateY(-50%); z-index: 3;
+    color: #000000; font-size: 5cqw; font-weight: 900; font-style: italic; line-height: 1; white-space: nowrap;
+    -webkit-text-stroke: 0.1em #ffffff; paint-order: stroke fill;
+  }
+  /* 冠冕徽章（右緣）*/
+  .lbr-crown { position: absolute; right: 1.5%; top: 50%; transform: translateY(-50%); width: 9.5%; aspect-ratio: 1; z-index: 5; }
+  .lbr-crown > img { width: 100%; height: 100%; display: block; filter: drop-shadow(0 2px 3px rgba(0,0,0,0.45)); }
 </style>
 </head>
 <body>
@@ -1824,6 +1893,164 @@
         <span class="tag tag-extra">+ 排名 / 趨勢（外）</span>
         <span class="tag tag-extra">+ 數值 / 單位（外）</span>
       </div>
+    </div>
+  </div>
+
+  <!-- E·美術版: 排行榜列（資訊背板_排行 素材包） -->
+  <div class="case">
+    <div class="case-head">
+      <span class="case-no">E2</span>
+      <div class="case-title">lb-item（美術版 · 資訊背板_排行）</div>
+      <div class="case-where">出現位置：排行榜頁完整排名列 · 用途：整列美術背板 + 名次獎牌 + 稱號緞帶 + 冠冕徽章</div>
+    </div>
+    <div class="case-stage">
+      <div class="lbr-list">
+        <!-- 第 1 名：鑽石背板 + 冠軍獎牌 + 鑽石冠冕 -->
+        <div class="lbr">
+          <img class="lbr-bg" src="assets/leaderboard/tier_diamond.png" alt="" aria-hidden="true">
+          <div class="lbr-medal-wrap">
+            <img class="lbr-medalbase" src="assets/leaderboard/medalbase_1.png" alt="">
+            <img class="lbr-medal" src="assets/leaderboard/medal_1.png" alt="冠軍獎牌">
+          </div>
+          <div class="lbr-rankzone lbr-rankzone--medal">
+            <div class="lbr-rank"><span class="n">1</span><span class="sfx">st</span><img class="lbr-trend" src="assets/leaderboard/trend_up.png" alt="名次上升"></div>
+          </div>
+          <div class="lbr-av">
+            <img src="assets/leaderboard/avatar.png" alt="頭像">
+            <div class="lbr-level"><img src="assets/leaderboard/level.png" alt=""><span class="lbr-level-n">35</span></div>
+          </div>
+          <div class="lbr-mid">
+            <div class="lbr-title"><img src="assets/leaderboard/title_01.png" alt=""><span class="lbr-title-n">新手</span></div>
+            <div class="lbr-name">Bill16888</div>
+          </div>
+          <div class="lbr-score">1.30M</div>
+          <div class="lbr-crown"><img src="assets/leaderboard/crown_diamond.png" alt="鑽石徽章"></div>
+        </div>
+        <!-- 第 2 名：白金背板 + 亞軍獎牌 + 黃金冠冕 -->
+        <div class="lbr">
+          <img class="lbr-bg" src="assets/leaderboard/tier_platinum.png" alt="" aria-hidden="true">
+          <div class="lbr-medal-wrap">
+            <img class="lbr-medalbase" src="assets/leaderboard/medalbase_2.png" alt="">
+            <img class="lbr-medal" src="assets/leaderboard/medal_2.png" alt="亞軍獎牌">
+          </div>
+          <div class="lbr-rankzone lbr-rankzone--medal">
+            <div class="lbr-rank"><span class="n">2</span><span class="sfx">nd</span><img class="lbr-trend" src="assets/leaderboard/trend_down.png" alt="名次下降"></div>
+          </div>
+          <div class="lbr-av">
+            <img src="assets/leaderboard/avatar.png" alt="頭像">
+            <div class="lbr-level"><img src="assets/leaderboard/level.png" alt=""><span class="lbr-level-n">34</span></div>
+          </div>
+          <div class="lbr-mid">
+            <div class="lbr-title"><img src="assets/leaderboard/title_02.png" alt=""><span class="lbr-title-n">新手</span></div>
+            <div class="lbr-name">Anna7788</div>
+          </div>
+          <div class="lbr-score">1.15M</div>
+          <div class="lbr-crown"><img src="assets/leaderboard/crown_gold.png" alt="黃金徽章"></div>
+        </div>
+        <!-- 第 3 名：黃金背板 + 季軍獎牌 + 黃金冠冕 -->
+        <div class="lbr">
+          <img class="lbr-bg" src="assets/leaderboard/tier_gold.png" alt="" aria-hidden="true">
+          <div class="lbr-medal-wrap">
+            <img class="lbr-medalbase" src="assets/leaderboard/medalbase_3.png" alt="">
+            <img class="lbr-medal" src="assets/leaderboard/medal_3.png" alt="季軍獎牌">
+          </div>
+          <div class="lbr-rankzone lbr-rankzone--medal">
+            <div class="lbr-rank"><span class="n">3</span><span class="sfx">rd</span><img class="lbr-trend" src="assets/leaderboard/trend_up.png" alt="名次上升"></div>
+          </div>
+          <div class="lbr-av">
+            <img src="assets/leaderboard/avatar.png" alt="頭像">
+            <div class="lbr-level"><img src="assets/leaderboard/level.png" alt=""><span class="lbr-level-n">33</span></div>
+          </div>
+          <div class="lbr-mid">
+            <div class="lbr-title"><img src="assets/leaderboard/title_03.png" alt=""><span class="lbr-title-n">新手</span></div>
+            <div class="lbr-name">Cody2266</div>
+          </div>
+          <div class="lbr-score">1.10M</div>
+          <div class="lbr-crown"><img src="assets/leaderboard/crown_gold.png" alt="黃金徽章"></div>
+        </div>
+        <!-- 第 4 名：銀背板 + 名次數字 + 趨勢（無獎牌 / 無冠冕）-->
+        <div class="lbr">
+          <img class="lbr-bg" src="assets/leaderboard/tier_silver.png" alt="" aria-hidden="true">
+          <div class="lbr-rankzone">
+            <div class="lbr-rank"><span class="n">4</span><span class="sfx">th</span></div>
+            <img class="lbr-trend" src="assets/leaderboard/trend_up.png" alt="名次上升">
+          </div>
+          <div class="lbr-av">
+            <img src="assets/leaderboard/avatar.png" alt="頭像">
+            <div class="lbr-level"><img src="assets/leaderboard/level.png" alt=""><span class="lbr-level-n">31</span></div>
+          </div>
+          <div class="lbr-mid">
+            <div class="lbr-title"><img src="assets/leaderboard/title_04.png" alt=""><span class="lbr-title-n">新手</span></div>
+            <div class="lbr-name">Dora5120</div>
+          </div>
+          <div class="lbr-score">980,400</div>
+        </div>
+        <!-- 第 5 名：銅背板 -->
+        <div class="lbr">
+          <img class="lbr-bg" src="assets/leaderboard/tier_bronze.png" alt="" aria-hidden="true">
+          <div class="lbr-rankzone">
+            <div class="lbr-rank"><span class="n">5</span><span class="sfx">th</span></div>
+            <img class="lbr-trend" src="assets/leaderboard/trend_down.png" alt="名次下降">
+          </div>
+          <div class="lbr-av">
+            <img src="assets/leaderboard/avatar.png" alt="頭像">
+            <div class="lbr-level"><img src="assets/leaderboard/level.png" alt=""><span class="lbr-level-n">28</span></div>
+          </div>
+          <div class="lbr-mid">
+            <div class="lbr-title"><img src="assets/leaderboard/title_05.png" alt=""><span class="lbr-title-n">新手</span></div>
+            <div class="lbr-name">Evan3344</div>
+          </div>
+          <div class="lbr-score">870,100</div>
+        </div>
+        <!-- 第 6 名：鐵背板 -->
+        <div class="lbr">
+          <img class="lbr-bg" src="assets/leaderboard/tier_iron.png" alt="" aria-hidden="true">
+          <div class="lbr-rankzone">
+            <div class="lbr-rank"><span class="n">6</span><span class="sfx">th</span></div>
+            <img class="lbr-trend" src="assets/leaderboard/trend_up.png" alt="名次上升">
+          </div>
+          <div class="lbr-av">
+            <img src="assets/leaderboard/avatar.png" alt="頭像">
+            <div class="lbr-level"><img src="assets/leaderboard/level.png" alt=""><span class="lbr-level-n">25</span></div>
+          </div>
+          <div class="lbr-mid">
+            <div class="lbr-title"><img src="assets/leaderboard/title_06.png" alt=""><span class="lbr-title-n">新手</span></div>
+            <div class="lbr-name">Finn9001</div>
+          </div>
+          <div class="lbr-score">760,800</div>
+        </div>
+        <!-- 第 7 名：預設背板 -->
+        <div class="lbr">
+          <img class="lbr-bg" src="assets/leaderboard/tier_default.png" alt="" aria-hidden="true">
+          <div class="lbr-rankzone">
+            <div class="lbr-rank"><span class="n">7</span><span class="sfx">th</span></div>
+            <img class="lbr-trend" src="assets/leaderboard/trend_down.png" alt="名次下降">
+          </div>
+          <div class="lbr-av">
+            <img src="assets/leaderboard/avatar.png" alt="頭像">
+            <div class="lbr-level"><img src="assets/leaderboard/level.png" alt=""><span class="lbr-level-n">22</span></div>
+          </div>
+          <div class="lbr-mid">
+            <div class="lbr-title"><img src="assets/leaderboard/title_07.png" alt=""><span class="lbr-title-n">新手</span></div>
+            <div class="lbr-name">Gina4455</div>
+          </div>
+          <div class="lbr-score">650,300</div>
+        </div>
+      </div>
+    </div>
+    <div class="case-meta">
+      <b>素材：</b> <code>資訊背板_排行</code> 素材包 → 整列膠囊背板（依品階 7 色）+ 名次獎牌/數字 + 頭像 + 等級盾 + 稱號緞帶 + 名稱 + 分數 + 冠冕徽章<br>
+      <b>結構：</b> <code>.lbr</code> row（背板 <code>.lbr-bg</code> 鋪底）→ 名次區 <code>.lbr-rankzone</code>（前 3 名獎牌＋襯底 / 4 名後數字＋趨勢箭頭）→ 頭像 <code>.lbr-av</code>（含等級盾）→ 中段 <code>.lbr-mid</code>（稱號緞帶＋名稱）→ 分數 <code>.lbr-score</code> → 冠冕 <code>.lbr-crown</code>
+      <div class="tags">
+        <span class="tag tag-bg">背板（品階 7 色）</span>
+        <span class="tag tag-extra">名次獎牌 / 數字＋趨勢</span>
+        <span class="tag tag-av">頭像＋等級盾</span>
+        <span class="tag tag-title">稱號緞帶</span>
+        <span class="tag tag-name">名稱</span>
+        <span class="tag tag-extra">分數</span>
+        <span class="tag tag-extra">冠冕徽章</span>
+      </div>
+      <p style="margin-top:6px;">📐 <b>顯示規則：</b> 名次 1~3 顯示獎牌（冠/亞/季軍）＋襯底；4 名後顯示名次數字＋升降趨勢箭頭。背板顏色對應玩家<b>品階</b>（鑽石/白金/黃金/銀/銅/鐵/預設），與名次無關。</p>
     </div>
   </div>
 

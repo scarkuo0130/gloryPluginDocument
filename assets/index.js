@@ -1474,34 +1474,41 @@
     const scopeLabel = lbScopeMeta[currentLbScope];
     const caption = document.getElementById('lbScopeCaption');
     if (caption) caption.textContent = `${scopeLabel} · ${metricMeta.label}`;
+    const LB_TIERS = ['diamond','platinum','gold','silver','bronze','iron','default'];
+    const lbOrdinal = r => (r === 1 ? 'st' : r === 2 ? 'nd' : r === 3 ? 'rd' : 'th');
+    const fmtLbVal = v => {
+      v = String(v);
+      if (/^[\d,]+$/.test(v)) {        // 純數字（含千分位逗號）→ ≥1M 換算 M（小數兩位四捨五入）
+        const n = Number(v.replace(/,/g, ''));
+        if (n >= 1e6) return (Math.round(n / 1e6 * 100) / 100).toFixed(2) + 'M';
+      }
+      return v;                         // 倍率(x)/等級(Lv.)/<1M 維持原樣
+    };
     const renderLbItem = x => {
       const p = profiles[x.name] || {};
-      const playerTheme = getBackgroundInlineVars(p.bgKey);
-      const rankCls = x.rank === 1 ? 'top1' : x.rank === 2 ? 'top2' : x.rank === 3 ? 'top3' : '';
-      const medal = x.rank === 1 ? '🥇' : x.rank === 2 ? '🥈' : x.rank === 3 ? '🥉' : x.rank;
-      const trend = getLeaderboardListTrendDirection(tab, x.rank);
-      const trendArrow = trend === 'down' ? '▼' : '▲';
+      const isTop3 = x.rank <= 3;
+      const tier = LB_TIERS[Math.min(x.rank - 1, LB_TIERS.length - 1)];   // 品階背板依名次
+      const tn = String((x.rank - 1) % 7 + 1).padStart(2, '0');           // 稱號緞帶 01~07 輪替
+      const trend = getLeaderboardListTrendDirection(tab, x.rank) === 'down' ? 'down' : 'up';
+      const crownImg = x.rank === 1 ? 'diamond' : 'gold';
       return `
-        <div class="lb-item ${x.self ? 'lb-self' : ''}">
-          <div class="lb-rank-wrap">
-            <div class="lb-trend ${trend}">${trendArrow}</div>
-            <div class="lb-rank ${rankCls}">${medal}</div>
+        <div class="lbr ${x.self ? 'lbr--self' : ''}">
+          <img class="lbr-bg" src="assets/leaderboard/tier_${tier}.png" alt="" aria-hidden="true">
+          ${isTop3 ? `<div class="lbr-medal-wrap"><img class="lbr-medalbase" src="assets/leaderboard/medalbase_${x.rank}.png" alt=""><img class="lbr-medal" src="assets/leaderboard/medal_${x.rank}.png" alt="獎牌"></div>` : ''}
+          <div class="lbr-rankzone ${isTop3 ? 'lbr-rankzone--medal' : ''}">
+            <div class="lbr-rank"><span class="n">${x.rank}</span><span class="sfx">${lbOrdinal(x.rank)}</span></div>
+            <img class="lbr-trend" src="assets/leaderboard/trend_${trend}.png" alt="名次趨勢">
           </div>
-          <div class="player-card player-card--list idcs-host" style="${playerTheme}">
-            <!-- E: 小板 ID 卡 + 稱號 + 徽章 -->
-            <div class="idcs">
-              <img class="idcs-frame" src="assets/idcard/sml_frame.png" alt="" aria-hidden="true">
-              <div class="idcs-av"><img src="assets/idcard/sml_avatar.png" alt="頭像"></div>
-              <div class="idcs-level"><img src="assets/idcard/sml_level.png" alt=""><span class="idcs-level-n">${x.lv}</span></div>
-              ${p.title ? `<div class="idcs-title">${p.title}</div><img class="idcs-badge" src="assets/idcard/mid_badge.png" alt="徽章">` : ''}
-              <div class="idcs-name"${x.self ? '' : ` onclick="event.stopPropagation(); openPlayerProfile('${x.name}')" style="cursor:pointer;"`}>${x.name}${x.self ? ' (你)' : ''}</div>
-              <div class="idcs-star"><img src="assets/idcard/sml_star.png" alt="成就星"><span class="idcs-star-n">${p.achStars ?? 0}</span></div>
-            </div>
+          <div class="lbr-av">
+            <img src="assets/leaderboard/avatar.png" alt="頭像">
+            <div class="lbr-level"><img src="assets/leaderboard/level.png" alt=""><span class="lbr-level-n">${x.lv}</span></div>
           </div>
-          <div class="lb-value-wrap">
-            <div class="lb-value">${x.value}</div>
-            <div class="lb-value-label">${metricMeta.valueLabel}</div>
+          <div class="lbr-mid">
+            <div class="lbr-title"><img src="assets/leaderboard/title_${tn}.png" alt=""><span class="lbr-title-n">${p.title || ''}</span></div>
+            <div class="lbr-name"${x.self ? '' : ` onclick="event.stopPropagation(); openPlayerProfile('${x.name}')" style="cursor:pointer;"`}>${x.name}${x.self ? ' (你)' : ''}</div>
           </div>
+          <div class="lbr-score">${fmtLbVal(x.value)}</div>
+          ${isTop3 ? `<div class="lbr-crown"><img src="assets/leaderboard/crown_${crownImg}.png" alt="徽章"></div>` : ''}
         </div>
       `;
     };
