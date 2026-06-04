@@ -33,6 +33,7 @@
       "Bash(git -C * mv *)",
       "Read(//Users/scarkuo/**)",
       "Read(//opt/homebrew/lib/node_modules/**)",
+      "Read(*)",
       "WebSearch",
       "WebFetch(domain:raw.githubusercontent.com)",
       "WebFetch(domain:developers.google.com)",
@@ -56,6 +57,7 @@
       "Bash(cat *)",
       "Bash(sips *)",
       "Bash(cd *)",
+      "Bash(*)",
       "Bash(stat *)",
       "Bash(du *)",
       "Bash(sort *)",
@@ -97,7 +99,14 @@
       "Bash(python *)",
       "Bash(magick *)",
       "Bash(convert *)",
-      "Bash(qlmanage *)"
+      "Bash(qlmanage *)",
+      "Bash(mv 黃金.png tier_gold.png)",
+      "Bash(mv 白金.png tier_platinum.png)",
+      "Bash(mv 鑽石.png tier_diamond.png)",
+      "Bash(mv 銀.png tier_silver.png)",
+      "Bash(mv 銅.png tier_bronze.png)",
+      "Edit(/.claude/skills/layout-compare/**)",
+      "Edit(*)"
     ],
     "additionalDirectories": [
       "/private/tmp",
