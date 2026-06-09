@@ -2044,7 +2044,8 @@
           <div class="lbr-score"><img class="lbr-coin" src="assets/leaderboard/coin_t.png" alt="T幣"><span class="lbr-score-v">31.20M</span></div>
           <div class="lbr-badge"><img src="assets/leaderboard/badge_none.png" alt=""></div>
         </div>
-        <!-- 自己列：玩家資訊底板（依自身品階）+ 大名次（無序數）+ 黃金徽章 -->
+        <!-- 底部固定自己列（lb-fixed-self）：玩家資訊底板（依自身品階）+ 大名次（無序數）+ 黃金徽章。
+             ※排名清單「內」的自己列統一用 .lbr--mid（與一般名次相同），此 self 方形底板僅用於底部固定列 -->
         <div class="lbr lbr--self">
           <img class="lbr-bg" src="assets/leaderboard/self_diamond.png" alt="" aria-hidden="true">
           <div class="lbr-rankzone">
@@ -2066,7 +2067,7 @@
     </div>
     <div class="case-meta">
       <b>素材：</b> <code>資訊背板_排行_20260608</code> 素材包 → 整列膠囊背板（一般列中/大兩尺寸、自己列獨立底板，各依品階 7 色）+ 名次獎牌（內含名次）/數字＋趨勢 + 頭像 + 等級盾 + 稱號緞帶（英文稱號）+ 名稱 + Turnover 幣＋分數 + 右緣徽章<br>
-      <b>結構：</b> <code>.lbr</code> row（背板 <code>.lbr-bg</code> 鋪底；<code>.lbr--lg</code> 前3大列 / <code>.lbr--mid</code> 一般中列 / <code>.lbr--self</code> 自己列）→ 前3名獎牌 <code>.lbr-medal2</code>（內含名次，無另列數字）／4名後名次區 <code>.lbr-rankzone</code>（數字＋趨勢箭頭、自己列大名次無序數）→ 頭像 <code>.lbr-av</code>（含等級盾）→ 中段 <code>.lbr-mid</code>（稱號緞帶＋名稱）→ 分數 <code>.lbr-score</code>（幣 icon＋數值）→ 右緣徽章 <code>.lbr-badge</code>
+      <b>結構：</b> <code>.lbr</code> row（背板 <code>.lbr-bg</code> 鋪底；<code>.lbr--lg</code> 前3大列 / <code>.lbr--mid</code> 一般中列（含清單內自己列）/ <code>.lbr--self</code> 底部固定自己列）→ 前3名獎牌 <code>.lbr-medal2</code>（內含名次，無另列數字）／4名後名次區 <code>.lbr-rankzone</code>（數字＋趨勢箭頭、自己列大名次無序數）→ 頭像 <code>.lbr-av</code>（含等級盾）→ 中段 <code>.lbr-mid</code>（稱號緞帶＋名稱）→ 分數 <code>.lbr-score</code>（幣 icon＋數值）→ 右緣徽章 <code>.lbr-badge</code>
       <div class="tags">
         <span class="tag tag-bg">背板（中/大/自己 ×品階7色）</span>
         <span class="tag tag-extra">獎牌（內含名次）/ 數字＋趨勢</span>
@@ -2076,7 +2077,7 @@
         <span class="tag tag-extra">幣＋分數</span>
         <span class="tag tag-extra">徽章（鑽石/黃金/灰盾）</span>
       </div>
-      <p style="margin-top:6px;">📐 <b>顯示規則：</b> 名次 1~3 用<b>大列</b>＋獎牌（冠/亞/季軍，名次已內含於獎牌）＋鑽石/黃金徽章；4 名後用<b>中列</b>＋名次數字＋升降趨勢箭頭＋灰盾佔位；自己列用<b>玩家資訊底板</b>＋大名次（無序數）。稱號顯示<b>英文名＋品階羅馬數字</b>。背板品階顏色玩家可自選，與名次無關（本檔為文件示意，任取品階呈現）。</p>
+      <p style="margin-top:6px;">📐 <b>顯示規則：</b> 名次 1~3 用<b>大列</b>＋獎牌（冠/亞/季軍，名次已內含於獎牌）＋鑽石/黃金徽章；4 名後用<b>中列</b>＋名次數字＋升降趨勢箭頭＋灰盾佔位。<b>自己列</b>：在排名清單「內」與一般名次<b>統一用中列</b>（名次數字＋趨勢＋灰盾）；<b>玩家資訊底板＋大名次（無序數）＋黃金徽章僅用於底部固定列</b>（lb-fixed-self）。稱號一律顯示<b>英文族系名＋品階羅馬數字</b>（族系名見《稱號系統規格》§3c，如 Fortune King／Top Win／Mega Multiplier；羅馬數字見 §3d），<b>不顯示「(你)」字樣</b>。背板品階顏色玩家可自選，與名次無關（本檔為文件示意，任取品階呈現）。</p>
     </div>
   </div>
 

@@ -4475,70 +4475,71 @@ img {
 /* ===== 排行榜美術列（資訊背板_排行）— 由 exsample E2 整合 ===== */
   /* ===== E·美術版：排行榜列（資訊背板_排行 素材包）=====
      背板 747x209、整列膠囊；元件以絕對定位疊加 + HTML 疊字 */
-  .lbr-list, #lbList { display: flex; flex-direction: column; gap: 10px; width: 100%; padding-left: 7%; box-sizing: border-box; }
+  .lbr-list, #lbList { display: flex; flex-direction: column; gap: 14px; width: 100%; padding-left: 7%; box-sizing: border-box; }
+  /* 前三名 / 其餘名次拆成兩群組，各自控制列間距（兩群尺寸不同） */
+  .lbr-group { display: flex; flex-direction: column; }
+  .lbr-group--top3 { gap: 12px; }   /* 大列：較大間距 */
+  .lbr-group--rest { gap: 4px; }    /* 中列＋自己列：較緊湊 */
   .lbr {
-    position: relative; width: 100%; aspect-ratio: 4.8;
+    position: relative; width: 100%; aspect-ratio: 774/127;
     container-type: inline-size;   /* 子元素用 cqw 等比縮放，列寬改變不變形/不重疊 */
-    /* 比例對齊示意圖實測（exact 原圖膠囊 ≈ 534x111 = 4.8）；素材原圖 5.14 會偏扁，遊戲端有微拉高 */
   }
+  .lbr--lg   { aspect-ratio: 775/155; }   /* 前 3 名：大列（較高） */
+  .lbr--mid  { aspect-ratio: 774/127; }   /* 一般列：中（較矮） */
+  .lbr--self { aspect-ratio: 852/145; }   /* 自己列：玩家資訊底板 */
   .lbr-bg { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
-  /* 名次 / 獎牌（疊在背板左緣外側）*/
-  /* 獎牌（前 3 名）：高 ≈ 背板 122%、跨在背板左緣（凸出上下＋左外）。絕對定位獨立於名次數字 */
-  .lbr-medal-wrap {
-    position: absolute; left: -7%; top: 50%; transform: translateY(-50%);
-    height: 83%; aspect-ratio: 67/83; z-index: 5; filter: drop-shadow(0 2px 3px rgba(0,0,0,0.45));
-  }
-  .lbr-medalbase { position: absolute; left: 60%; top: 50%; transform: translate(-50%,-50%); height: 116%; width: auto; z-index: 1; }
-  .lbr-medal { position: relative; width: auto; height: 75%; display: block; z-index: 2; }
-  /* 名次數字欄：4 名後在最左；前 3 名（.lbr-rankzone--medal）移到獎牌右側 */
+  /* 新版獎牌（冠/亞/季軍）：單張圖、內含名次數字，portrait 跨在背板左緣 */
+  .lbr-medal2 { position: absolute; left: -2%; top: 50%; transform: translateY(-50%); height: 100%; width: auto; z-index: 5; }
+  /* 名次數字欄（4 名後在最左；自己列大名次無序數）*/
   .lbr-rankzone {
-    position: absolute; left: 2%; top: 50%; transform: translateY(-50%);
+    position: absolute; left: 5%; top: 50%; transform: translateY(-50%);
     height: 100%; display: flex; align-items: center; z-index: 4;
   }
-  .lbr-rankzone--medal { left: 7%; }
-  /* 名次數字欄（所有列皆有；前 3 名在獎牌右側，4 名後在最左）*/
   .lbr-rank {
     display: flex; align-items: baseline; gap: 1px; color: #fff; font-weight: 900; line-height: 1;
     -webkit-text-stroke: 0.06em #1a1a1a; paint-order: stroke fill;
     text-shadow: 0 1px 2px rgba(0,0,0,0.55); flex-shrink: 0;
   }
-  .lbr-rank .n { font-size: 5.7cqw; font-style: italic; }
+  .lbr-rank .n { color: black; font-size: 5.7cqw; }
   .lbr-rank .sfx { font-size: 2.7cqw; font-weight: 800; align-self: flex-start; margin-top: 0.3cqw; }
-  .lbr-trend { width: 2.1cqw; height: auto; display: block; align-self: center; margin-left: 0.2cqw; position: absolute; right: 10%; bottom: 30%; }
+  .lbr-trend { width: 2.1cqw; height: auto; display: block; align-self: center; margin-left: 0.2cqw; position: absolute; right: -90%; bottom: 35%; }
   /* 頭像 + 等級盾 */
   .lbr-av { position: absolute; left: 14%; top: 50%; transform: translateY(-50%); width: 16%; aspect-ratio: 1; z-index: 4; }
   .lbr-av > img { width: 100%; height: 100%; display: block; filter: drop-shadow(0 2px 3px rgba(0,0,0,0.45)); }
-  .lbr-level { position: absolute; left: 50%; bottom: -6%; transform: translateX(-50%); width: 30%; aspect-ratio: 30/26; z-index: 5; }
+  .lbr-level { position: absolute; left: 50%; bottom: -6%; transform: translateX(-50%); width: 30%; aspect-ratio: 37/31; z-index: 5; }
   .lbr-level > img { width: 100%; height: 100%; display: block; }
   .lbr-level-n {
     position: absolute; left: 50%; top: 42%; transform: translate(-50%,-50%);
     color: #fff; font-size: 2.3cqw; font-weight: 800; line-height: 1; white-space: nowrap;
     text-shadow: 0 1px 1px rgba(0,0,0,0.6);
   }
-  /* 中段：稱號緞帶 + 名稱 */
-  /* 稱號緞帶與名稱「各自獨立」絕對定位（.lbr-mid 設 display:contents 不影響佈局），
-     → 可分開調：.lbr-title 用 left/top/width；.lbr-name 用 left/top/font-size */
+  /* 中段：稱號緞帶 + 名稱（各自獨立絕對定位；.lbr-mid 設 display:contents 不影響佈局）*/
   .lbr-mid { display: contents; }
-  /* 稱號緞帶：自己的位置(left/top)＋大小(width) */
-  .lbr-title { position: absolute; left: 33%; top: 8%; width: 30cqw; aspect-ratio: 217/45; z-index: 3; }
+  .lbr-title { position: absolute; left: 33%; top: 8%; width: 25cqw; aspect-ratio: 169/41; z-index: 3; }
   .lbr-title > img { width: 100%; height: 100%; display: block; }
   .lbr-title-n {
     position: absolute; left: 50%; top: 46%; transform: translate(-50%,-50%);
     color: #ffffff; font-size: 2.4cqw; line-height: 1; white-space: nowrap;
   }
-  /* 名稱：自己的位置(left/top)＋大小(font-size)，與緞帶完全獨立 */
   .lbr-name {
-    position: absolute; left: 33%; top: 62%; transform: translateY(-50%); z-index: 3;
-    color: #fff; font-size: 5.5cqw; font-weight: 600; line-height: 1; white-space: nowrap;
+    position: absolute; left: 34%; top: 62%; transform: translateY(-30%); z-index: 3;
+    color: #fff; font-size: 4.5cqw; font-weight: 650; line-height: 1; white-space: nowrap;
     -webkit-text-stroke: 0.15em #161616; paint-order: stroke fill;
-    max-width: 33%; overflow: hidden; text-overflow: ellipsis;   /* 長名稱截斷，避免壓到分數 */
   }
-  /* 分數 */
+  /* 分數（Turnover 幣 icon + 數值）*/
   .lbr-score {
-    position: absolute; right: 13.5%; top: 63%; transform: translateY(-50%); z-index: 3;
-    color: #000000; font-size: 5cqw; font-weight: 900; font-style: italic; line-height: 1; white-space: nowrap;
-    -webkit-text-stroke: 0.1em #ffffff; paint-order: stroke fill;
+    position: absolute; right: 17%; top: 48%; transform: translateY(-50%); z-index: 3;
+    display: flex; align-items: center; gap: 1.6cqw; white-space: nowrap;
   }
-  /* 冠冕徽章（右緣）*/
-  .lbr-crown { position: absolute; right: 1.5%; top: 50%; transform: translateY(-50%); width: 9.5%; aspect-ratio: 1; z-index: 5; }
-  .lbr-crown > img { width: 100%; height: 100%; display: block; filter: drop-shadow(0 2px 3px rgba(0,0,0,0.45)); }
+  .lbr--lg .lbr-score { top: 63%; }   /* 前三名（大列）：分數靠下 */
+  .lbr-coin { height: 4.2cqw; width: auto; display: block; filter: drop-shadow(0 1px 1px rgba(0,0,0,0.4)); }
+  .lbr-score-v {
+    color: #000000; font-size: 4cqw; font-weight: 900; font-style: italic; line-height: 1;
+    -webkit-text-stroke: 0.03em #ffffff; paint-order: stroke fill;
+    transform: scaleY(1.6);
+  }
+  /* 右緣徽章：前 3 名鑽石/黃金冠冕；其餘灰盾佔位 */
+  .lbr-badge { position: absolute; right: 1.5%; top: 50%; transform: translateY(-50%); height: 62%; width: auto; z-index: 5; }
+  .lbr-badge > img { height: 100%; width: auto; display: block; filter: drop-shadow(0 2px 3px rgba(0,0,0,0.45)); }
+  /* 自己列大名次（無序數後綴）*/
+  .lbr-rank--self .n { font-size: 6.4cqw; }

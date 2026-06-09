@@ -1476,6 +1476,10 @@
     if (caption) caption.textContent = `${scopeLabel} · ${metricMeta.label}`;
     const LB_TIERS = ['diamond','platinum','gold','silver','bronze','iron','default'];
     const lbOrdinal = r => (r === 1 ? 'st' : r === 2 ? 'nd' : r === 3 ? 'rd' : 'th');
+    // 稱號：對玩家只顯示英文族系名 + 品階羅馬數字（稱號系統規格 §3c/§3d）
+    const LB_ROMAN = ['','Ⅰ','Ⅱ','Ⅲ','Ⅳ','Ⅴ','Ⅵ','Ⅶ','Ⅷ','Ⅸ','Ⅹ'];
+    const LB_TITLE_FAMILIES = ['Fortune King','Top Win','Mega Multiplier','Cash King','Level King','Spin Master','Combo King'];
+    const lbTitle = rank => `${LB_TITLE_FAMILIES[(rank - 1) % LB_TITLE_FAMILIES.length]} ${LB_ROMAN[Math.max(1, Math.min(10, 11 - rank))]}`;
     const fmtLbVal = v => {
       v = String(v);
       if (/^[\d,]+$/.test(v)) {        // 純數字（含千分位逗號）→ ≥1M 換算 M（小數兩位四捨五入）
@@ -1484,31 +1488,34 @@
       }
       return v;                         // 倍率(x)/等級(Lv.)/<1M 維持原樣
     };
-    const renderLbItem = x => {
+    const renderLbItem = (x, fixed = false) => {
       const p = profiles[x.name] || {};
-      const isTop3 = x.rank <= 3;
+      const asSelf = x.self && fixed;                                     // 僅底部固定列用 self 方形背板；列表內自己列統一中列
+      const isTop3 = x.rank <= 3 && !x.self;
       const tier = LB_TIERS[Math.min(x.rank - 1, LB_TIERS.length - 1)];   // 品階背板依名次
-      const tn = String((x.rank - 1) % 7 + 1).padStart(2, '0');           // 稱號緞帶 01~07 輪替
       const trend = getLeaderboardListTrendDirection(tab, x.rank) === 'down' ? 'down' : 'up';
-      const crownImg = x.rank === 1 ? 'diamond' : 'gold';
+      // 尺寸 / 背板 / 徽章：前3名大列、4名後中列、底部固定自己列獨立底板
+      const sizeCls = asSelf ? 'lbr--self' : (isTop3 ? 'lbr--lg' : 'lbr--mid');
+      const bg = asSelf ? `self_${tier}` : (isTop3 ? `row_lg_${tier}` : `row_mid_${tier}`);
+      const badge = asSelf ? 'badge_gold' : (isTop3 ? (x.rank === 1 ? 'badge_diamond' : 'badge_gold') : 'badge_none');
       return `
-        <div class="lbr ${x.self ? 'lbr--self' : ''}">
-          <img class="lbr-bg" src="assets/leaderboard/tier_${tier}.png" alt="" aria-hidden="true">
-          ${isTop3 ? `<div class="lbr-medal-wrap"><img class="lbr-medalbase" src="assets/leaderboard/medalbase_${x.rank}.png" alt=""><img class="lbr-medal" src="assets/leaderboard/medal_${x.rank}.png" alt="獎牌"></div>` : ''}
-          <div class="lbr-rankzone ${isTop3 ? 'lbr-rankzone--medal' : ''}">
-            <div class="lbr-rank"><span class="n">${x.rank}</span><span class="sfx">${lbOrdinal(x.rank)}</span></div>
-            <img class="lbr-trend" src="assets/leaderboard/trend_${trend}.png" alt="名次趨勢">
-          </div>
+        <div class="lbr ${sizeCls}">
+          <img class="lbr-bg" src="assets/leaderboard/${bg}.png" alt="" aria-hidden="true">
+          ${isTop3 ? `<img class="lbr-medal2" src="assets/leaderboard/medal2_${x.rank}.png" alt="名次獎牌">` : `
+          <div class="lbr-rankzone">
+            <div class="lbr-rank ${asSelf ? 'lbr-rank--self' : ''}"><span class="n">${x.rank}</span></div>
+            ${asSelf ? '' : `<img class="lbr-trend" src="assets/leaderboard/trend2_${trend}.png" alt="名次趨勢">`}
+          </div>`}
           <div class="lbr-av">
-            <img src="assets/leaderboard/avatar.png" alt="頭像">
-            <div class="lbr-level"><img src="assets/leaderboard/level.png" alt=""><span class="lbr-level-n">${x.lv}</span></div>
+            <img src="assets/leaderboard/av2.png" alt="頭像">
+            <div class="lbr-level"><img src="assets/leaderboard/level2_plate.png" alt=""><span class="lbr-level-n">${x.lv}</span></div>
           </div>
           <div class="lbr-mid">
-            <div class="lbr-title"><img src="assets/leaderboard/title_${tn}.png" alt=""><span class="lbr-title-n">${p.title || ''}</span></div>
-            <div class="lbr-name"${x.self ? '' : ` onclick="event.stopPropagation(); openPlayerProfile('${x.name}')" style="cursor:pointer;"`}>${x.name}${x.self ? ' (你)' : ''}</div>
+            <div class="lbr-title"><img src="assets/leaderboard/ribbon_low_01.png" alt=""><span class="lbr-title-n">${lbTitle(x.rank)}</span></div>
+            <div class="lbr-name"${x.self ? '' : ` onclick="event.stopPropagation(); openPlayerProfile('${x.name}')" style="cursor:pointer;"`}>${x.name}</div>
           </div>
-          <div class="lbr-score">${fmtLbVal(x.value)}</div>
-          ${isTop3 ? `<div class="lbr-crown"><img src="assets/leaderboard/crown_${crownImg}.png" alt="徽章"></div>` : ''}
+          <div class="lbr-score"><img class="lbr-coin" src="assets/leaderboard/coin_t.png" alt="T幣"><span class="lbr-score-v">${fmtLbVal(x.value)}</span></div>
+          <div class="lbr-badge"><img src="assets/leaderboard/${badge}.png" alt=""></div>
         </div>
       `;
     };
@@ -1518,9 +1525,14 @@
     document.querySelectorAll('#leaderboardPage .lb-scope-tabs .tab').forEach(el => {
       el.classList.toggle('active', el.dataset.scope === currentLbScope);
     });
-    list.innerHTML = data.map(renderLbItem).join('');
+    // 前三名（大列）/ 其餘名次（中列）拆成兩群組，各自獨立列間距
+    const top3 = data.filter(x => x.rank <= 3 && !x.self);
+    const rest = data.filter(x => !(x.rank <= 3 && !x.self));
+    list.innerHTML =
+      `<div class="lbr-group lbr-group--top3">${top3.map(x => renderLbItem(x)).join('')}</div>` +
+      `<div class="lbr-group lbr-group--rest">${rest.map(x => renderLbItem(x)).join('')}</div>`;
     const self = data.find(x => x.self);
-    selfFixed.innerHTML = self ? renderLbItem(self) : '';
+    selfFixed.innerHTML = self ? renderLbItem(self, true) : '';
   }
 
   function switchAchTab(tab) {
