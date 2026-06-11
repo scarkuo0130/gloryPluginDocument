@@ -28,7 +28,7 @@
             <img class="idcm-frame" src="assets/idcard/mid_frame.png" alt="" aria-hidden="true">
             <div class="idcm-av"><img src="assets/idcard/mid_avatar.png" alt="頭像"></div>
             <div class="idcm-level"><img src="assets/idcard/mid_level.png" alt=""><span class="idcm-level-n">12</span></div>
-            <div class="idcm-title" id="statusTitle">幸運兒</div>
+            <div class="idcm-title" id="statusTitle">Mega Win Ⅴ</div>
             <img class="idcm-badge" src="assets/idcard/mid_badge.png" alt="徽章">
             <div class="idcm-name" id="statusName">Joan5428</div>
             <div class="idcm-star"><img src="assets/idcard/mid_star.png" alt="成就星"><span class="idcm-star-n">5</span></div>
@@ -57,21 +57,24 @@
         <div class="mail-dot-badge" id="mailBadge"></div>
       </div>
 
-      <!-- Main Menu -->
+      <!-- Main Menu（Game Hub 版面 · 2026-06-11 改版，對照 exsample.html M 區塊）-->
       <div class="menu" id="mainMenu">
-        <div class="menu-header player-card player-card--menu idcm-host" onclick="openPage('profilePage')">
-          <!-- ===== B 主選單頭：中板 ID 卡（與 A 共用同一套 .idcm，做成一樣）===== -->
-          <div class="idcm">
-            <img class="idcm-frame" src="assets/idcard/mid_frame.png" alt="" aria-hidden="true">
-            <div class="idcm-av"><img src="assets/idcard/mid_avatar.png" alt="頭像"></div>
-            <div class="idcm-level"><img src="assets/idcard/mid_level.png" alt=""><span class="idcm-level-n">12</span></div>
-            <div class="idcm-title" id="menuUserTitle">幸運兒</div>
-            <img class="idcm-badge" src="assets/idcard/mid_badge.png" alt="徽章">
-            <div class="idcm-name" id="menuUserName">Joan5428</div>
-            <div class="idcm-star"><img src="assets/idcard/mid_star.png" alt="成就星"><span class="idcm-star-n">5</span></div>
-            <div class="idcm-bar"><span class="idcm-bar-fill" style="width:65%"></span></div>
-            <div class="idcm-gloss"></div>
+        <!-- 玩家摘要列 -->
+        <div class="gh-summary" onclick="openPage('profilePage')">
+          <div class="gh-av">
+            <img src="assets/leaderboard/av2.png" alt="頭像">
+            <div class="gh-lv">12</div>
           </div>
+          <div class="gh-ttl" id="menuUserTitle">Mega Win Ⅴ</div>
+          <div class="gh-name-row">
+            <div class="gh-name" id="menuUserName">Joan5428</div>
+            <img src="assets/leaderboard/badge_diamond.png" alt="品階徽記">
+          </div>
+          <div class="gh-exp">
+            <div class="gh-exp-num">1688 / 2000</div>
+            <div class="gh-exp-track"><div class="gh-exp-fill" style="width:84%"></div></div>
+          </div>
+          <div class="gh-star"><img src="assets/leaderboard/star.png" alt="成就星"><span id="menuStarN">5</span></div>
           <!-- legacy 隱藏節點 -->
           <div id="menuAvatar" hidden></div>
           <div id="menuUserLevel" hidden></div>
@@ -79,84 +82,57 @@
             <span class="star">✮</span><span class="count"></span>
           </span>
         </div>
-        <button type="button" class="promotion-btn" onclick="openPromotionModal()" aria-label="Promotion">
-          <img class="promotion-thumb" id="promotionThumb" src="" alt="">
-          <div class="promotion-copy">
-            <div class="promotion-kicker" id="promotionKicker">PROMOTION</div>
-            <div class="promotion-title" id="promotionTitle">Cash Drop</div>
-            <div class="promotion-desc" id="promotionDesc">慶祝勞動節</div>
-            <div class="promotion-prize" id="promotionPrize">最高金額 6,000</div>
-          </div>
-          <div class="promotion-dots" id="promotionDots" aria-hidden="true"></div>
-        </button>
-        <div class="menu-grid">
-          <div class="menu-item leaderboard-preview-card" onclick="openPage('leaderboardPage')">
-            <div class="menu-item-icon">🏆</div>
-            <div class="menu-item-copy">
-              <div class="menu-item-kicker" id="lbMenuKicker">總排名 · Turnover</div>
-              <div class="menu-item-label">排行榜</div>
-              <div class="lb-menu-preview" id="lbMenuPreview">
-                <div class="lb-menu-row lb-menu-row--with-rank">
-                  <div class="lb-menu-rank-wrap">
-                    <div class="lb-menu-trend up">▲</div>
-                    <div class="lb-menu-rank">1</div>
-                  </div>
-                  <div class="player-card player-card--list-mini">
-                    <div class="lb-menu-avatar">👑</div>
-                    <div class="lb-menu-meta">
-                      <div class="lb-menu-name">
-                        <span class="lb-menu-lv">Lv.38</span>
-                        <span class="lb-menu-player">KingOfSpin</span>
-                      </div>
-                      <div class="lb-menu-title">✦ 王者</div>
-                    </div>
-                  </div>
-                  <div class="lb-menu-value">125,000,000</div>
-                </div>
+        <!-- 每日任務 + 成就 -->
+        <div class="gh-cards">
+          <div class="gh-card gh-card--daily" onclick="openPage('dailyTaskPage')">
+            <div class="gh-card-head">每日任務</div>
+            <div class="gh-dot" id="dailyTaskBadge" aria-label="有每日任務可領取"><img src="assets/gamehub/dot_red.png" alt="紅點"></div>
+            <div class="compact-progress" aria-label="每日任務完成進度">
+              <div class="gh-daily-label">今日進度</div>
+              <div class="gh-daily-count"><b id="dailyTaskMenuStatus">0 / 3</b><span>完成</span></div>
+              <div class="gh-bar"><div class="gh-bar-fill gh-bar-fill--daily" id="dailyTaskMenuProgressFill"></div></div>
+            </div>
+            <div class="gh-gift">
+              <span class="gh-claim">可領 2</span>
+              <div class="gh-gift-img">
+                <img src="assets/gamehub/icon_gift.png" alt="禮物">
+                <span class="gh-exp-tag">EXP</span>
               </div>
             </div>
           </div>
-          <div class="menu-item compact" onclick="openPage('dailyTaskPage')">
-            <div class="menu-item-icon">📅</div>
-            <div class="menu-item-copy">
-              <div class="menu-item-kicker">DAILY</div>
-              <div class="menu-item-label">每日任務</div>
-              <div class="menu-item-desc">每日進度與 EXP 領取</div>
-              <div class="compact-progress" aria-label="每日任務完成進度">
-                <div class="compact-progress-bar">
-                  <div class="compact-progress-fill" id="dailyTaskMenuProgressFill"></div>
-                </div>
-                <div class="compact-progress-status" id="dailyTaskMenuStatus">0 / 3</div>
-              </div>
-            </div>
-            <div class="menu-item-badge dot" id="dailyTaskBadge" aria-label="有每日任務可領取"></div>
-          </div>
-          <div class="menu-item compact" onclick="openPage('achievementPage')">
-            <div class="menu-item-icon">🎯</div>
-            <div class="menu-item-copy">
-              <div class="menu-item-kicker">GLORY</div>
-              <div class="menu-item-label">成就系統</div>
-              <div class="menu-item-desc">解鎖稱號、頭像、背板</div>
-            </div>
-          </div>
-          <div class="menu-item compact" onclick="openPage('mailPage')" style="display:none;">
-            <div class="menu-item-icon">✉️</div>
-            <div class="menu-item-copy">
-              <div class="menu-item-kicker">MAIL</div>
-              <div class="menu-item-label">信件系統</div>
-              <div class="menu-item-desc">查看系統通知與獎勵</div>
-            </div>
-            <div class="menu-item-badge" id="menuMailBadge">3</div>
-          </div>
-          <div class="menu-item compact" onclick="openPage('machinePage')" style="display:none;">
-            <div class="menu-item-icon">🎰</div>
-            <div class="menu-item-copy">
-              <div class="menu-item-kicker">MENU</div>
-              <div class="menu-item-label">機台選擇</div>
-              <div class="menu-item-desc">查看可解鎖機台</div>
-            </div>
+          <div class="gh-card gh-card--ach" onclick="openPage('achievementPage')">
+            <div class="gh-card-head">成就系統</div>
+            <div class="gh-dot"><img src="assets/gamehub/dot_red.png" alt="紅點"></div>
+            <div class="gh-ach-icon"><img src="assets/gamehub/icon_achieve.png" alt="成就"></div>
+            <div class="gh-ach-count">4/29</div>
+            <div class="gh-bar"><div class="gh-bar-fill gh-bar-fill--ach" style="width:38%"></div></div>
           </div>
         </div>
+        <!-- 排行榜預覽（前三名完整列，renderLeaderboardMenuCard 動態渲染）-->
+        <div class="gh-lb leaderboard-preview-card" onclick="openPage('leaderboardPage')">
+          <div class="gh-lb-head">
+            <div class="gh-trophy">🏆</div>
+            <div>
+              <div class="gh-lb-sub" id="lbMenuKicker">總排名 · Turnover</div>
+              <div class="gh-lb-title">排行榜</div>
+            </div>
+          </div>
+          <div class="gh-lb-rows" id="lbMenuPreview"></div>
+        </div>
+        <!-- 活動橫幅（promotion 輪播）-->
+        <button type="button" class="gh-banner" onclick="openPromotionModal()" aria-label="Promotion">
+          <img class="gh-banner-bg" id="promotionThumb" src="" alt="">
+          <div class="gh-bn-icon">🏆</div>
+          <div class="gh-bn-text">
+            <div class="gh-bn-kicker" id="promotionKicker">PROMOTION</div>
+            <div class="gh-bn-title" id="promotionTitle">Cash Drop</div>
+            <div class="gh-bn-date" id="promotionDesc">慶祝勞動節</div>
+          </div>
+          <span id="promotionPrize" hidden></span>
+          <div class="gh-bn-dots" id="promotionDots" aria-hidden="true"></div>
+        </button>
+        <!-- legacy 隱藏節點：信箱紅點（信箱入口本期隱藏） -->
+        <div class="menu-item-badge" id="menuMailBadge" hidden>3</div>
       </div>
 
       <!-- Overlay -->
@@ -189,7 +165,7 @@
                   <span class="idc-level">1</span>
                 </div>
                 <img class="idc-badge" src="assets/idcard/badge.png" alt="徽章">
-                <div class="idc-title">新手</div>
+                <div class="idc-title">Mega Win Ⅴ</div>
                 <div class="idc-name" id="profileInfoName">Louis5566</div>
                 <div class="idc-star">
                   <img src="assets/idcard/ach_star.png" alt="成就星">
@@ -237,7 +213,7 @@
           <div class="profile-hidden-state" aria-hidden="true">
             <div id="currentAvatarPreview">🦊</div>
             <div id="currentAvatarText">目前頭像</div>
-            <div id="currentTitlePreview">✦ 幸運兒</div>
+            <div id="currentTitlePreview">Mega Win Ⅴ</div>
             <div class="profile-current-bg bg-sunset" id="currentBgPreview">預設背板</div>
           </div>
         </div>
@@ -291,13 +267,13 @@
             </div>
             <div class="title-grid">
               <div class="title-option" data-title="">無</div>
-              <div class="title-option" data-title="新手">✦ 新手</div>
-              <div class="title-option selected" data-title="幸運兒">✦ 幸運兒</div>
-              <div class="title-option locked" data-title="不敗">✦ 不敗 🔒</div>
-              <div class="title-option locked" data-title="賭神">✦ 賭神 🔒</div>
-              <div class="title-option locked" data-title="王者">✦ 王者 🔒</div>
-              <div class="title-option locked" data-title="至尊">✦ 至尊 🔒</div>
-              <div class="title-option locked" data-title="傳奇">✦ 傳奇 🔒</div>
+              <div class="title-option" data-title="Rising Star Ⅰ">Rising Star Ⅰ</div>
+              <div class="title-option selected" data-title="Mega Win Ⅴ">Mega Win Ⅴ</div>
+              <div class="title-option locked" data-title="Streak Master Ⅵ">Streak Master Ⅵ 🔒</div>
+              <div class="title-option locked" data-title="Cash King Ⅹ">Cash King Ⅹ 🔒</div>
+              <div class="title-option locked" data-title="Rank King Ⅹ">Rank King Ⅹ 🔒</div>
+              <div class="title-option locked" data-title="Top Win Ⅷ">Top Win Ⅷ 🔒</div>
+              <div class="title-option locked" data-title="Level King Ⅹ">Level King Ⅹ 🔒</div>
             </div>
           </div>
         </div>
@@ -332,7 +308,7 @@
                   <span class="idc-level" id="playerProfileLv">?</span>
                 </div>
                 <img class="idc-badge" src="assets/idcard/badge.png" alt="徽章">
-                <div class="idc-title" id="playerProfileTitle">王者</div>
+                <div class="idc-title" id="playerProfileTitle">Rank King Ⅹ</div>
                 <div class="idc-name" id="playerProfileName">玩家名稱</div>
                 <div class="idc-star">
                   <img src="assets/idcard/ach_star.png" alt="成就星">

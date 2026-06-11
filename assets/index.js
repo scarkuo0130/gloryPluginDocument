@@ -403,14 +403,14 @@
   // 玩家檔案：每個玩家附等級 / 頭像 / 稱號 / 背板主題 / 成就星數（共用於排行榜、跑馬燈）
   // achStars: 白金 1+ 跨遊戲成就數量，0~11，render 成 .player-card 上緣的 ✮ 列
   const profiles = {
-    KingOfSpin: { lv: 38, avatar: '👑', title: '王者',   bgKey: 'lava',    achStars: 11 },
-    Hades:      { lv: 32, avatar: '🐲', title: '賭神',   bgKey: 'galaxy',  achStars: 10 },
-    Sunny:      { lv: 28, avatar: '🦁', title: '幸運兒', bgKey: 'sunset',  achStars: 8 },
-    Misella:    { lv: 25, avatar: '🐍', title: '不敗',   bgKey: 'ocean',   achStars: 7 },
-    Dede:       { lv: 24, avatar: '🐯', title: '至尊',   bgKey: 'gold',    achStars: 6 },
-    Jesse:      { lv: 22, avatar: '🐼', title: '傳奇',   bgKey: 'jade',    achStars: 5 },
-    Ratu:       { lv: 20, avatar: '🐶', title: '新手',   bgKey: 'night',   achStars: 3 },
-    Joan5428:   { lv: 12, avatar: '🦊', title: '幸運兒', bgKey: DEFAULT_BG_THEME, achStars: 4 },
+    KingOfSpin: { lv: 38, avatar: '👑', title: 'Rank King Ⅹ',      bgKey: 'lava',    achStars: 11 },
+    Hades:      { lv: 32, avatar: '🐲', title: 'Cash King Ⅹ',      bgKey: 'galaxy',  achStars: 10 },
+    Sunny:      { lv: 28, avatar: '🦁', title: 'Mega Win Ⅴ',       bgKey: 'sunset',  achStars: 8 },
+    Misella:    { lv: 25, avatar: '🐍', title: 'Streak Master Ⅵ',  bgKey: 'ocean',   achStars: 7 },
+    Dede:       { lv: 24, avatar: '🐯', title: 'Top Win Ⅷ',        bgKey: 'gold',    achStars: 6 },
+    Jesse:      { lv: 22, avatar: '🐼', title: 'Level King Ⅹ',     bgKey: 'jade',    achStars: 5 },
+    Ratu:       { lv: 20, avatar: '🐶', title: 'Rising Star Ⅰ',    bgKey: 'night',   achStars: 3 },
+    Joan5428:   { lv: 12, avatar: '🦊', title: 'Mega Win Ⅴ',       bgKey: DEFAULT_BG_THEME, achStars: 4 },
   };
 
   // 把成就星數 render 成 .ach-star-badge HTML（A-I 統一規格：大星 + 數字疊星內 + 描邊+影子）
@@ -436,6 +436,9 @@
     setAchStarBadge(document.getElementById('statusAchStarBadge'), n);
     setAchStarBadge(document.getElementById('menuAchStarBadge'), n);
     setAchStarBadge(document.getElementById('profileAchStarBadge'), n);
+    // Game Hub 摘要列右側大星數字
+    const menuStarN = document.getElementById('menuStarN');
+    if (menuStarN) menuStarN.textContent = n;
   }
 
   // 跑馬燈訊息：每筆指定玩家 + 訊息（個人資訊從 profiles 取）
@@ -444,7 +447,7 @@
     { player: 'Joan5428',   msg: '梅杜莎單局派彩 280x！', icon: '💰' },
     { player: 'Sunny',      msg: '進入 TurnOver Top 3！', icon: '🏆' },
     { player: 'Hades',      msg: '派彩 1500x！',          icon: '💰' },
-    { player: 'KingOfSpin', msg: '解鎖王者稱號！',         icon: '👑' },
+    { player: 'KingOfSpin', msg: '解鎖 Rank King Ⅹ 稱號！', icon: '👑' },
     { player: 'Misella',    msg: '單局派彩 800x！',        icon: '💎' },
   ];
 
@@ -588,13 +591,13 @@
       { tier: '銅', title: '升級成就', status: 'Lv20', next: 'Lv50', progress: 40, reward: '給予頭像',
         thresholds: ['Lv50', 'Lv80', 'Lv120', 'Lv180', 'Lv250', 'Lv350'] },
       // 鐵 進行中：銅(rank 200) ≥ status(80) > 鐵(50)，排名數字越小越強
-      { tier: '鐵', title: '彩金排行王', status: '彩金排行第 80', next: 'rank 50', progress: 60, reward: '給予稱號', rewardTitle: '排行新銳',
+      { tier: '鐵', title: '彩金排行王', status: '彩金排行第 80', next: 'rank 50', progress: 60, reward: '給予稱號', rewardTitle: 'Rank King Ⅲ',
         thresholds: ['rank 200', 'rank 50', 'rank 20', 'rank 10', 'rank 3', 'rank 1'] },
       // 銅 進行中：status 12 < 銅(30)
       { tier: '銅', title: '每日任務達人', status: '完成 12 次', next: '30 次', progress: 40, reward: '給予頭像',
         thresholds: ['30 次', '80 次', '150 次', '300 次', '600 次', '1,200 次'] },
       // 鐵 進行中：銅(30) ≤ status(80) < 鐵(150)
-      { tier: '鐵', title: '每日任務常客', status: '完成 80 次', next: '150 次', progress: 53, reward: '給予稱號', rewardTitle: '勤勉者',
+      { tier: '鐵', title: '每日任務常客', status: '完成 80 次', next: '150 次', progress: 53, reward: '給予稱號', rewardTitle: 'Task Master Ⅹ',
         thresholds: ['30 次', '150 次', '300 次', '600 次', '1,200 次', '2,500 次'] },
       // 銅 進行中：status 50 < 銅(100)
       { tier: '銅', title: '勝場收藏家', status: 'Win 50 次', next: '100 次', progress: 50, reward: '給予頭像',
@@ -603,7 +606,7 @@
       { tier: '銀', title: '勝場霸主', status: 'Win 420 次', next: '800 次', progress: 52, reward: '給予頭像', rewardAvatar: '🦅',
         thresholds: ['Win 100 次', 'Win 250 次', 'Win 800 次', 'Win 1,500 次', 'Win 3,000 次', 'Win 6,000 次'] },
       // 鐵 進行中：銅(3) ≤ status(8) < 鐵(15)
-      { tier: '鐵', title: '連勝挑戰者', status: '連續 Win 8 次', next: '15 次', progress: 53, reward: '給予稱號', rewardTitle: '連擊好手',
+      { tier: '鐵', title: '連勝挑戰者', status: '連續 Win 8 次', next: '15 次', progress: 53, reward: '給予稱號', rewardTitle: 'Streak Master Ⅲ',
         thresholds: ['連續 3 次', '連續 15 次', '連續 25 次', '連續 40 次', '連續 60 次', '連續 100 次'] },
       // 黃金 進行中：白金(30) ≤ status(45) < 黃金(80)
       { tier: '黃金', title: '不敗王者', status: '連續 Win 45 次', next: '80 次', progress: 56, reward: '給予頭像', rewardAvatar: '🦁',
@@ -621,7 +624,7 @@
       { tier: '白金', title: '彩金收藏家', status: '60,000,000', next: '300,000,000', progress: 61, reward: '給予背板', rewardBg: 'gold',
         thresholds: ['15,000', '300,000', '5,000,000', '300,000,000', '2,000,000,000', '30,000,000,000'] },
       // 鐵 進行中：銅(3) ≤ status(6) < 鐵(10)
-      { tier: '鐵', title: '鐵牌成就收藏', status: '完成 6 個鐵牌', next: '10 個', progress: 60, reward: '給予稱號', rewardTitle: '鐵牌收藏家',
+      { tier: '鐵', title: '鐵牌成就收藏', status: '完成 6 個鐵牌', next: '10 個', progress: 60, reward: '給予稱號', rewardTitle: 'Spin Master Ⅲ',
         thresholds: ['3 個', '10 個', '25 個', '50 個', '80 個', '120 個'] },
       // 銀 進行中：鐵(2) ≤ status(4) < 銀(8) ；銅(1) 略低
       { tier: '銀', title: '銀牌成就收藏', status: '完成 4 個銀牌', next: '8 個', progress: 50, reward: '給予頭像', rewardAvatar: '🦄',
@@ -641,7 +644,7 @@
       { tier: '銅', title: '彩金獵人', status: 'Payout 20,000', next: '400,000', progress: 32, reward: '給予頭像',
         thresholds: ['400,000', '6,000,000', '80,000,000', '1,000,000,000', '20,000,000,000', '500,000,000,000'] },
       // 鐵 進行中：銅(10) ≤ status(20) < 鐵(50)
-      { tier: '鐵', title: '幸運兒', status: '20 倍', next: '50 倍', progress: 44, reward: '給予稱號', rewardTitle: '初露鋒芒',
+      { tier: '鐵', title: '幸運兒', status: '20 倍', next: '50 倍', progress: 44, reward: '給予稱號', rewardTitle: 'Mega Win Ⅳ',
         thresholds: ['10 倍', '50 倍', '100 倍', '250 倍', '500 倍', '1,000 倍'] },
       // 銀 進行中：鐵(60) ≤ status(80) < 銀(120)
       { tier: '銀', title: '勝場高手', status: 'Win 80 次', next: 'Win 120 次', progress: 67, reward: '給予頭像', rewardAvatar: '🐺',
@@ -718,10 +721,10 @@
     },
     {
       type: 'Tournament',
-      title: '世界杯錦標賽',
+      title: '世界盃錦標賽',
       date: '2026 05/01 ~ 05/31',
       prize: '第一名獎金 10,000,000',
-      image: 'assets/campaign_worldcup.jpg'
+      image: 'assets/gamehub/banner_tournament.png'
     }
   ];
   let promotionIdx = 0;
@@ -879,6 +882,18 @@
     return trends[Math.max(0, rank - 1)] || 'up';
   }
 
+  // Game Hub 排行榜預覽數值：>= 1M 以「125.00M」樣式呈現（整數大字＋小數縮小）
+  function formatLbMenuValue(raw) {
+    const n = Number(String(raw).replace(/[^0-9.]/g, ''));
+    if (Number.isFinite(n) && n >= 1e6) {
+      const m = n / 1e6;
+      const intPart = Math.floor(m);
+      const decPart = (m - intPart).toFixed(2).slice(1); // ".00"
+      return `${intPart}<small>${decPart}M</small>`;
+    }
+    return String(raw);
+  }
+
   function renderLeaderboardMenuCard(withMotion = false) {
     const items = getLeaderboardMenuItems();
     const card = document.querySelector('.leaderboard-preview-card');
@@ -891,28 +906,21 @@
       void card.offsetWidth;
     }
     kicker.textContent = item.kicker;
+    /* Game Hub 前三名完整列：名次品階底板（金/銀/銅）＋桂冠獎牌＋頭像/Lv＋稱號＋數值＋品階徽記 */
     preview.innerHTML = item.top3.map((player, index) => {
       const profile = profiles[player.name] || {};
-      const playerTheme = getBackgroundInlineVars(profile.bgKey);
-      const trend = getLeaderboardTrendDirection(item.metricKey, index);
-      const trendArrow = trend === 'down' ? '▼' : '▲';
+      const rankNo = Math.min(player.rank ?? (index + 1), 3);
       return `
-        <div class="lb-menu-row lb-menu-row--with-rank">
-          <div class="lb-menu-rank-wrap">
-            <div class="lb-menu-trend ${trend}">${trendArrow}</div>
-            <div class="lb-menu-rank">${player.rank}</div>
+        <div class="gh-lb-row gh-lb-row--${index + 1}" onclick="event.stopPropagation(); openPlayerProfile('${player.name}')">
+          <div class="gh-row-plate"></div>
+          <div class="gh-medal"><img src="assets/leaderboard/medal2_${rankNo}.png" alt="第${player.rank}名"></div>
+          <div class="gh-row-av"><img src="assets/leaderboard/av2.png" alt="頭像"><div class="gh-row-lv">${profile.lv ?? player.lv ?? '?'}</div></div>
+          <div class="gh-row-info">
+            ${profile.title ? `<div class="gh-row-ttl">${profile.title}</div>` : ''}
+            <div class="gh-row-name">${player.name}</div>
           </div>
-          <div class="player-card player-card--list-mini idcs-host" onclick="event.stopPropagation(); openPlayerProfile('${player.name}')" style="cursor:pointer; ${playerTheme}">
-            <!-- F: 小板 ID 卡 -->
-            <div class="idcs">
-              <img class="idcs-frame" src="assets/idcard/sml_frame.png" alt="" aria-hidden="true">
-              <div class="idcs-av"><img src="assets/idcard/sml_avatar.png" alt="頭像"></div>
-              <div class="idcs-level"><img src="assets/idcard/sml_level.png" alt=""><span class="idcs-level-n">${profile.lv ?? player.lv ?? '?'}</span></div>
-              <div class="idcs-name">${player.name}</div>
-              <div class="idcs-star"><img src="assets/idcard/sml_star.png" alt="成就星"><span class="idcs-star-n">${profile.achStars ?? 0}</span></div>
-            </div>
-          </div>
-          <div class="lb-menu-value">${player.value}</div>
+          <div class="gh-row-val"><img src="assets/leaderboard/coin_t.png" alt="T"><b>${formatLbMenuValue(player.value)}</b></div>
+          <div class="gh-row-badge"><img src="assets/leaderboard/badge_diamond.png" alt="品階"></div>
         </div>
       `;
     }).join('');
@@ -1423,8 +1431,8 @@
         setTitleVisibility(statusTitle, true);
         menuUserTitle.textContent = title;
         setTitleVisibility(menuUserTitle, true);
-        currentTitle.textContent = '✦ ' + title;
-        profileInfoTitle.textContent = '✦ ' + title;
+        currentTitle.textContent = title;
+        profileInfoTitle.textContent = title;
         setTitleVisibility(profileInfoTitle, true);
         playMemberSound('tap');
         showToast('稱號已更換：' + title);
@@ -1806,7 +1814,7 @@
             </div>
             ${item.tier === '鑽石' ? `
               <div class="achievement-progress-row">
-                <div class="achievement-completed">✦ 已達成最高成就</div>
+                <div class="achievement-completed">已達成最高成就</div>
               </div>
             ` : `
               <div class="achievement-progress-row">
@@ -2306,7 +2314,7 @@
   // ratio = 1：只在真的溢出時觸發（適合自動寬的元素如 title）
   const STATUS_MARQUEE_TARGETS = [
     { selector: '.status-name .name-text', prefix: '',   ratio: 0.6 },
-    { selector: '.status-title',           prefix: '✦ ', ratio: 1.0 }
+    { selector: '.status-title',           prefix: '',   ratio: 1.0 }
   ];
   function applyStatusMarquee(el, prefix, ratio) {
     // 取消舊動畫、還原為純文字以正確量測

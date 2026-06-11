@@ -1118,7 +1118,9 @@
     box-shadow: inset 0 1px 0 rgba(255,255,255,0.6), 0 4px 4px rgba(0,0,0,0.35);
     color: #fff; font-size: 4cqw; font-weight: 800; line-height: 1; white-space: nowrap;
     -webkit-text-stroke: 0.06em #c23b85; paint-order: stroke fill;
+    max-width: 18%; box-sizing: border-box; overflow: hidden;
   }
+  .idcm-title.is-marquee .marquee-inner { display: inline-block; white-space: nowrap; }
   /* 徽章 */
   .idcm-badge { position: absolute; left: 45%; top: 9%; width: 7.5%; height: auto; display: block; }
   /* 名字（下半，大字，貼底）*/
@@ -1184,7 +1186,9 @@
     box-shadow: inset 0 1px 0 rgba(255,255,255,0.6), 0 2px 3px rgba(0,0,0,0.4);
     color: #fff; font-size: 3cqw; font-weight: 800; line-height: 1; white-space: nowrap;
     -webkit-text-stroke: 0.05em #c23b85; paint-order: stroke fill;
+    max-width: 12.5%; box-sizing: border-box; overflow: hidden;
   }
+  .idcs-title.is-marquee .marquee-inner { display: inline-block; white-space: nowrap; }
   .idcs-badge {
     position: absolute; left: 35%; top: 3%; z-index: 5;
     width: 5%; height: auto; display: block;
@@ -1291,7 +1295,7 @@
   <div class="legend-item"><span class="legend-dot legend-av"></span> 頭像（Avatar emoji + 漸層圓）</div>
   <div class="legend-item"><span class="legend-dot legend-lv"></span> 等級（Lv. badge / inline）</div>
   <div class="legend-item"><span class="legend-dot legend-name"></span> 名稱（玩家暱稱）</div>
-  <div class="legend-item"><span class="legend-dot legend-title"></span> 稱號（✦ Title）</div>
+  <div class="legend-item"><span class="legend-dot legend-title"></span> 稱號（Title，無符號前綴）</div>
 </div>
 
 <div class="spec-callout">
@@ -1420,7 +1424,7 @@
   <ul style="margin: 8px 0; padding-left: 20px; font-size:13px; color:rgba(255,255,255,0.78); line-height:1.7;">
     <li><b>用 Web Animations API 不用 CSS @keyframes</b>：父層 <code>.canvas</code> 有 <code>transform: scale()</code> 形成 compositor context，CSS keyframes 的 transform 動畫會被推到 compositor 但**視覺不重繪**（JS 讀得到值、畫面卻不動）。WAAPI 走不同路徑、可靠。</li>
     <li><b>不使用 will-change: transform</b>：與父層 transform 並存會強制獨立 layer，再加上 calc(var()) 容易卡在不重繪狀態。</li>
-    <li><b>稱號 ✦ 前綴處理</b>：若 title 用 <code>::before { content: '✦ '; }</code>，marquee 啟動時 ::before 不會跟著捲，會跟內文重疊。解法：is-marquee 時 <code>::before { content: none; }</code>，並把 ✦ 直接前綴到 inner span 的 textContent。</li>
+    <li><b>稱號前綴處理（2026-06-11 已作廢）</b>：稱號前綴符號已全面移除（見 M 區塊規格要點⑥），原 ::before 前綴與 marquee 疊字問題不再存在。</li>
     <li><b>動態文字更新時要重跑量測</b>：rename / 輪播 / 頁面切換 / resize 都要呼叫 refreshXxxMarquee()，重建 inner span 和重算距離。</li>
     <li><b>WeakMap 管理 animation 實例</b>：每個 element 對應一個 Animation，re-apply 時先 cancel() 舊的，避免 leak。</li>
   </ul>
@@ -1669,7 +1673,7 @@
   <h3 style="color:#ffd166; font-size:15px; margin-top:14px;">HTML 結構（unified pattern）</h3>
   <pre style="background:rgba(0,0,0,0.35); padding:12px 16px; border-radius:8px; font-size:12px; color:#ffd166; overflow-x:auto;">&lt;div class="ttl-row"&gt;
   &lt;span class="ttl-badge" role="img" aria-label="徽章"&gt;&lt;/span&gt;
-  &lt;div class="ttl"&gt;✦ Title&lt;/div&gt;
+  &lt;div class="ttl"&gt;Title&lt;/div&gt;
 &lt;/div&gt;
 
 /* CSS（共用 :root 變數）*/
@@ -1723,7 +1727,7 @@
           <img class="idcm-frame" src="assets/idcard/mid_frame.png" alt="" aria-hidden="true">
           <div class="idcm-av"><img src="assets/idcard/mid_avatar.png" alt="頭像"></div>
           <div class="idcm-level"><img src="assets/idcard/mid_level.png" alt=""><span class="idcm-level-n">12</span></div>
-          <div class="idcm-title">幸運兒</div>
+          <div class="idcm-title">Mega Win Ⅴ</div>
           <img class="idcm-badge" src="assets/idcard/mid_badge.png" alt="徽章">
           <div class="idcm-name">Louis5566</div>
           <div class="idcm-star"><img src="assets/idcard/mid_star.png" alt="成就星"><span class="idcm-star-n">5</span></div>
@@ -1760,7 +1764,7 @@
           <img class="idcm-frame" src="assets/idcard/mid_frame.png" alt="" aria-hidden="true">
           <div class="idcm-av"><img src="assets/idcard/mid_avatar.png" alt="頭像"></div>
           <div class="idcm-level"><img src="assets/idcard/mid_level.png" alt=""><span class="idcm-level-n">12</span></div>
-          <div class="idcm-title">幸運兒</div>
+          <div class="idcm-title">Mega Win Ⅴ</div>
           <img class="idcm-badge" src="assets/idcard/mid_badge.png" alt="徽章">
           <div class="idcm-name">Louis5566</div>
           <div class="idcm-star"><img src="assets/idcard/mid_star.png" alt="成就星"><span class="idcm-star-n">5</span></div>
@@ -1800,7 +1804,7 @@
             <span class="idc-level">1</span>
           </div>
           <img class="idc-badge" src="assets/idcard/badge.png" alt="徽章">
-          <div class="idc-title">新手</div>
+          <div class="idc-title">Level King Ⅰ</div>
           <div class="idc-name">Louis5566</div>
           <div class="idc-star">
             <img src="assets/idcard/ach_star.png" alt="成就星">
@@ -1849,7 +1853,7 @@
             <div class="name">KingOfSpin</div>
             <div class="ttl-row">
               <span class="ttl-badge" role="img" aria-label="徽章"></span>
-              <div class="ttl">✦ 王者</div>
+              <div class="ttl">Rank King Ⅹ</div>
             </div>
             <span class="ach-star-badge" aria-label="成就：5 個白金以上成就">
               <span class="star">✮</span><span class="count">5</span>
@@ -1888,7 +1892,7 @@
           <img class="idcs-frame" src="assets/idcard/sml_frame.png" alt="" aria-hidden="true">
           <div class="idcs-av"><img src="assets/idcard/sml_avatar.png" alt="頭像"></div>
           <div class="idcs-level"><img src="assets/idcard/sml_level.png" alt=""><span class="idcs-level-n">38</span></div>
-          <div class="idcs-title">王者</div>
+          <div class="idcs-title">Rank King Ⅹ</div>
           <img class="idcs-badge" src="assets/idcard/mid_badge.png" alt="徽章">
           <div class="idcs-name">KingOfSpin</div>
           <div class="idcs-star"><img src="assets/idcard/sml_star.png" alt="成就星"><span class="idcs-star-n">11</span></div>
@@ -2203,7 +2207,7 @@
             </div>
             <div class="ttl-row">
               <span class="ttl-badge" role="img" aria-label="徽章"></span>
-              <div class="ttl">幸運兒</div>
+              <div class="ttl">Mega Win Ⅴ</div>
             </div>
             <span class="ach-star-badge" aria-label="成就：4 個白金以上成就">
               <span class="star">✮</span><span class="count">4</span>
@@ -2268,7 +2272,7 @@
     <li><b>頭像尺寸跨度大</b>：32px（mq-user）→ 80px（profile-card），共 6 種尺寸 → 可整理為 3 階規格（小 32-40 / 中 44-64 / 大 80）</li>
     <li><b>圓角值不一致</b>：18 / 20 / 24 / 28 / 32 / 34 → 可統一為 18（列）/ 20（區塊）/ 32（chip）三檔</li>
     <li><b>等級顯示有兩種樣式</b>：<code>.status-level</code>（純色文字）與 <code>.lv badge</code>（金橙漸層膠囊）→ 同一概念有兩種視覺</li>
-    <li style="color:#55e486;"><b>✓ 稱號樣式已統一</b>：A–H 全採用金色膠囊（金橙漸層底 + <code>1.5px solid rgba(255,209,102,0.5)</code> border + <code>border-radius 8~10px</code>），字級依場景縮放（13–18px）。<code>✦</code> 前綴維持。</li>
+    <li style="color:#55e486;"><b>✓ 稱號樣式已統一</b>：A–H 全採用金色膠囊（金橙漸層底 + <code>1.5px solid rgba(255,209,102,0.5)</code> border + <code>border-radius 8~10px</code>），字級依場景縮放（13–18px）。<b>前綴符號已移除（2026-06-11，見 M 規格要點⑥）</b>。</li>
     <li><b>背板套用方式有 3 種</b>：(1) 整個容器作為 background（A、B、E、F、G、H）；(2) 半透明疊加 35% opacity（C、D）；(3) 加黑膜降亮（I）→ 影響可讀性的策略不一致</li>
   </ul>
   <h3>📐 統一規格建議方向</h3>
@@ -2314,8 +2318,8 @@
     }
   }
   function refreshExampleMarquees() {
-    // 只 A demo 套用，對齊 index.html 實作範圍
-    document.querySelectorAll('.demo-status-profile .name, .demo-status-profile .ttl').forEach(applyExampleMarquee);
+    // A demo + 美術卡稱號緞帶（英文稱號較長，超出上限寬時滑動），對齊 index.html 溢出處理
+    document.querySelectorAll('.demo-status-profile .name, .demo-status-profile .ttl, .idcm-title, .idcs-title').forEach(applyExampleMarquee);
   }
   window.addEventListener('resize', refreshExampleMarquees);
   setTimeout(refreshExampleMarquees, 0);
@@ -2393,6 +2397,329 @@
     else document.addEventListener('DOMContentLoaded', initAll);
   })();
 </script>
+
+<!-- ===================================================================== -->
+<!-- M · Game Hub 主選單改版（2026-06-11 示意圖 temp/photo_2026-06-11 13.55.41.jpeg） -->
+<!-- ===================================================================== -->
+<style>
+  /* ===== M: Game Hub 主選單 ===== */
+  .gamehub-screen {
+    width: 720px; height: 1280px;
+    background: linear-gradient(180deg, #0e1d33 0%, #15273f 45%, #0c1828 100%);
+    display: flex; align-items: center; justify-content: center;
+    border-radius: 24px;
+    flex: none;
+  }
+  .gamehub {
+    width: 666px;   /* 容器寬由子元件內縮比例反推：625/93.9% ≈ 599/90% ≈ 666 */
+    background: url("assets/gamehub/hub_container.png") center / cover no-repeat;
+    border-radius: 30px;
+    box-shadow: 0 18px 48px rgba(0,0,0,0.55), inset 0 0 0 2px rgba(255,255,255,0.25);
+    padding: 26px 0 50px;
+    display: flex; flex-direction: column; align-items: center;
+  }
+  /* --- 玩家摘要列 Player Summary Bar --- */
+  .gh-summary {
+    width: 625px; height: 179px;
+    background: url("assets/gamehub/summary_bar.png") center / 100% 100% no-repeat;
+    position: relative;
+    flex: none;
+  }
+  .gh-summary .gh-av {
+    position: absolute; left: 18px; top: 50%; transform: translateY(-50%);
+    width: 138px; height: 138px; border-radius: 50%;
+    border: 3px solid rgba(255,255,255,0.85);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.4);
+    background: #16263d;
+  }
+  .gh-summary .gh-av img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; display: block; }
+  .gh-summary .gh-av .gh-lv {
+    position: absolute; left: 50%; bottom: -10px; transform: translateX(-50%);
+    min-width: 40px; padding: 2px 8px;
+    background: #1c2c44; border: 2px solid rgba(255,255,255,0.7); border-radius: 999px;
+    font-size: 16px; font-weight: 900; color: #fff; text-align: center; line-height: 1.2;
+  }
+  .gh-summary .gh-ttl {
+    /* 稱號底版參考 E2：ribbon_low_01 緞帶（169×41 原寸），文字置中、無符號前綴 */
+    position: absolute; left: 172px; top: 20px;
+    width: 169px; aspect-ratio: 169 / 41;
+    background: url("assets/leaderboard/ribbon_low_01.png") center / 100% 100% no-repeat;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 15px; font-weight: 700; color: #fff; line-height: 1; white-space: nowrap;
+  }
+  .gh-summary .gh-name-row {
+    position: absolute; left: 172px; top: 58px;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .gh-summary .gh-name { font-size: 34px; font-weight: 900; color: #fff; text-shadow: 0 2px 4px rgba(0,0,0,0.45); line-height: 1.1; }
+  .gh-summary .gh-name-row img { width: 32px; height: 32px; }
+  .gh-summary .gh-exp { position: absolute; left: 172px; right: 130px; bottom: 40px; }
+  .gh-summary .gh-exp-num { text-align: right; font-size: 15px; font-weight: 800; color: #fff; text-shadow: 0 1px 3px rgba(0,0,0,0.5); margin-bottom: 4px; }
+  .gh-summary .gh-exp-track { height: 10px; border-radius: 999px; background: rgba(10,30,55,0.55); overflow: hidden; }
+  .gh-summary .gh-exp-fill { height: 100%; border-radius: 999px; background: linear-gradient(180deg, #ffffff, #d7e8ff); }
+  .gh-summary .gh-star {
+    /* 素材 leaderboard/star.png 原比例 85:80 */
+    position: absolute; right: 14px; top: 50%; transform: translateY(-50%);
+    width: 106px; height: 100px;
+  }
+  .gh-summary .gh-star img { width: 100%; height: 100%; display: block; }
+  .gh-summary .gh-star span {
+    position: absolute; left: 50%; top: 48%; transform: translate(-50%, -50%);
+    font-size: 38px; font-weight: 900; color: #fff;
+    -webkit-text-stroke: 2px #1d6fb8; paint-order: stroke fill;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.35);
+  }
+  /* --- 雙卡列（每日任務 / 成就系統）--- */
+  .gh-cards { width: 599px; display: flex; gap: 12px; flex: none; margin-top: 32px; }
+  .gh-card { position: relative; flex: none; }
+  .gh-card--daily { width: 370px; height: 257px; background: url("assets/gamehub/card_daily.png") center / 100% 100% no-repeat; }
+  .gh-card--ach   { width: 217px; height: 257px; background: url("assets/gamehub/card_achievement.png") center / 100% 100% no-repeat; }
+  .gh-card .gh-card-head {
+    position: absolute; top: 6px; left: 0; right: 0; height: 44px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 21px; font-weight: 800; color: #fff; text-shadow: 0 1px 3px rgba(0,0,0,0.35);
+  }
+  .gh-card .gh-dot { position: absolute; top: 12px; right: 14px; width: 19px; height: 19px; }
+  .gh-card .gh-dot img { width: 100%; height: 100%; display: block; }
+  .gh-daily-label { position: absolute; left: 22px; top: 85px; font-size: 15px; color: rgba(255,255,255,0.85); font-weight: 700; }
+  .gh-daily-count { position: absolute; left: 20px; top: 130px; display: flex; align-items: baseline; gap: 8px; }
+  .gh-daily-count b { font-size: 62px; font-weight: 900; color: #fff; text-shadow: 0 2px 5px rgba(0,0,0,0.4); line-height: 1; }
+  .gh-daily-count span { font-size: 16px; font-weight: 700; color: rgba(255,255,255,0.9); }
+  .gh-gift { position: absolute; right: 26px; top: 58px; width: 96px; text-align: center; }
+  .gh-gift .gh-claim {
+    display: inline-block; padding: 2px 12px; margin-bottom: 2px;
+    background: linear-gradient(180deg, #ffe07a, #ffb53e); border-radius: 999px;
+    font-size: 14px; font-weight: 900; color: #5a3200;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+  }
+  .gh-gift .gh-gift-img { position: relative; width: 86px; margin: 0 auto; }
+  .gh-gift .gh-gift-img > img { width: 86px; display: block; }
+  .gh-gift .gh-exp-tag {
+    position: absolute; right: -10px; bottom: 2px;
+    padding: 1px 8px;
+    background: linear-gradient(180deg, #ffb13e, #f07c1d); border-radius: 6px;
+    font-size: 13px; font-weight: 900; color: #fff; border: 1px solid rgba(255,255,255,0.6);
+  }
+  .gh-bar { position: absolute; left: 20px; right: 20px; bottom: 30px; height: 14px; border-radius: 999px; background: rgba(10,25,45,0.55); overflow: hidden; }
+  .gh-bar-fill { height: 100%; border-radius: 999px; }
+  .gh-bar-fill--daily {
+    background:
+      repeating-linear-gradient(120deg, rgba(255,255,255,0.22) 0 8px, transparent 8px 20px),
+      linear-gradient(90deg, #ffd95e, #ff9a2e);
+  }
+  .gh-bar-fill--ach { background: linear-gradient(90deg, #57e6c9, #1ec48f); }
+  .gh-ach-icon { position: absolute; left: 50%; top: 70px; transform: translateX(-50%); width: 104px; }
+  .gh-ach-icon img { width: 100%; display: block; }
+  .gh-ach-count { position: absolute; left: 0; right: 0; top: 167px; text-align: center; font-size: 33px; font-weight: 900; color: #fff; text-shadow: 0 2px 4px rgba(0,0,0,0.4); }
+  /* --- 排行榜預覽卡 --- */
+  .gh-lb { width: 599px; height: 402px; background: url("assets/gamehub/card_leaderboard.png") center / 100% 100% no-repeat; position: relative; flex: none; margin-top: 12px; }
+  .gh-lb-head { position: absolute; top: 0; left: 0; right: 0; height: 56px; display: flex; align-items: center; gap: 12px; padding: 0 18px; }
+  .gh-lb-head .gh-trophy {
+    width: 40px; height: 40px; border-radius: 50%;
+    background: rgba(255,255,255,0.92);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22px; flex: none;
+  }
+  .gh-lb-head .gh-lb-sub { font-size: 12px; font-weight: 700; color: rgba(255,255,255,0.8); line-height: 1.3; }
+  .gh-lb-head .gh-lb-title { font-size: 22px; font-weight: 900; color: #fff; line-height: 1.2; }
+  .gh-lb-rows { position: absolute; left: 14px; right: 14px; top: 95px; display: flex; flex-direction: column; }
+  .gh-lb-row { position: relative; height: 92px; flex: none; }
+  .gh-lb-row .gh-row-plate { position: absolute; left: 30px; right: 0; top: 50%; transform: translateY(-50%); height: 86px; background-size: 100% 100%; background-repeat: no-repeat; }
+  .gh-lb-row--1 .gh-row-plate { background-image: url("assets/leaderboard/row_mid_gold.png"); }
+  .gh-lb-row--2 .gh-row-plate { background-image: url("assets/leaderboard/row_mid_silver.png"); }
+  .gh-lb-row--3 .gh-row-plate { background-image: url("assets/leaderboard/row_mid_bronze.png"); }
+  .gh-lb-row .gh-medal { position: absolute; left: 0; top: 50%; transform: translateY(-50%); width: 76px; z-index: 2; }
+  .gh-lb-row .gh-medal img { width: 100%; display: block; }
+  .gh-lb-row .gh-row-av { position: absolute; left: 86px; top: 50%; transform: translateY(-50%); width: 58px; height: 58px; z-index: 2; }
+  .gh-lb-row .gh-row-av img { width: 100%; height: 100%; border-radius: 50%; border: 2px solid rgba(255,255,255,0.8); display: block; }
+  .gh-lb-row .gh-row-av .gh-row-lv {
+    position: absolute; left: 50%; bottom: -8px; transform: translateX(-50%);
+    padding: 0 6px; background: #1c2c44; border: 1.5px solid rgba(255,255,255,0.7); border-radius: 999px;
+    font-size: 11px; font-weight: 900; color: #fff; line-height: 1.5;
+  }
+  .gh-lb-row .gh-row-info { position: absolute; left: 156px; top: 50%; transform: translateY(-50%); display: flex; flex-direction: column; gap: 4px; z-index: 2; max-width: 170px; }
+  .gh-lb-row .gh-row-ttl {
+    /* 稱號底版參考 E2：ribbon_low_01，寬度依 E2 規格 = 列寬 25%（571 × 25% ≈ 143px）*/
+    align-self: flex-start;
+    width: 143px; aspect-ratio: 169 / 41;
+    background: url("assets/leaderboard/ribbon_low_01.png") center / 100% 100% no-repeat;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px; font-weight: 700; color: #fff; line-height: 1; white-space: nowrap;
+  }
+  .gh-lb-row .gh-row-name { font-size: 19px; font-weight: 900; color: #fff; text-shadow: 0 1px 3px rgba(0,0,0,0.5); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .gh-lb-row .gh-row-val { position: absolute; right: 64px; top: 50%; transform: translateY(-50%); display: flex; align-items: center; gap: 8px; z-index: 2; }
+  .gh-lb-row .gh-row-val img { width: 26px; height: 27px; }
+  .gh-lb-row .gh-row-val b { font-size: 30px; font-weight: 900; font-style: italic; color: #fff; text-shadow: 0 2px 4px rgba(0,0,0,0.55); }
+  .gh-lb-row .gh-row-val b small { font-size: 19px; }
+  .gh-lb-row .gh-row-badge { position: absolute; right: 14px; top: 50%; transform: translateY(-50%); width: 42px; height: 42px; z-index: 2; }
+  .gh-lb-row .gh-row-badge img { width: 100%; height: 100%; display: block; }
+  /* --- 活動橫幅 --- */
+  .gh-banner { width: 604px; height: 143px; background: url("assets/gamehub/banner_tournament.png") center / 100% 100% no-repeat; position: relative; flex: none; margin-top: 20px; }
+  .gh-banner .gh-bn-icon {
+    position: absolute; left: 22px; top: 50%; transform: translateY(-50%);
+    width: 64px; height: 64px; border-radius: 14px;
+    background: linear-gradient(180deg, #3f8d4f, #2c6e3c);
+    border: 2px solid rgba(255,255,255,0.5);
+    display: flex; align-items: center; justify-content: center; font-size: 34px;
+  }
+  .gh-banner .gh-bn-text { position: absolute; left: 104px; top: 50%; transform: translateY(-50%); }
+  .gh-banner .gh-bn-kicker { font-size: 14px; font-weight: 700; color: rgba(255,255,255,0.85); }
+  .gh-banner .gh-bn-title { font-size: 27px; font-weight: 900; color: #fff; text-shadow: 0 2px 4px rgba(0,0,0,0.5); line-height: 1.25; }
+  .gh-banner .gh-bn-date { font-size: 13px; font-weight: 700; color: #f3c96b; }
+  .gh-banner .gh-bn-dots { position: absolute; right: 18px; bottom: 12px; display: flex; gap: 6px; }
+  .gh-banner .gh-bn-dots i { width: 8px; height: 8px; border-radius: 50%; background: rgba(255,255,255,0.35); }
+  .gh-banner .gh-bn-dots i.on { background: #fff; }
+</style>
+
+<div class="spec-callout">
+  <h2>✓ M · Game Hub 主選單改版規格（2026-06-11 美術示意圖）</h2>
+  <p>主選單改版為 <b>Game Hub</b> 直式版面，由上而下：<b>玩家摘要列 → 每日任務卡＋成就卡（並排）→ 排行榜預覽卡 → 活動橫幅</b>，整體坐落於灰藍幾何紋理容器上。素材：<code>assets/gamehub/</code>（原稿 <code>temp/Game Hub Screen_20260611/</code>）。</p>
+  <table>
+    <thead>
+      <tr><th>區塊</th><th>背板素材（原寸）</th><th>內容</th><th>點擊行為</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>容器</td><td><code>hub_container.png</code>（613×920，cover 延展）</td><td>—</td><td>—</td></tr>
+      <tr><td>玩家摘要列</td><td><code>summary_bar.png</code>（625×179，左右各凸 6px）</td><td>頭像＋Lv、稱號、名稱＋徽記、EXP 條＋數字、成就星＋數</td><td>開個人資料頁</td></tr>
+      <tr><td>每日任務卡</td><td><code>card_daily.png</code>（370×257）</td><td>今日進度 n/m、禮物＋可領數＋EXP 標、進度條、紅點</td><td>開每日任務頁</td></tr>
+      <tr><td>成就卡</td><td><code>card_achievement.png</code>（217×257）</td><td>靶心 icon、進度 n/m、進度條、紅點</td><td>開成就頁</td></tr>
+      <tr><td>排行榜預覽卡</td><td><code>card_leaderboard.png</code>（599×402）</td><td>標題列（指標＋「排行榜」）＋前三名完整列（名次品階底板）</td><td>開排行榜頁</td></tr>
+      <tr><td>活動橫幅</td><td><code>banner_tournament.png</code>（604×143）</td><td>活動名＋期間＋輪播點</td><td>開活動彈窗（輪播）</td></tr>
+    </tbody>
+  </table>
+  <p style="margin-top: 12px;">📐 <b>規格要點</b>：</p>
+  <p>① 排行榜預覽改用「前三名完整列」：桂冠獎牌（<code>medal2_1~3</code>）＋金/銀/銅名次底板（<code>row_mid_gold/silver/bronze</code>，沿用 E2 名次品階規則）＋稱號＋T 幣數值＋玩家品階徽記。</p>
+  <p>② 示意圖稱號「Mega Multi<b>pier</b> VIII」為拼字錯誤，實作一律 <b>Mega Multiplier Ⅷ</b>（稱號規格 D1）。</p>
+  <p>③ 摘要列 EXP <b>顯示數字（1688 / 2000）</b>——依本示意圖；與實作規格 §個人資料「不顯示數字」之 ⚠️ 爭點以本示意圖為新準。</p>
+  <p>④ 紅點：每日任務（有未完成或可領）／成就（有可領）時顯示（<code>dot_red.png</code>）。</p>
+  <p>⑥ 稱號底版參考 E2：<code>ribbon_low_01.png</code> 緞帶（169×41），摘要列用原寸、排行列寬 = 列寬 25%；稱號文字置中、<b>前面不加任何符號</b>（✦ 已全面移除，含狀態列/個資頁/成就獎勵）。</p>
+  <p>⑤ 進度條填充：正式接資料時寬度 = 完成數／總數；demo 依示意圖目視比例。</p>
+  <p style="color:#ff8c42;">⚠️ 待補素材：排行榜標題列獎盃 icon、橫幅左側活動徽記——美術未提供切圖，demo 以 emoji 佔位（🏆），正式版需請美術補。</p>
+</div>
+
+<div class="grid">
+  <div class="case">
+    <div class="case-head">
+      <span class="case-no">M</span>
+      <div class="case-title">Game Hub 主選單（720×1280 實寸）</div>
+      <div class="case-where">出現位置：主選單（取代現行 menu 版面） · 對照：temp/photo_2026-06-11 13.55.41.jpeg</div>
+    </div>
+    <div class="case-stage" style="padding: 28px 12px;">
+      <div class="gamehub-screen" id="gamehubDemo">
+        <div class="gamehub">
+          <!-- 玩家摘要列 -->
+          <div class="gh-summary">
+            <div class="gh-av">
+              <img src="assets/leaderboard/av2.png" alt="頭像">
+              <div class="gh-lv">35</div>
+            </div>
+            <div class="gh-ttl">Mega Multiplier Ⅷ</div>
+            <div class="gh-name-row">
+              <div class="gh-name">Louis3130</div>
+              <img src="assets/leaderboard/badge_diamond.png" alt="品階徽記">
+            </div>
+            <div class="gh-exp">
+              <div class="gh-exp-num">1688 / 2000</div>
+              <div class="gh-exp-track"><div class="gh-exp-fill" style="width: 84%;"></div></div>
+            </div>
+            <div class="gh-star"><img src="assets/leaderboard/star.png" alt="成就星"><span>5</span></div>
+          </div>
+          <!-- 每日任務 + 成就 -->
+          <div class="gh-cards">
+            <div class="gh-card gh-card--daily">
+              <div class="gh-card-head">每日任務</div>
+              <div class="gh-dot"><img src="assets/gamehub/dot_red.png" alt="紅點"></div>
+              <div class="gh-daily-label">今日進度</div>
+              <div class="gh-daily-count"><b>2/3</b><span>完成</span></div>
+              <div class="gh-gift">
+                <span class="gh-claim">可領 2</span>
+                <div class="gh-gift-img">
+                  <img src="assets/gamehub/icon_gift.png" alt="禮物">
+                  <span class="gh-exp-tag">EXP</span>
+                </div>
+              </div>
+              <div class="gh-bar"><div class="gh-bar-fill gh-bar-fill--daily" style="width: 66%;"></div></div>
+            </div>
+            <div class="gh-card gh-card--ach">
+              <div class="gh-card-head">成就系統</div>
+              <div class="gh-dot"><img src="assets/gamehub/dot_red.png" alt="紅點"></div>
+              <div class="gh-ach-icon"><img src="assets/gamehub/icon_achieve.png" alt="成就"></div>
+              <div class="gh-ach-count">4/29</div>
+              <div class="gh-bar"><div class="gh-bar-fill gh-bar-fill--ach" style="width: 38%;"></div></div>
+            </div>
+          </div>
+          <!-- 排行榜預覽 -->
+          <div class="gh-lb">
+            <div class="gh-lb-head">
+              <div class="gh-trophy">🏆</div>
+              <div>
+                <div class="gh-lb-sub">總排名 . Turnover</div>
+                <div class="gh-lb-title">排行榜</div>
+              </div>
+            </div>
+            <div class="gh-lb-rows">
+              <div class="gh-lb-row gh-lb-row--1">
+                <div class="gh-row-plate"></div>
+                <div class="gh-medal"><img src="assets/leaderboard/medal2_1.png" alt="第1名"></div>
+                <div class="gh-row-av"><img src="assets/leaderboard/av2.png" alt=""><div class="gh-row-lv">35</div></div>
+                <div class="gh-row-info">
+                  <div class="gh-row-ttl">Mega Multiplier Ⅷ</div>
+                  <div class="gh-row-name">Bill16888</div>
+                </div>
+                <div class="gh-row-val"><img src="assets/leaderboard/coin_t.png" alt="T"><b>125<small>.00M</small></b></div>
+                <div class="gh-row-badge"><img src="assets/leaderboard/badge_diamond.png" alt="品階"></div>
+              </div>
+              <div class="gh-lb-row gh-lb-row--2">
+                <div class="gh-row-plate"></div>
+                <div class="gh-medal"><img src="assets/leaderboard/medal2_2.png" alt="第2名"></div>
+                <div class="gh-row-av"><img src="assets/leaderboard/av2.png" alt=""><div class="gh-row-lv">35</div></div>
+                <div class="gh-row-info">
+                  <div class="gh-row-ttl">Mega Multiplier Ⅷ</div>
+                  <div class="gh-row-name">Loliyta</div>
+                </div>
+                <div class="gh-row-val"><img src="assets/leaderboard/coin_t.png" alt="T"><b>85<small>.50M</small></b></div>
+                <div class="gh-row-badge"><img src="assets/leaderboard/badge_diamond.png" alt="品階"></div>
+              </div>
+              <div class="gh-lb-row gh-lb-row--3">
+                <div class="gh-row-plate"></div>
+                <div class="gh-medal"><img src="assets/leaderboard/medal2_3.png" alt="第3名"></div>
+                <div class="gh-row-av"><img src="assets/leaderboard/av2.png" alt=""><div class="gh-row-lv">35</div></div>
+                <div class="gh-row-info">
+                  <div class="gh-row-ttl">Mega Multiplier Ⅷ</div>
+                  <div class="gh-row-name">Jhon1314</div>
+                </div>
+                <div class="gh-row-val"><img src="assets/leaderboard/coin_t.png" alt="T"><b>79<small>.00M</small></b></div>
+                <div class="gh-row-badge"><img src="assets/leaderboard/badge_diamond.png" alt="品階"></div>
+              </div>
+            </div>
+          </div>
+          <!-- 活動橫幅 -->
+          <div class="gh-banner">
+            <div class="gh-bn-icon">🏆</div>
+            <div class="gh-bn-text">
+              <div class="gh-bn-kicker">Tournament</div>
+              <div class="gh-bn-title">世界盃錦標賽</div>
+              <div class="gh-bn-date">2026 05/01 - 05/31</div>
+            </div>
+            <div class="gh-bn-dots"><i class="on"></i><i></i><i></i></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="case-meta">
+      <b>結構：</b> <code>.gamehub-screen</code>（720×1280 暗底）&gt; <code>.gamehub</code>（613w 容器，hub_container cover）&gt; 摘要列 / 雙卡 / 排行榜預覽 / 橫幅 依序堆疊（gap 18px）<br>
+      <b>重用元件：</b> 排行榜列沿用 E2 名次品階規則（<code>row_mid_*</code> 底板 + <code>medal2_*</code> 桂冠）；成就星沿用 <code>mid_star.png</code>＋疊數字；品階徽記 <code>badge_diamond.png</code>
+      <div class="tags">
+        <span class="tag tag-bg">gamehub 新背板 ×6</span>
+        <span class="tag tag-av">頭像＋Lv 角標</span>
+        <span class="tag tag-title">稱號（深色膠囊）</span>
+        <span class="tag tag-name">名稱</span>
+        <span class="tag tag-extra">＋EXP 數字 ＋紅點 ＋可領數 ＋輪播點</span>
+      </div>
+      <p style="color:#ff8c42; margin-top:6px;">🏆 emoji 為佔位（排行榜標題 icon、橫幅徽記素材待美術補圖）。稱號拼字已修正為 Mega Multiplier。</p>
+    </div>
+  </div>
+</div>
 
 </body>
 </html>
