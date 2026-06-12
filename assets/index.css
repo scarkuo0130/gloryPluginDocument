@@ -4571,7 +4571,7 @@ img {
     position: absolute; left: 172px; top: 58px;
     display: flex; align-items: center; gap: 10px;
   }
-  .gh-summary .gh-name { font-size: 34px; font-weight: 900; color: #fff; text-shadow: 0 2px 4px rgba(0,0,0,0.45); line-height: 1.1; }
+  .gh-summary .gh-name { font-size: 34px; font-weight: 900; color: #fff; text-shadow: 0 2px 4px rgba(0,0,0,0.45); line-height: 1.1; position: relative; bottom: -15px; left: 10px; }
   .gh-summary .gh-name-row img { width: 32px; height: 32px; }
   .gh-summary .gh-exp { position: absolute; left: 172px; right: 130px; bottom: 40px; }
   .gh-summary .gh-exp-num { text-align: right; font-size: 15px; font-weight: 800; color: #fff; text-shadow: 0 1px 3px rgba(0,0,0,0.5); margin-bottom: 4px; }
